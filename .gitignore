@@ -50,3 +50,9 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Databese personal contacts
+*.sqlite3
+*.csv
+*.bak
+*.log
