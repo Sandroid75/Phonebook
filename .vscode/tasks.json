@@ -1,0 +1,41 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cppbuild",
+			"label": "C/C++: gcc compila il file attivo",
+			"command": "/usr/bin/gcc",
+			"args": [
+				"-std=gnu17",
+				"-Wall",
+				"-O0",
+				"-g",
+				//"${file}",
+				"${fileDirname}/*.c",
+				"-o",
+				//"${fileDirname}/${fileBasenameNoExtension}",
+				"${fileDirname}/phonebook",
+				"-I../include/",
+				"-L../lib/",
+				"-lpthread",
+				"-lncurses",
+				"-lmenu",
+				"-lform",
+				"-lsqlite3",
+				"-lsds",
+				"-lm"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"detail": "compilatore: /usr/bin/gcc"
+		}
+	]
+}

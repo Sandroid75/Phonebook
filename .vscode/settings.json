@@ -1,0 +1,6 @@
+{
+    "terminal.explorerKind": "external",
+    "files.associations": {
+        "cctype": "c"
+    }
+}
