@@ -19,8 +19,8 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
-#include "sds.h"
-#include "sds_ext.h"
+#include "../sds/sds.h"
+#include "../sds/sds_extra.h"
 
 
 //macro deinitions
@@ -29,6 +29,7 @@
 #define NEXT(list)       { list = list->next; }
 #define REWIND(list)    while(list && list->prev) { PREV(list); }
 #define FORWARD(list)   while(list && list->next) { NEXT(list); }
+#define NULLSET(pointer) if(pointer) { pointer = NULL; }
 
 #ifndef KEY_SPACE
 #define KEY_SPACE 32
@@ -164,7 +165,7 @@ extern PhoneBook_t *contacts; //Global contatcts phonebook
 */
 
 //functions
-sds *buildMenuItems(char **items, int *numbers);
+sds *buildMenuItems(char **items, int numbers);
 void MainMenu(WINDOW *win);	//main menu
 void SearchMenu(WINDOW *win);	//search menu
 void AddMenu(WINDOW *win);	//add menu
@@ -183,7 +184,7 @@ int messageBox(WINDOW *win, int y, const char *string, chtype color);
 void printLabels(WINDOW *win, chtype color);
 int write_db(WINDOW *win);
 int update_db(WINDOW *win);
-int read_db(WINDOW *win);
+int read_db(void);
 int callback(void *NotUsed, int argc, char **argv, char **azColName);
 PhoneBook_t *newNode(DBnode_t *node);
 PhoneBook_t *addNode(PhoneBook_t **list, DBnode_t *node); //push the element of db in contacts list, return the new element node pointer
@@ -192,7 +193,7 @@ DBnode_t *initNode(PhoneBook_t *ptrList);
 int filecopy(const char* source, const char* destination);
 int write_csv(const char *csv_file, PhoneBook_t *contact_csv);
 void destroyNode(DBnode_t *ptr);
-void destroyList(PhoneBook_t **ptr);
+void destroyList(PhoneBook_t *ptr);
 int countList(PhoneBook_t *ptr);
 void db_log(const char *funcname, char *comment, DBnode_t *db);
 void logfile(const char *fmt, ...);

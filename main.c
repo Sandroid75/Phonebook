@@ -34,17 +34,18 @@ int main(void) { //Phonebook main function
         logfile("%s: Terminal height not enough you have %d rows, you need at least 24 rows\n", __func__, ymax);
         logfile("%s: Terminal width not enough you have %d columns, you need at least 80 columns\n", __func__, xmax);
 
-        fprintf(stderr, "%s: Terminal error, see log file please.", __func__);
+        fprintf(stderr, "%s: Terminal error, see %s file please.", __func__, LOGFILE);
+        getchar();
     } else {
         win = newwin(ymax, xmax, 0, 0); //create the main window
         wrefresh(win); //refresh the main window
-        read_db(win); //read the sqlite file database and store it in the contacts list
+        read_db(); //read the sqlite file database and store it in the contacts list
         MainMenu(win); //run main program menu
     }
 
     curs_set(TRUE); // show cursor
     endwin(); //close ncurses
-    destroyList(&contacts); //free memory routine for PhoneBook_t contacts
+    destroyList(contacts); //free memory routine for PhoneBook_t contacts
     logfile("%s: *** END SESSION ***\n", __func__);
 
     return 0;

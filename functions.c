@@ -319,7 +319,7 @@ int flexForm(WINDOW *win, DBnode_t **db, const char *formName) {
 	}
     if(field) {
         free(field);
-        field = NULL;
+		NULLSET(field);
     }
 
     free_form(my_form);
@@ -372,7 +372,7 @@ int initField(FIELD **field, DBnode_t *db) {
     field[i++] = new_field(1, 2,	 	rows,	STEXT*2 +13,			0, 0); //day
     field[i++] = new_field(1, 2,	 	rows,	STEXT*2 +17,			0, 0); //mon
 	field[i++] = new_field(1, 4,	 	rows,	STEXT*2 +21,			0, 0); //year
-	field[i] = NULL;
+	NULLSET(field[i]);
 	rows = i; //store the numbers of counted fields
 
 	//now for not alphanumeric field a new type will assigned
@@ -549,7 +549,7 @@ int countList(PhoneBook_t *ptr) {
 
 	REWIND(ptr); //rewind the list up to the first node
 	while(ptr) {
-		ptr = ptr->next;
+		NEXT(ptr);
 		count++;
 	}
 

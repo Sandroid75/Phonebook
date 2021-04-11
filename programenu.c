@@ -1,26 +1,19 @@
 #include "phonebook.h"
 
-sds *buildMenuItems(char **items, int *numbers) {
-    char **ptr = items;
+sds *buildMenuItems(char **items, int numbers) {
     sds *menuChoices;
-    int i, count = 0;
+    int i = numbers;
 
     if(!items) {
         return NULL;
     }
 
-    while((*ptr++)) { //counting numbers of menu items
-        count++;
-    }
+    menuChoices = (sds *) calloc(i, sizeof(sds)); //calculate one more also for empity sds
 
-    i = count +1;
-    menuChoices = (sds *) calloc(i, sizeof(sds));
-
-    for(i = 0; i < count; i++) {
+    for(i = 0; i < (numbers -1); i++) {
         menuChoices[i] = sdscatprintf(sdsempty(), "[%d] %s", i+1, items[i]);
     }
-    menuChoices[i++] = sdsempty();
-    (*numbers) = i;
+    menuChoices[i] = sdsempty();
 
     return (sds *) menuChoices;
 }
@@ -35,7 +28,8 @@ void MainMenu(WINDOW *win) { //main menu
     wrefresh(win);
     wclear(win);
 
-    choices = buildMenuItems(items, &n_choices);
+    n_choices = ARRAY_SIZE(items) +1;  //calculate one more also for empity sds
+    choices = buildMenuItems(items, n_choices);
     if(!choices) {
         sdsfree(menuModify); //free memory
         sdsfree(menuUpdate); //free memory
@@ -104,7 +98,8 @@ void SearchMenu(WINDOW *win) { //search menu
         return;
     }
 
-    choices = buildMenuItems(items, &n_choices);
+    n_choices = ARRAY_SIZE(items) +1;  //calculate one more also for empity sds
+    choices = buildMenuItems(items, n_choices);
     if(!choices) {
         sdsfree(menuName); //free memory
 
@@ -200,7 +195,7 @@ int do_search(WINDOW *win, bool csv_export) {
             sdsfree(menuCriteria); //destroy the criteeria string
             sdsfree(menuName); //destory the menu name
             destroyNode(dbFlex);
-            destroyList(&resultList); //destroy the result list
+            destroyList(resultList); //destroy the result list
 
             return -1;
         }
@@ -213,7 +208,7 @@ int do_search(WINDOW *win, bool csv_export) {
     sdsfree(menuCriteria); //destroy the criteeria string
     sdsfree(menuName); //destory the menu name
     destroyNode(dbFlex);
-    destroyList(&resultList); //destroy the result list
+    destroyList(resultList); //destroy the result list
 
     return nb_records;
 }
@@ -258,7 +253,6 @@ void UpdateMenu(WINDOW *win, PhoneBook_t *resultList, sds menuName, sds menuModi
 
     if(!ptr) { //if no contacts in list
         messageBox(win, 10, " No contacts was found in DataBase! ", COLOR_PAIR(PAIR_EDIT));
-        sdsfree(menuName);
 
         return;
     }
@@ -315,8 +309,6 @@ void UpdateMenu(WINDOW *win, PhoneBook_t *resultList, sds menuName, sds menuModi
     if(contacts_list) {
         free(contacts_list); //release the memory of the list
     }
-    //sdsfree(menuModify); //destory the menu name
-    //sdsfree(menuName); //destory the menu name
 
     return;
 }
@@ -338,7 +330,7 @@ sds *buildcontacts(PhoneBook_t *fromList, int *nb_fileds) {
 
     for(i = 0; ptr; i++) {
         contacts_list[i] = (sds) sdscatprintf(sdsempty(), "%s %s", ptr->db.fname, ptr->db.lname);
-        ptr = ptr->next;
+        NEXT(ptr);
     }
     contacts_list[i++] = sdsempty(); //assign NULL string to the last contact of the list
     (*nb_fileds) = i;

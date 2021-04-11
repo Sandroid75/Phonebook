@@ -48,7 +48,7 @@ int callback(void *NotUsed, int argc, char **argv, char **azColName) {
     return 0;
 }
 
-int read_db(WINDOW *win) { //read existing SQL database or creat a new if doesn't exist, return -1 on error, 0 if is new db, or numbers of fields readed
+int read_db(void) { //read existing SQL database or creat a new if doesn't exist, return -1 on error, 0 if is new db, or numbers of fields readed
     sqlite3 *sqlDB; //sqlite variables
     char *sql_err_msg;
     int rc;
@@ -137,7 +137,8 @@ PhoneBook_t *newNode(DBnode_t *node) {
     dbNode->db.birthday.tm_mon  = node->birthday.tm_mon;
     dbNode->db.birthday.tm_year = node->birthday.tm_year;
 
-    dbNode->prev = dbNode->next = NULL; //set prev and next node to NULL pointer
+    NULLSET(dbNode->prev); //set prev node to NULL pointer
+    NULLSET(dbNode->next); //set next node to NULL pointer
 
     return (PhoneBook_t *) dbNode;
 }
@@ -168,7 +169,7 @@ void deleteNodeID(PhoneBook_t **list, int id) {
 
     REWIND(ptr);
     while(ptr && ptr->db.id != id) { //walk up to id to del or end of list
-        ptr = ptr->next; //step next
+        NEXT(ptr); //step next
     }
     if(ptr) {
         if(ptr->next) {
@@ -177,8 +178,9 @@ void deleteNodeID(PhoneBook_t **list, int id) {
         if(ptr->prev) {
             ptr->prev->next = ptr->next; //assign the prev pointer of next node to prev node
         }
-        ptr->prev = ptr->next = NULL; //isolate the note to delete
-        destroyList(&ptr); //destroy the node from contacts list
+        NULLSET(ptr->prev); //in order to isolate the note to delete
+        NULLSET(ptr->next); //in order to isolate the note to delete
+        destroyList(ptr); //destroy the node from contacts list
     }
 
     return;
@@ -224,7 +226,6 @@ DBnode_t *initNode(PhoneBook_t *ptrList) {
 
 
 void destroyNode(DBnode_t *ptr) {
-
     if(ptr) {
 		//free all sds strings
 		sdsfree(ptr->fname);
@@ -244,19 +245,22 @@ void destroyNode(DBnode_t *ptr) {
         sdsfree(ptr->country);
 
         free(ptr); //destroy the node
-        ptr = NULL;
     }
 
 	return;
 }
 
-void destroyList(PhoneBook_t **list) {
-	PhoneBook_t *nextPtr, *ptr = (*list);
+void destroyList(PhoneBook_t *list) {
+	PhoneBook_t *nextPtr, *ptr = (list);
 
     REWIND(ptr); //rewind the list up to the first node
     while(ptr) { //walk thru complete contacts list
         nextPtr = ptr->next; //store point nextPtr to next node before destroy it
 
+/*         ptr->db.delete = false;
+        ptr->db.modified = false;
+        ptr->db.id = 0;
+ */
 		//free all sds strings in each node
 		sdsfree(ptr->db.fname);
         sdsfree(ptr->db.lname);
@@ -273,12 +277,14 @@ void destroyList(PhoneBook_t **list) {
         sdsfree(ptr->db.city);
         sdsfree(ptr->db.state);
         sdsfree(ptr->db.country);
-    
+
+/*         NULLSET(ptr->prev); //in order to isulate the node
+        NULLSET(ptr->next); //in order to isulate the node
+ */     
         free(ptr); //now to ptr elment can be free
         ptr = nextPtr; //step to next node
     }
-
-	ptr = (PhoneBook_t *) NULL;
+    NULLSET(list);
 
 	return;
 }
@@ -401,20 +407,20 @@ int update_db(WINDOW *win) {
         if(ptr->db.modified) { //check if the contacts was modified
             ptr->db.modified = false; //set the flag to false before push the contact into tobeupdate list
             if(!addNode(&tobeupdate, &(ptr->db))) { //build tobeupdate list and check the result
-                destroyList(&tobeupdate); //destroing the list before return
+                destroyList(tobeupdate); //destroing the list before return
                 logfile("%s: Error storing id=%d, the contact will not be updated...\n", __func__, ptr->db.id);
 
                 return -1;
             }
         } else if(ptr->db.delete) { //check if the contacts was deleted
             if(!addNode(&tobeupdate, &(ptr->db))) { //build tobeupdate list and check the result
-                destroyList(&tobeupdate); //destroing the list before return
+                destroyList(tobeupdate); //destroing the list before return
                 logfile("%s: Error storing id=%d, the contact will not be deleted...\n", __func__, ptr->db.id);
 
                 return -1;
             }
         }
-        ptr = ptr->next; //step next
+        NEXT(ptr); //step next
     }
     if(!tobeupdate) { //check if there are contacts to be update
         logfile("%s: Nothing to update or delete\n", __func__);
@@ -453,14 +459,14 @@ int update_db(WINDOW *win) {
                                     ptr->db.id);                //the id is used for statement WHERE SQLite
             logfile("%s: Record id=%d updated...\n", __func__, ptr->db.id);
         }
-        ptr = ptr->next; //step to next node
+        NEXT(ptr); //step to next node
     }
 
     rc = sqlite3_open(DB, &sqlDB); //Open existing database
     if(rc != SQLITE_OK) {
         logfile("%s: Can't open database: %s\n", __func__, sqlite3_errmsg(sqlDB));
         sqlite3_close(sqlDB);
-        destroyList(&tobeupdate);
+        destroyList(tobeupdate);
         sdsfree(sql);
 
         return rc;
@@ -476,7 +482,7 @@ int update_db(WINDOW *win) {
         //not need return error code because the function is end anyway
     }
     sqlite3_close(sqlDB); //close SQL database
-    destroyList(&tobeupdate); //destroy the list
+    destroyList(tobeupdate); //destroy the list
 
     return rc;
 }
