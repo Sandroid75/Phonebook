@@ -544,18 +544,6 @@ void printLabels(WINDOW *win, chtype color) {
 	return;
 }
 
-int countList(PhoneBook_t *ptr) {
-    int count = 0;
-
-	REWIND(ptr); //rewind the list up to the first node
-	while(ptr) {
-		NEXT(ptr);
-		count++;
-	}
-
-    return count;
-}
-
 void logfile(const char *format, ...) {
 	va_list args;
 	FILE *fd;

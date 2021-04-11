@@ -39,7 +39,6 @@ int main(void) { //Phonebook main function
     } else {
         win = newwin(ymax, xmax, 0, 0); //create the main window
         wrefresh(win); //refresh the main window
-        read_db(); //read the sqlite file database and store it in the contacts list
         MainMenu(win); //run main program menu
     }
 

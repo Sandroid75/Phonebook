@@ -25,6 +25,19 @@ void MainMenu(WINDOW *win) { //main menu
     sds menuName = sdsnew(" Main Menu "), menuUpdate = sdsnew(" Show / Modify "), menuModify = sdsnew(" Modify ");
     char *items[] = { "Search Contact", "Add new Contact", "Show / Modify", "Import / Export", "Utility", "Exit" };
 
+    if(!contacts) { //the list is empty
+        ch = read_db(); //read the sqlite file database and store it in the contacts list
+        if(ch == -1) { //an error was found reading db
+            logfile("%s: Error reading DB\n", __func__);
+
+            sdsfree(menuModify); //free memory
+            sdsfree(menuUpdate); //free memory
+            sdsfree(menuName); //free memory
+
+            return;
+        }        
+    }
+
     wrefresh(win);
     wclear(win);
 
@@ -38,11 +51,6 @@ void MainMenu(WINDOW *win) { //main menu
         return;
     }
 
-    if(!contacts) { //new database
-        AddMenu(win);
-        wrefresh(win);
-        wclear(win);
-    }
 
     //start the operations
     do {
@@ -258,7 +266,6 @@ void UpdateMenu(WINDOW *win, PhoneBook_t *resultList, sds menuName, sds menuModi
     }
 
     contacts_list = buildcontacts(ptr, &nb_fields); //build the list from resultList
-
     do {
         choice = flexMenu(win, contacts_list, nb_fields, menuName); //pass the contacts list to felxMenu to elaborate it
         if(choice) { //if a choice is made
@@ -328,6 +335,7 @@ sds *buildcontacts(PhoneBook_t *fromList, int *nb_fileds) {
     i = countList(ptr) +1; //count the number of field found
     contacts_list = (sds *) calloc(i, sizeof(sds)); //allocate the memory for contact list
 
+    REWIND(ptr);
     for(i = 0; ptr; i++) {
         contacts_list[i] = (sds) sdscatprintf(sdsempty(), "%s %s", ptr->db.fname, ptr->db.lname);
         NEXT(ptr);

@@ -22,8 +22,7 @@
 				"-lmenu",
 				"-lform",
 				"-lsqlite3",
-				"-lsds",
-				"-lm"
+				"-lsds"
 			],
 			"options": {
 				"cwd": "${workspaceFolder}"
