@@ -7,6 +7,7 @@ To Do
 - Export function of all contacts to CSV
 - Import funciton from Google contacts CSV
 - Export function to Google contacts CSV
+- Duplicate contacts merging
 - Sorting function to order by name or family name
 
 Enjoy
