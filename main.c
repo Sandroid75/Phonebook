@@ -1,7 +1,7 @@
-/**
- * Phone book application
- * Usage: ./phonebook <database_file> or ./phonebook
+/*
  *
+ * Phone book application
+ * Usage: ./phonebook
  *
  */
 #include "phonebook.h"
@@ -19,7 +19,7 @@ int main(void) { //Phonebook main function
     start_color(); //initialize colour
     cbreak(); //NOSTOP input
     noecho(); //off echo
-    keypad(stdscr, TRUE); // make keys work
+    keypad(stdscr, true); // make keys work
 
     // initializing color pairs
     init_pair(PAIR_STD, COLOR_WHITE, COLOR_BLACK); //initializing 1 as a color pair for standard
@@ -27,7 +27,7 @@ int main(void) { //Phonebook main function
     init_pair(PAIR_EDIT, COLOR_BLUE, COLOR_WHITE); //initializing 3 as a color pair for editing
     init_pair(PAIR_MODIFIED, COLOR_YELLOW, COLOR_BLUE); //initializing 4 as a color pair for modified
 
-    curs_set(FALSE); // hide cursor
+    curs_set(false); // hide cursor
     timeout(100); //dalay for system
     getmaxyx(stdscr, ymax, xmax); //get current window console surface dimension
     if(ymax < 24 || xmax < 80) {
@@ -42,9 +42,9 @@ int main(void) { //Phonebook main function
         MainMenu(win); //run main program menu
     }
 
-    curs_set(TRUE); // show cursor
+    curs_set(true); // show cursor
     endwin(); //close ncurses
-    destroyList(contacts); //free memory routine for PhoneBook_t contacts
+    destroyList(&contacts); //free memory routine for PhoneBook_t contacts
     logfile("%s: *** END SESSION ***\n", __func__);
 
     return 0;
