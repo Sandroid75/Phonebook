@@ -36,7 +36,8 @@ int flexMenu(WINDOW *win, sds *choices, int n_choices, char *menuName) {
     keypad(my_menu_win, true); //initialize the keypad for menu window
 	
     set_menu_win(my_menu, my_menu_win); // Set main window and sub window
-    derWindow = derwin(my_menu_win, mrows -3, mcols -2, 3, 1); //create a sub window from menu window
+	mrows = mrows -3; //set the numbers of items (or rows) per page
+    derWindow = derwin(my_menu_win, mrows, mcols -2, 3, 1); //create a sub window from menu window
     set_menu_sub(my_menu, derWindow); //set menu sub window by derivated window
 	
     set_menu_mark(my_menu, " "); //Set menu mark to the string can be "*"
@@ -54,19 +55,29 @@ int flexMenu(WINDOW *win, sds *choices, int n_choices, char *menuName) {
 	post_menu(my_menu); // Post the menu
 	wrefresh(my_menu_win);
 
-    index = 1;
     while(quit != true) {
+		index = item_index(current_item(my_menu)) +1; //set the current item index
         ch = wgetch(my_menu_win); //wait for user input
         switch(ch) {
-            case KEY_TAB: //TAB KEY
-            case KEY_DOWN:
-                index = index < n_choices -1 ? index +1 : index; //check if is the last node than increment the index
-				menu_driver(my_menu, REQ_DOWN_ITEM);
-				break;
             case KEY_BTAB: //BACK TAB
 			case KEY_UP:
-                index = index > 1 ? index -1 : index; //check if is the first node than decrement the index
-				menu_driver(my_menu, REQ_UP_ITEM);
+				menu_driver(my_menu, REQ_UP_ITEM); //go to prev menu item
+				break;
+            case KEY_TAB: //TAB KEY
+            case KEY_DOWN:
+				menu_driver(my_menu, REQ_DOWN_ITEM); //go to next menu item
+				break;
+			case KEY_HOME: //HOME KEY
+				menu_driver(my_menu, REQ_FIRST_ITEM); //go up to the first item
+				break;
+			case KEY_END: //END KEY
+				menu_driver(my_menu, REQ_LAST_ITEM); //go up to the last item
+				break;
+			case KEY_PPAGE: //PREVIOUS PAGE
+				menu_driver(my_menu, REQ_SCR_UPAGE); //go to prev menu page
+				break;
+			case KEY_NPAGE: //NEXT PAGE
+				menu_driver(my_menu, REQ_SCR_DPAGE); //go to next menu page
 				break;
             case KEY_SPACE: //SPACE
             case KEY_ENTER: //ENTER numeric pad

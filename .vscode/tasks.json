@@ -9,7 +9,7 @@
 				"-std=gnu17",
 				"-Wall",
 				"-O0",
-				"-g",
+				"-ggdb",
 				//"${file}",
 				"${fileDirname}/*.c",
 				"-o",

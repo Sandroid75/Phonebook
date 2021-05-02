@@ -184,35 +184,26 @@ int doSQLstatement(sds sql) {
 int write_csv(const char *csv_file, PhoneBook_t *contact_csv) {
     PhoneBook_t *ptr = contact_csv;
     FILE *fp;
-    sds csv_table = sdsempty();
+    sds csv_table;
     int rows;
     size_t bytes;
 
+    REWIND(ptr);
+    if(!ptr) {
+        logfile("%s: There is no contacts to export in '%s'\n", __func__, csv_file);
+
+        return -1;
+    }
+
     if(access(csv_file, R_OK)) { //if the csv_file doesn't exist
         csv_table = sdsnew(CSV_HEADER); //build the CSV header
+    } else { //the csv_file exist
+        csv_table = sdsempty(); //init an empty table
     }
-    REWIND(ptr);
-    for(rows = 0; ptr; ptr = ptr->next, rows++) { //build the CSV table with rows
-        csv_table = sdscatprintf(csv_table, CSV_SCHEMA, 
-                                            ptr->db.id,
-                                            ptr->db.fname,
-                                            ptr->db.lname,
-                                            ptr->db.organization,
-                                            ptr->db.job,
-                                            ptr->db.hphone,
-                                            ptr->db.wphone,
-                                            ptr->db.pmobile,
-                                            ptr->db.bmobile,
-                                            ptr->db.pemail,
-                                            ptr->db.bemail,
-                                            ptr->db.address,
-                                            ptr->db.zip,
-                                            ptr->db.city,
-                                            ptr->db.state,
-                                            ptr->db.country,
-                                            ptr->db.birthday.tm_mday,
-                                            ptr->db.birthday.tm_mon,
-                                            ptr->db.birthday.tm_year);
+
+    for(rows = 0; ptr; rows++) { //build the CSV table with rows
+        csv_table = SDSinsertCSV(csv_table, ptr->db); //insert each row from db node
+        NEXT(ptr); //step to next
     }
 
     fp = fopen(csv_file, "a"); //open or create for appending
@@ -220,16 +211,26 @@ int write_csv(const char *csv_file, PhoneBook_t *contact_csv) {
         logfile("%s: error creating %s\n", __func__, csv_file);
 
         return -1;
-    }    
-    bytes = sdslen(csv_table); //calculate how many bytes to writes
+    }
+    bytes = (size_t) sdslen(csv_table); //calculate how many bytes to writes
     while(bytes) { //while there is bytes to write
         bytes = fwrite(csv_table, sizeof(char), bytes, fp); //writes the table bytes
         sdsrange(csv_table, bytes, -1); //remove the writed byte from the string
-        bytes = sdslen(csv_table); //calculate if remains bytes to writes
+        bytes = (size_t) sdslen(csv_table); //calculate if remains bytes to writes
     }
 
     fclose(fp); //close the file pointer
     sdsfree(csv_table); //free memory
 
     return rows; //returns the number of rows writed
+}
+
+sds SDSinsertCSV(sds csvRow, DBnode_t node) { //build INSERT statement from node
+    csvRow = sdscatprintf(csvRow, CSV_SCHEMA,
+                node.id, node.fname, node.lname, node.organization, node.job,
+                node.hphone, node.wphone, node.pmobile, node.bmobile, node.pemail, node.bemail,
+                node.address, node.zip, node.city, node.state, node.country,
+                node.birthday.tm_mday, node.birthday.tm_mon, node.birthday.tm_year);
+
+    return (sds) csvRow;
 }
