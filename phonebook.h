@@ -56,15 +56,17 @@
 #define KEY_CTRL_RIGHT 560
 #endif
 
-#define LOGFILE "PHONEBOOK.log"
 #define PAIR_STD      1
 #define PAIR_TITLE    2
 #define PAIR_EDIT     3
 #define PAIR_MODIFIED 4
 
-#define DB "phbook.sqlite3"	//database file name
-#define DBAK "phbook.bak"	//database file name
-#define SEARCH_CSV "search_dump.csv" //search csv dump file name
+#define LOGFILE "phonebook.log" //LOG file name
+#define DB "phonebook.sqlite3"  //database file name
+#define DBAK "phonebook.bak"	//database BAK file name
+#define DB_CSV "phonebook.csv"	//CSV file name
+#define GOOGLE_CSV "contacts.csv"	//Google CSV file name
+#define SEARCH_CSV "search_dump.csv" //search CSV dump file name
 #define MAX_BUFFER 256 //max text array dimension
 #define LTEXT 72 //for long field
 #define MTEXT 35 //for medium field
@@ -120,7 +122,6 @@
 
 #define CSV_HEADER "id,FirstName,LastName,Organization,Job,HPhone,WPhone,PMobile,BMobile,PEmail,BEmail,Address,Zip,City,State,Country,mDay,Mon,Year\r\n"
 #define CSV_SCHEMA "%d,\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",%d,%d,%d\r\n"
-
 #define CSV_GOOGLE_HEADER "Name,Given Name,Additional Name,Family Name,Yomi Name,Given Name Yomi,Additional Name Yomi,Family Name Yomi,Name Prefix,Name Suffix,Initials,Nickname,Short Name,Maiden Name,Birthday,Gender,Location,Billing Information,Directory Server,Mileage,Occupation,Hobby,Sensitivity,Priority,Subject,Notes,Language,Photo,Group Membership,E-mail 1 - Type,E-mail 1 - Value,E-mail 2 - Type,E-mail 2 - Value,E-mail 3 - Type,E-mail 3 - Value,Phone 1 - Type,Phone 1 - Value,Phone 2 - Type,Phone 2 - Value,Phone 3 - Type,Phone 3 - Value,Phone 4 - Type,Phone 4 - Value,Phone 5 - Type,Phone 5 - Value,Address 1 - Type,Address 1 - Formatted,Address 1 - Street,Address 1 - City,Address 1 - PO Box,Address 1 - Region,Address 1 - Postal Code,Address 1 - Country,Address 1 - Extended Address,Organization 1 - Type,Organization 1 - Name,Organization 1 - Yomi Name,Organization 1 - Title,Organization 1 - Department,Organization 1 - Symbol,Organization 1 - Location,Organization 1 - Job Description,Website 1 - Type,Website 1 - Value,Website 2 - Type,Website 2 - Value,Custom Field 1 - Type,Custom Field 1 - Value"
 
 //char *Months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", };
@@ -158,21 +159,41 @@ struct PhoneBook {
 
 extern PhoneBook_t *contacts; //Global contatcts phonebook
 
-/*
-  time_t t = time(NULL);
-  struct tm tm = *localtime(&t);
-  printf("now: %d-%02d-%02d %02d:%02d:%02d\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
-*/
+//function declarations db_func.c
+int callback(void *NotUsed, int argc, char **argv, char **azColName);
+int read_db(void);
+int write_db(_Bool update);
+sds SDSinsertSQL(sds sql, DBnode_t node);
+sds SDSupdateSQL(sds sql, DBnode_t node);
+int doSQLstatement(sds sql);
+int write_csv(const char *csv_file, PhoneBook_t *contact_csv);
+sds SDSinsertCSV(sds csvRow, DBnode_t node);
 
-//functions
-sds *buildMenuItems(char **items, int numbers);
+//function declarations dblist.c
+PhoneBook_t *newNode(DBnode_t node);
+PhoneBook_t *addNode(PhoneBook_t **list, DBnode_t node); //push the element of db in contacts list, return the pointer of the new node
+DBnode_t *initNode(PhoneBook_t *list);
+int countList(PhoneBook_t *list);
+void destroyNode(DBnode_t **node);
+void destroyList(PhoneBook_t **list);
+
+//function declarations functions.c
+void logfile(const char *fmt, ...);
+void db_log(const char *funcname, char *comment, DBnode_t *db);
+int filecopy(const char* source, const char* destination);
+
+//function declarations menu.c
 void MainMenu(WINDOW *win);	//main menu
 void SearchMenu(WINDOW *win);	//search menu
+int do_search(WINDOW *win, _Bool csv_export);	//main search function
 void AddMenu(WINDOW *win);	//add menu
 void UpdateMenu(WINDOW *win, PhoneBook_t *resultList, sds menuName, sds menuModify);
-int do_search(WINDOW *win, _Bool csv_export);	//main search function
+void ImpExpMenu(WINDOW *win);
+sds *buildMenuItems(char **items, int numbers);
 sds *buildMenuList(PhoneBook_t *fromList, int *nb_fileds);
 void freeMenuList(sds **menuList, int nb_fields);
+
+//function declarations ui_ncurses.c
 int flexMenu(WINDOW *win, sds *choices, int n_choices, char *menuName);
 int flexForm(WINDOW *win, DBnode_t *db, const char *menuName);
 int initField(FIELD **field, DBnode_t *db); //initialize all field with db
@@ -181,24 +202,3 @@ int field_digit(FIELD *field, int buf); //return the int value of filed_buffer
 void print_in_middle(WINDOW *win, int y, const char *string, chtype color);
 int messageBox(WINDOW *win, int y, const char *string, chtype color);
 void printLabels(WINDOW *win, chtype color);
-int write_db(_Bool update);
-sds SDSinsertSQL(sds sql, DBnode_t node);
-sds SDSupdateSQL(sds sql, DBnode_t node);
-//int update_db(void);
-int doSQLstatement(sds sql);
-int read_db(void);
-int callback(void *NotUsed, int argc, char **argv, char **azColName);
-PhoneBook_t *newNode(DBnode_t node);
-PhoneBook_t *addNode(PhoneBook_t **list, DBnode_t node); //push the element of db in contacts list, return the pointer of the new node
-DBnode_t *initNode(PhoneBook_t *list);
-int filecopy(const char* source, const char* destination);
-int write_csv(const char *csv_file, PhoneBook_t *contact_csv);
-void destroyNode(DBnode_t **node);
-void destroyList(PhoneBook_t **list);
-int countList(PhoneBook_t *list);
-void db_log(const char *funcname, char *comment, DBnode_t *db);
-void logfile(const char *fmt, ...);
-
-//#include "functions.c"
-//#include "programenu.c"
-//#include "sqlite_funcs.c"
