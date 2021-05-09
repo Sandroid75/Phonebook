@@ -78,7 +78,7 @@ DBnode_t *initNode(PhoneBook_t *list) {
     node->modified = false; //always set modified flag to false
     FORWARD(ptr); //go to the tail of contacts list
     node->id = ptr ? (ptr->db.id +1) : 1; //if ptr is NULL means that it's a new list
-
+/* 
     node->fname   		= sdsnewlen("", STEXT);
     node->lname	        = sdsnewlen("", STEXT);
     node->organization  = sdsnewlen("", MTEXT);
@@ -94,6 +94,22 @@ DBnode_t *initNode(PhoneBook_t *list) {
     node->city          = sdsnewlen("", MTEXT);
     node->state         = sdsnewlen("", STATE);
     node->country       = sdsnewlen("", STEXT);
+*/
+    node->fname   		= sdsempty();
+    node->lname	        = sdsempty();
+    node->organization  = sdsempty();
+    node->job	    	= sdsempty();
+    node->hphone	    = sdsempty();
+    node->wphone	    = sdsempty();
+    node->pmobile	    = sdsempty();
+    node->bmobile	    = sdsempty();
+    node->pemail	    = sdsempty();
+    node->bemail	    = sdsempty();
+    node->address       = sdsempty();
+    node->zip           = sdsempty();
+    node->city          = sdsempty();
+    node->state         = sdsempty();
+    node->country       = sdsempty();
 
     node->birthday.tm_mday = 1;
     node->birthday.tm_mon  = 1;

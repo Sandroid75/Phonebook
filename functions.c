@@ -5,7 +5,7 @@ void logfile(const char *format, ...) {
 	FILE *fd;
 	time_t current_time;
 	struct tm *local;
-	static unsigned int errno = 0; //each session start from 0
+	static unsigned int errcount = 0; //each session start from 0
 
 	fd = fopen(LOGFILE, "a+"); // a+ (create + append) option will allow appending which is useful in a log file
 	if(fd == NULL) {
@@ -19,7 +19,7 @@ void logfile(const char *format, ...) {
 	local = localtime(&current_time); //convert to local
     fprintf(fd, "%d/%02d/%02d - ", local->tm_year+1900, local->tm_mon+1, local->tm_mday); // write current date yyyy/mm/dd
 	fprintf(fd, "%02d:%02d:%02d ", local->tm_hour, local->tm_min, local->tm_sec); // write local time hh:mm:ss
-    fprintf(fd, "[%03u] ", errno++); //write the index log of current session
+    fprintf(fd, "[%03u] ", errcount++); //write the index log of current session
 
     va_start (args, format);
     vfprintf(fd, format, args); //write the info recieved from function arguments

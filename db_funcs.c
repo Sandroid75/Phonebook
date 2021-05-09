@@ -181,7 +181,7 @@ int doSQLstatement(sds sql) {
     return rc;
 }
 
-int write_csv(const char *csv_file, PhoneBook_t *contact_csv) {
+int write_csv(const char *csvFile, PhoneBook_t *contact_csv) {
     PhoneBook_t *ptr = contact_csv;
     FILE *fp;
     sds csv_table;
@@ -190,14 +190,14 @@ int write_csv(const char *csv_file, PhoneBook_t *contact_csv) {
 
     REWIND(ptr);
     if(!ptr) {
-        logfile("%s: There is no contacts to export in '%s'\n", __func__, csv_file);
+        logfile("%s: There is no contacts to export in '%s'\n", __func__, csvFile);
 
         return -1;
     }
 
-    if(access(csv_file, R_OK)) { //if the csv_file doesn't exist
+    if(access(csvFile, R_OK)) { //if the csvFile doesn't exist
         csv_table = sdsnew(CSV_HEADER); //build the CSV header
-    } else { //the csv_file exist
+    } else { //the csvFile exist
         csv_table = sdsempty(); //init an empty table
     }
 
@@ -206,9 +206,9 @@ int write_csv(const char *csv_file, PhoneBook_t *contact_csv) {
         NEXT(ptr); //step to next
     }
 
-    fp = fopen(csv_file, "a"); //open or create for appending
+    fp = fopen(csvFile, "a"); //open or create for appending
     if(!fp) {
-        logfile("%s: error creating %s\n", __func__, csv_file);
+        logfile("%s: error creating %s\n", __func__, csvFile);
 
         return -1;
     }
@@ -218,9 +218,16 @@ int write_csv(const char *csv_file, PhoneBook_t *contact_csv) {
         sdsrange(csv_table, bytes, -1); //remove the writed byte from the string
         bytes = (size_t) sdslen(csv_table); //calculate if remains bytes to writes
     }
+    sdsfree(csv_table); //free memory
+    
+    if(ferror(fp)) {
+        logfile("%s: error while writing file %s\n", __func__, csvFile);
+        fclose(fp); //close the file pointer
+
+        return -1;
+    }
 
     fclose(fp); //close the file pointer
-    sdsfree(csv_table); //free memory
 
     return rows; //returns the number of rows writed
 }
@@ -233,4 +240,240 @@ sds SDSinsertCSV(sds csvRow, DBnode_t node) { //build INSERT statement from node
                 node.birthday.tm_mday, node.birthday.tm_mon, node.birthday.tm_year);
 
     return (sds) csvRow;
+}
+
+static int is_space(unsigned char c) {
+  if(c == CSV_SPACE || c == CSV_TAB) {
+    return 1;
+  }
+
+  return 0;
+}
+
+static int is_term(unsigned char c) {
+  if(c == CSV_CR || c == CSV_LF) {
+      return 1;
+  }
+
+  return 0;
+}
+
+void csv_cb_field (void *s, size_t len, void *data) { //callback fuction called every field
+    int count;
+    sds *tokens, field = sdsnewlen(s, len); //cduplicate the field content
+
+    if(!((Counts_t *)data)->fields) { //every first field
+        ((Counts_t *)data)->db = initNode(contacts); //initializing the db node
+    }
+
+    ((Counts_t *)data)->fields++; //increment the field counter
+
+    if(!len) { //if the field is empty
+        sdsfree(field); //release the memory
+
+        return; //do nothing
+    }
+
+    if(((Counts_t *)data)->isGoogle) { //if parsing Google CSV file
+        switch(((Counts_t *)data)->fields) { //check the field number
+            case 2: //FirstName
+                ((Counts_t *)data)->db->fname = sdsnewlen(field, STEXT);
+                break;
+            case 4: //LastName
+                ((Counts_t *)data)->db->lname = sdsnewlen(field, STEXT);
+                break;
+            case 15: //Birthday '1975-03-28'
+                tokens = sdssplitlen(field, len, "-", 1, &count);
+                ((Counts_t *)data)->db->birthday.tm_year = atoi(tokens[0]);
+                ((Counts_t *)data)->db->birthday.tm_mon = atoi(tokens[1]);
+                ((Counts_t *)data)->db->birthday.tm_mday = atoi(tokens[2]);
+                sdsfreesplitres(tokens, count);
+                break;
+            case 31: //Pemail
+                ((Counts_t *)data)->db->pemail = sdsnewlen(field, MTEXT);
+                break;
+            case 37: //Pmobile
+                sdstrim(field," "); //remove spaces from sds string
+                ((Counts_t *)data)->db->pmobile = sdsnewlen(field, PHONE);
+                break;
+            case 39: //Wphone
+                sdstrim(field," "); //remove spaces from sds string
+                ((Counts_t *)data)->db->wphone = sdsnewlen(field, PHONE);
+                break;
+            case 41: //Hphone
+                sdstrim(field," "); //remove spaces from sds string
+                ((Counts_t *)data)->db->hphone = sdsnewlen(field, PHONE);
+                break;
+            case 48: //Address
+                ((Counts_t *)data)->db->address = sdsnewlen(field, LTEXT);
+                break;
+            case 49: //City
+                ((Counts_t *)data)->db->city = sdsnewlen(field, MTEXT);
+                break;
+            case 51: //State
+                ((Counts_t *)data)->db->state = sdsnewlen(field, STATE);
+                break;
+            case 52: //zip
+                sdstrim(field," "); //remove spaces from sds string
+                ((Counts_t *)data)->db->zip = sdsnewlen(field, ZIP);
+                break;
+            case 53: //Country
+                ((Counts_t *)data)->db->country = sdsnewlen(field, STEXT);
+                break;
+            case 56: //Organizzation
+                ((Counts_t *)data)->db->organization = sdsnewlen(field, MTEXT);
+                break;
+            case 58: //Job
+                ((Counts_t *)data)->db->job = sdsnewlen(field, STEXT);
+                break;
+            
+            default: //do nothing
+                break;
+        }
+    } else { //parsing PhoneBook CSV file
+        switch(((Counts_t *)data)->fields) { //check the field number
+            case 1: //id
+                break;
+            case 2: //FirstName
+                ((Counts_t *)data)->db->fname = sdsnew(field);
+                break;
+            case 3: //LastName
+                ((Counts_t *)data)->db->lname = sdsnew(field);
+                break;
+            case 4: //Organization
+                ((Counts_t *)data)->db->organization = sdsnew(field);
+                break;
+            case 5: //Job
+                ((Counts_t *)data)->db->job = sdsnew(field);
+                break;
+            case 6: //HPhone
+                ((Counts_t *)data)->db->hphone = sdsnew(field);
+                break;
+            case 7: //WPhone
+                ((Counts_t *)data)->db->wphone = sdsnew(field);
+                break; 
+            case 8: //PMobile
+                ((Counts_t *)data)->db->pmobile = sdsnew(field);
+                break;
+            case 9: //BMobile
+                ((Counts_t *)data)->db->bmobile = sdsnew(field);
+                break;
+            case 10: //PEmail
+                ((Counts_t *)data)->db->pemail = sdsnew(field);
+                break;
+            case 11: //BEmail
+                ((Counts_t *)data)->db->bemail = sdsnew(field);
+                break;
+            case 12: //Address
+                ((Counts_t *)data)->db->address = sdsnew(field);
+                break;
+            case 13: //Zip
+                ((Counts_t *)data)->db->zip = sdsnew(field);
+                break;
+            case 14: //City
+                ((Counts_t *)data)->db->city = sdsnew(field);
+                break;
+            case 15: //State
+                ((Counts_t *)data)->db->state = sdsnew(field);
+                break;
+            case 16: //Country
+                ((Counts_t *)data)->db->country = sdsnew(field);
+                break;
+            case 17: //mDay
+                ((Counts_t *)data)->db->birthday.tm_mday = atoi(field);
+                break;
+            case 18: //Mon
+                ((Counts_t *)data)->db->birthday.tm_mon = atoi(field);
+                break;
+            case 19: //Year
+                ((Counts_t *)data)->db->birthday.tm_year = atoi(field);
+                break;
+
+            default: //do nothing
+                break;
+    }
+
+    sdsfree(field); //release the memory
+
+    return;
+}
+
+void csv_cb_row (int c, void *data) { //callback fuction called every row
+    ((Counts_t *)data)->fields = 0;
+
+    if(((Counts_t *)data)->rows) { //exclude the header of CSV
+        addNode(&contacts, ((Counts_t *)data)->db); //add the row to contacts list
+        destroyNode(&((Counts_t *)data)->db); //free memory of each sds strings
+    }
+
+    ((Counts_t *)data)->rows++; //increment the rows counter
+
+    return;
+}
+
+int importCSV(sds csvFile) {
+    FILE *fp;
+    CSV_Parser_t parse;
+    size_t bytes_read, pos = 0;
+    char buffer[MAX_BUFFER];
+    int retVal;
+    unsigned char options = 0;
+    Counts_t data;
+
+    data.fields = 0;
+    data.rows = 0;
+    data.isGoogle = sdscmp(csvFile, GOOGLE_CSV) ? false : true; //check if is Google csv file
+
+    if(csv_init(&parse, options)) {
+        logfile("%s: Failed to initialize csv parser\n", __func__);
+
+        return -1;
+    }
+
+    csv_set_space_func(&parse, is_space);
+    csv_set_term_func(&parse, is_term);
+
+    fp = fopen(csvFile, "rb");
+    if(!fp) {
+        logfile("%s: Failed to open %s: %s\n", __func__, csvFile, strerror(errno));
+        csv_fini(&parse, csv_cb_field, csv_cb_row, &data);
+        csv_free(&parse);
+
+        return -1;
+    }
+    
+    while((bytes_read = fread(buffer, 1, MAX_BUFFER, fp)) > 0) {
+        retVal = csv_parse(&parse, buffer, bytes_read, csv_cb_field, csv_cb_row, &data);
+        pos += bytes_read;
+        if(retVal == bytes_read) {
+            logfile("%s: reading '%s' up to %lu bytes\n", __func__, csvFile, (unsigned long) pos);
+        } else if(csv_error(&parse) == CSV_EPARSE) {
+            logfile("%s: malformed at byte %lu at row %u at field %u\n", __func__, (unsigned long) pos, data.rows, data.fields);
+            csv_fini(&parse, csv_cb_field, csv_cb_row, &data);
+            csv_free(&parse);
+            
+            return -1;
+        } else {
+            logfile("%s: error while parsing file '%s': %s\n", __func__, csvFile, csv_strerror(csv_error(&parse)));
+            csv_fini(&parse, csv_cb_field, csv_cb_row, &data);
+            csv_free(&parse);
+            
+            return -1;
+        }
+    }
+
+    csv_fini(&parse, csv_cb_field, csv_cb_row, &data);
+
+    if(ferror(fp)) {
+      logfile("%s: error while reading file %s\n", __func__, csvFile);
+      csv_free(&parse);
+      fclose(fp);
+
+      return -1;
+    }
+
+    fclose(fp);
+    csv_free(&parse);
+
+    return data.rows;
 }

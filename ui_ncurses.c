@@ -301,21 +301,21 @@ int flexForm(WINDOW *win, DBnode_t *db, const char *formName) {
 		ptrDB->id = field_digit(field[i++], 0);
 		
 		//in next lines assign the value returned by form fields than trim removing white space from the tail of th string
-		ptrDB->fname 		= sdsnew(field_buffer(field[i++], 0));	sdstrim(ptrDB->fname, " ");
-		ptrDB->lname 		= sdsnew(field_buffer(field[i++], 0));	sdstrim(ptrDB->lname, " ");
-		ptrDB->organization	= sdsnew(field_buffer(field[i++], 0));	sdstrim(ptrDB->organization, " ");
-		ptrDB->job 			= sdsnew(field_buffer(field[i++], 0));	sdstrim(ptrDB->job, " ");
-		ptrDB->hphone 		= sdsnew(field_buffer(field[i++], 0));	sdstrim(ptrDB->hphone, " ");
-		ptrDB->wphone 		= sdsnew(field_buffer(field[i++], 0));	sdstrim(ptrDB->wphone, " ");
-		ptrDB->pmobile 		= sdsnew(field_buffer(field[i++], 0));	sdstrim(ptrDB->pmobile, " ");
-		ptrDB->bmobile 		= sdsnew(field_buffer(field[i++], 0));	sdstrim(ptrDB->bmobile, " ");
-		ptrDB->pemail 		= sdsnew(field_buffer(field[i++], 0));	sdstrim(ptrDB->pemail, " ");
-		ptrDB->bemail 		= sdsnew(field_buffer(field[i++], 0));	sdstrim(ptrDB->bemail, " ");
-		ptrDB->address 		= sdsnew(field_buffer(field[i++], 0));	sdstrim(ptrDB->address, " ");
-		ptrDB->zip 			= sdsnew(field_buffer(field[i++], 0));	sdstrim(ptrDB->zip, " ");
-		ptrDB->city 		= sdsnew(field_buffer(field[i++], 0));	sdstrim(ptrDB->city, " ");
-		ptrDB->state 		= sdsnew(field_buffer(field[i++], 0));	sdstrim(ptrDB->state, " ");
-		ptrDB->country		= sdsnew(field_buffer(field[i++], 0));	sdstrim(ptrDB->country, " ");
+		ptrDB->fname 		= sdsnew(field_buffer(field[i++], 0));	/* sdstrim(ptrDB->fname, " "); */
+		ptrDB->lname 		= sdsnew(field_buffer(field[i++], 0));	/* sdstrim(ptrDB->lname, " "); */
+		ptrDB->organization	= sdsnew(field_buffer(field[i++], 0));	/* sdstrim(ptrDB->organization, " "); */
+		ptrDB->job 			= sdsnew(field_buffer(field[i++], 0));	/* sdstrim(ptrDB->job, " "); */
+		ptrDB->hphone 		= sdsnew(field_buffer(field[i++], 0));	/* sdstrim(ptrDB->hphone, " "); */
+		ptrDB->wphone 		= sdsnew(field_buffer(field[i++], 0));	/* sdstrim(ptrDB->wphone, " "); */
+		ptrDB->pmobile 		= sdsnew(field_buffer(field[i++], 0));	/* sdstrim(ptrDB->pmobile, " "); */
+		ptrDB->bmobile 		= sdsnew(field_buffer(field[i++], 0));	/* sdstrim(ptrDB->bmobile, " "); */
+		ptrDB->pemail 		= sdsnew(field_buffer(field[i++], 0));	/* sdstrim(ptrDB->pemail, " "); */
+		ptrDB->bemail 		= sdsnew(field_buffer(field[i++], 0));	/* sdstrim(ptrDB->bemail, " "); */
+		ptrDB->address 		= sdsnew(field_buffer(field[i++], 0));	/* sdstrim(ptrDB->address, " "); */
+		ptrDB->zip 			= sdsnew(field_buffer(field[i++], 0));	/* sdstrim(ptrDB->zip, " "); */
+		ptrDB->city 		= sdsnew(field_buffer(field[i++], 0));	/* sdstrim(ptrDB->city, " "); */
+		ptrDB->state 		= sdsnew(field_buffer(field[i++], 0));	/* sdstrim(ptrDB->state, " "); */
+		ptrDB->country		= sdsnew(field_buffer(field[i++], 0));	/* sdstrim(ptrDB->country, " "); */
 
 		ptrDB->birthday.tm_mday = field_digit(field[i++], 0);
 		ptrDB->birthday.tm_mon 	= field_digit(field[i++], 0);
@@ -346,7 +346,7 @@ int flexForm(WINDOW *win, DBnode_t *db, const char *formName) {
 }
 
 int initField(FIELD **field, DBnode_t *db) {
-	DBnode_t *ptrDB;
+	DBnode_t *ptrDB = db;
 	int i, rows, start_phone, start_email, i_zip, start_bday;	
 
 	/* Initialize the fields */
@@ -422,7 +422,6 @@ int initField(FIELD **field, DBnode_t *db) {
 
 	set_field_back(field[1], A_UNDERLINE | A_REVERSE); //the first filde (name) in order to will be reversed at first call of form
 
-	ptrDB = db;
 	i = 0;
 	set_field_digit(field[i++], 0, ptrDB->id); 
 	
@@ -461,7 +460,6 @@ int set_field_digit(FIELD *field, int buf, int digit) { //the equivalent of set_
 		return E_BAD_ARGUMENT;
 	}
 
-	//string = sdscatprintf(sdsempty(), "%d", digit); //convert integer to sds string
 	string = sdsfromlonglong((long long) digit); //convert integer to sds string
 	retVal = set_field_buffer(field, buf, string); //set the buffer with the string value
 	sdsfree(string); //free memory

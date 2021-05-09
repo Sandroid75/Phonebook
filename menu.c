@@ -323,7 +323,7 @@ void UpdateMenu(WINDOW *win, PhoneBook_t *resultList, sds menuName, sds menuModi
 void ImpExpMenu(WINDOW *win) { //search menu
     _Bool quit = false; //check if option is valid
     int rows, n_choices; //number of menu items
-    sds  message, *choices, menuName = sdsnew(" Import & Export Menu ");
+    sds  *choices, menuName = sdsnew(" Import & Export Menu ");
     char *items[] = { "Import from CSV", "Import from Google CSV", "Export to CSV", "Export to Google CSV", "Back to Main Menu" };
 
     n_choices = ARRAY_SIZE(items) +1;  //calculate one more also for empity sds
@@ -336,21 +336,33 @@ void ImpExpMenu(WINDOW *win) { //search menu
 
     //start the operations
     while(!quit) {
+        sds csvFile = sdsempty(); //create an empty sds string
+        char *message = NULL; //create a NULL string
         switch(flexMenu(win, choices, n_choices, menuName)) {
             case 1: //Import from CSV
-                break;
+                csvFile = sdscpy(csvFile, DB_CSV); //assign the standard csv file name
             case 2: //Import from Google CSV
+                if(sdslen(csvFile) == 0) { //check if the file name is already set
+                    csvFile = sdscpy(csvFile, GOOGLE_CSV); //assign the standard Google csv file name
+                }
+                rows = importCSV(csvFile); //import the contacts from csv
+                if(rows > 0) { //check if records are exported
+                    asprintf(&message, " Imported %d records from '%s' successfully ", rows, csvFile); //build message string
+                } else {
+                    asprintf(&message, " No records imported from '%s' ", csvFile); //build message string
+                }
+                messageBox(win, 15, message, COLOR_PAIR(PAIR_MODIFIED)); //display result
+                logfile("%s: %s\n", __func__, message); //write result to log file
                 break;
             case 3: //Export to CSV
                 rows = write_csv(DB_CSV, contacts); //write or append records to DB_CSV
                 if(rows > 0) { //check if records are exported
-                    message  = sdscatfmt(sdsempty(), " Exported %d records to %s successfully ", rows, DB_CSV); //build message sdsstring
+                    asprintf(&message, " Exported %d records to '%s' successfully ", rows, DB_CSV); //build message string
                 } else {
-                    message  = sdscatfmt(sdsempty(), " No records exported to %s ", DB_CSV); //build message sdsstring
+                    asprintf(&message, " No records exported to '%s' ", DB_CSV); //build message string
                 }
-                messageBox(win, 15, message, PAIR_MODIFIED); //display result
+                messageBox(win, 15, message, COLOR_PAIR(PAIR_MODIFIED)); //display result
                 logfile("%s: %s\n", __func__, message); //write result to log file
-                sdsfree(message); //realese the memory
                 break;
             case 4: //Export to Google CSV
                 break;
@@ -361,6 +373,10 @@ void ImpExpMenu(WINDOW *win) { //search menu
             default:
                 break;
         }
+        if(message) {
+            free(message); //realese the memory
+        }
+        sdsfree(csvFile); //realese the memory
         wrefresh(win);
         wclear(win);
     }

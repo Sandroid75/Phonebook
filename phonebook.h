@@ -19,6 +19,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
+#include <errno.h>
 #include "../sds/sds.h"
 #include "../sds/sds_extra.h"
 #include "../libcsv/csv.h"
@@ -67,7 +68,10 @@
 #define DB_CSV "phonebook.csv"	//CSV file name
 #define GOOGLE_CSV "contacts.csv"	//Google CSV file name
 #define SEARCH_CSV "search_dump.csv" //search CSV dump file name
-#define MAX_BUFFER 256 //max text array dimension
+
+#ifndef MAX_BUFFER
+#define MAX_BUFFER SDS_MAX_PREALLOC //max text array dimension
+#endif
 #define LTEXT 72 //for long field
 #define MTEXT 35 //for medium field
 #define STEXT 24 //for short field
@@ -128,6 +132,8 @@
 
 typedef struct DBnode DBnode_t;
 typedef struct PhoneBook PhoneBook_t;
+typedef struct csv_parser CSV_Parser_t;
+typedef struct Counts Counts_t;
 
 struct DBnode {
     _Bool delete;
@@ -157,6 +163,13 @@ struct PhoneBook {
     PhoneBook_t *next;
 };
 
+struct Counts {
+    unsigned int fields;
+    unsigned int rows;
+    _Bool isGoogle;
+    DBnode_t *db;
+};
+
 extern PhoneBook_t *contacts; //Global contatcts phonebook
 
 //function declarations db_func.c
@@ -166,8 +179,9 @@ int write_db(_Bool update);
 sds SDSinsertSQL(sds sql, DBnode_t node);
 sds SDSupdateSQL(sds sql, DBnode_t node);
 int doSQLstatement(sds sql);
-int write_csv(const char *csv_file, PhoneBook_t *contact_csv);
+int write_csv(const char *csvFile, PhoneBook_t *contact_csv);
 sds SDSinsertCSV(sds csvRow, DBnode_t node);
+int importCSV(sds csvFile);
 
 //function declarations dblist.c
 PhoneBook_t *newNode(DBnode_t node);
