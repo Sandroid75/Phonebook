@@ -258,7 +258,7 @@ static int is_term(unsigned char c) {
   return 0;
 }
 
-void csv_cb_field (void *s, size_t len, void *data) { //callback fuction called every field
+void csv_cb_field(void *s, size_t len, void *data) { //callback fuction called every field
     int count;
     sds *tokens, field = sdsnewlen(s, len); //cduplicate the field content
 
@@ -268,7 +268,7 @@ void csv_cb_field (void *s, size_t len, void *data) { //callback fuction called 
 
     ((Counts_t *)data)->fields++; //increment the field counter
 
-    if(!len) { //if the field is empty
+    if(!((Counts_t *)data)->rows || !len) { //if is the header row or if the field is empty
         sdsfree(field); //release the memory
 
         return; //do nothing
@@ -293,15 +293,15 @@ void csv_cb_field (void *s, size_t len, void *data) { //callback fuction called 
                 ((Counts_t *)data)->db->pemail = sdsnewlen(field, MTEXT);
                 break;
             case 37: //Pmobile
-                sdstrim(field," "); //remove spaces from sds string
+                sdstrim(field, " "); //remove spaces from sds string
                 ((Counts_t *)data)->db->pmobile = sdsnewlen(field, PHONE);
                 break;
             case 39: //Wphone
-                sdstrim(field," "); //remove spaces from sds string
+                sdstrim(field, " "); //remove spaces from sds string
                 ((Counts_t *)data)->db->wphone = sdsnewlen(field, PHONE);
                 break;
             case 41: //Hphone
-                sdstrim(field," "); //remove spaces from sds string
+                sdstrim(field, " "); //remove spaces from sds string
                 ((Counts_t *)data)->db->hphone = sdsnewlen(field, PHONE);
                 break;
             case 48: //Address
@@ -314,7 +314,7 @@ void csv_cb_field (void *s, size_t len, void *data) { //callback fuction called 
                 ((Counts_t *)data)->db->state = sdsnewlen(field, STATE);
                 break;
             case 52: //zip
-                sdstrim(field," "); //remove spaces from sds string
+                sdstrim(field, " "); //remove spaces from sds string
                 ((Counts_t *)data)->db->zip = sdsnewlen(field, ZIP);
                 break;
             case 53: //Country
@@ -391,6 +391,7 @@ void csv_cb_field (void *s, size_t len, void *data) { //callback fuction called 
 
             default: //do nothing
                 break;
+        }
     }
 
     sdsfree(field); //release the memory
@@ -398,11 +399,11 @@ void csv_cb_field (void *s, size_t len, void *data) { //callback fuction called 
     return;
 }
 
-void csv_cb_row (int c, void *data) { //callback fuction called every row
+void csv_cb_row(int c, void *data) { //callback fuction called every row
     ((Counts_t *)data)->fields = 0;
 
     if(((Counts_t *)data)->rows) { //exclude the header of CSV
-        addNode(&contacts, ((Counts_t *)data)->db); //add the row to contacts list
+        addNode(&contacts, *((Counts_t *)data)->db); //add the row to contacts list
         destroyNode(&((Counts_t *)data)->db); //free memory of each sds strings
     }
 
@@ -422,7 +423,7 @@ int importCSV(sds csvFile) {
 
     data.fields = 0;
     data.rows = 0;
-    data.isGoogle = sdscmp(csvFile, GOOGLE_CSV) ? false : true; //check if is Google csv file
+    data.isGoogle = strcmp(csvFile, GOOGLE_CSV) ? false : true; //check if is Google csv file
 
     if(csv_init(&parse, options)) {
         logfile("%s: Failed to initialize csv parser\n", __func__);
