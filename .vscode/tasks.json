@@ -17,12 +17,14 @@
 				"${fileDirname}/phonebook",
 				//"-I../include/",
 				"-L../sds/",
+				"-lsds",
+				"-L../libcsv/",
+				"-lcsv",
 				"-lpthread",
 				"-lncurses",
 				"-lmenu",
 				"-lform",
-				"-lsqlite3",
-				"-lsds"
+				"-lsqlite3"
 			],
 			"options": {
 				"cwd": "${workspaceFolder}"
