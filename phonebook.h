@@ -120,13 +120,16 @@
                             "Year = %d " \
                             "WHERE ID = %d;"
 
-#define INSERT_SQL_VALUE "INSERT INTO Contacts VALUES (%u, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d, %d, %d);"
+#define INSERT_SQL_VALUE "INSERT INTO Contacts VALUES (%u, \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", %d, %d, %d);"
+//#define INSERT_SQL_VALUE "INSERT INTO Contacts VALUES (%u, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d, %d, %d);"
 #define SELECT_FROM_CONTACTS "SELECT * FROM Contacts"
 #define DELETE_SQL_RECORD_ID "DELETE FROM Contacts WHERE ID = %d;"
 
 #define CSV_HEADER "id,FirstName,LastName,Organization,Job,HPhone,WPhone,PMobile,BMobile,PEmail,BEmail,Address,Zip,City,State,Country,mDay,Mon,Year\r\n"
 #define CSV_SCHEMA "%d,\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",%d,%d,%d\r\n"
 #define CSV_GOOGLE_HEADER "Name,Given Name,Additional Name,Family Name,Yomi Name,Given Name Yomi,Additional Name Yomi,Family Name Yomi,Name Prefix,Name Suffix,Initials,Nickname,Short Name,Maiden Name,Birthday,Gender,Location,Billing Information,Directory Server,Mileage,Occupation,Hobby,Sensitivity,Priority,Subject,Notes,Language,Photo,Group Membership,E-mail 1 - Type,E-mail 1 - Value,E-mail 2 - Type,E-mail 2 - Value,E-mail 3 - Type,E-mail 3 - Value,Phone 1 - Type,Phone 1 - Value,Phone 2 - Type,Phone 2 - Value,Phone 3 - Type,Phone 3 - Value,Phone 4 - Type,Phone 4 - Value,Phone 5 - Type,Phone 5 - Value,Address 1 - Type,Address 1 - Formatted,Address 1 - Street,Address 1 - City,Address 1 - PO Box,Address 1 - Region,Address 1 - Postal Code,Address 1 - Country,Address 1 - Extended Address,Organization 1 - Type,Organization 1 - Name,Organization 1 - Yomi Name,Organization 1 - Title,Organization 1 - Department,Organization 1 - Symbol,Organization 1 - Location,Organization 1 - Job Description,Website 1 - Type,Website 1 - Value,Website 2 - Type,Website 2 - Value,Custom Field 1 - Type,Custom Field 1 - Value"
+
+#define SPECIAL_CHARS "ÀÁÂÃÄÅĀĂĄÆàáâãäåāăąæÇĆČçćčĎĐđÈÉÊËĒĖĘĚĔèéêëēėęěĕĢĞģğÎÍÌĮĪÏîíìıįīïĶķŁĻĹłļĺŇŅŃÑňņńñÕÔÓÒŐØÖŒõôóòőøöœŔŘŕřŚŠŞśšşÞŤȚŢþțţÜÛÚÙŲŰŮŪüûúùųűůūµÝŸýÿŹŻŽźżž"
 
 //char *Months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", };
 
@@ -203,12 +206,12 @@ int do_search(WINDOW *win, _Bool csv_export);	//main search function
 void AddMenu(WINDOW *win);	//add menu
 void UpdateMenu(WINDOW *win, PhoneBook_t *resultList, sds menuName, sds menuModify);
 void ImpExpMenu(WINDOW *win);
-sds *buildMenuItems(char **items, int numbers);
+sds *buildMenuItems(char **items);
 sds *buildMenuList(PhoneBook_t *fromList, int *nb_fileds);
 void freeMenuList(sds **menuList, int nb_fields);
 
 //function declarations ui_ncurses.c
-int flexMenu(WINDOW *win, sds *choices, int n_choices, char *menuName);
+int flexMenu(WINDOW *win, sds *choices, char *menuName);
 int flexForm(WINDOW *win, DBnode_t *db, const char *menuName);
 int initField(FIELD **field, DBnode_t *db); //initialize all field with db
 int set_field_digit(FIELD *field, int buf, int digit); //like set_field_buffer but int values instead of char * return like set_field_buffer()

@@ -5,7 +5,7 @@ void MainMenu(WINDOW *win) { //main menu
     int ch, n_choices; //number of menu items
     sds *choices;
     sds menuName = sdsnew(" Main Menu "), menuUpdate = sdsnew(" Show / Modify "), menuModify = sdsnew(" Modify ");
-    char *items[] = { "Search Contact", "Add new Contact", "Show / Modify", "Import / Export", "Utility", "Exit" };
+    char *items[] = { "Search Contact", "Add new Contact", "Show / Modify", "Import / Export", "Utility", "Exit", NULL };
 
     REWIND(contacts);
     if(!contacts) { //the list is empty
@@ -18,15 +18,17 @@ void MainMenu(WINDOW *win) { //main menu
             sdsfree(menuName); //free memory
 
             return;
+        } else if(ch > 0) {
+            logfile("%s: DataBase '%s' is successfully opened, %d contacts readed...\n", __func__, DB, ch);
+        } else {
+            logfile("%s: No database found, new one will be created...\n", __func__);
         }
-        logfile("%s: DataBase '%s' is successfully opened, %d contacts readed...\n", __func__, DB, ch);
     }
 
     wrefresh(win);
     wclear(win);
 
-    n_choices = ARRAY_SIZE(items) +1;  //calculate one more also for empity sds
-    choices = buildMenuItems(items, n_choices); //build the menu items
+    choices = buildMenuItems(items); //build the menu items
     if(!choices) {
         sdsfree(menuModify); //free memory
         sdsfree(menuUpdate); //free memory
@@ -35,11 +37,10 @@ void MainMenu(WINDOW *win) { //main menu
         return;
     }
 
-
     //start the operations
     do {
         REWIND(contacts); //at each interation we are sure that the pointer contacts stay at head of list
-        switch(flexMenu(win, choices, n_choices, menuName)) {
+        switch(flexMenu(win, choices, menuName)) {
             case 1: //Search Contact
                 SearchMenu(win);
                 break;
@@ -68,6 +69,7 @@ void MainMenu(WINDOW *win) { //main menu
         wclear(win);
     } while(quit != true);
 
+    n_choices = ARRAY_SIZE(items);  //calculate
     for(int i = 0; i < n_choices; i++) { //walk through array index
         sdsfree(choices[i]); //free memory
     }
@@ -82,7 +84,7 @@ void SearchMenu(WINDOW *win) { //search menu
     _Bool quit = false; //check if option is valid
     int n_choices; //number of menu items
     sds *choices, menuName = sdsnew(" Search Menu ");
-    char *items[] = { "Search with export to CSV", "Search only", "Back to Main Menu" };
+    char *items[] = { "Search with export to CSV", "Search only", "Back to Main Menu", NULL };
 
     REWIND(contacts);
     if(!contacts) { //if no contacts in list
@@ -92,8 +94,7 @@ void SearchMenu(WINDOW *win) { //search menu
         return;
     }
 
-    n_choices = ARRAY_SIZE(items) +1;  //calculate one more also for empity sds
-    choices = buildMenuItems(items, n_choices); //build the menu items
+    choices = buildMenuItems(items); //build the menu items
     if(!choices) {
         sdsfree(menuName); //free memory
 
@@ -102,7 +103,7 @@ void SearchMenu(WINDOW *win) { //search menu
 
     //start the operations
     while(!quit) {
-        switch (flexMenu(win, choices, n_choices, menuName)) {
+        switch (flexMenu(win, choices, menuName)) {
             case 1:
                 do_search(win, true);
                 break;
@@ -120,6 +121,7 @@ void SearchMenu(WINDOW *win) { //search menu
         wclear(win);
     }
 
+    n_choices = ARRAY_SIZE(items);
     for(int i = 0; i < n_choices; i++) { //walk through array index
         sdsfree(choices[i]); //free memory
     }
@@ -255,7 +257,7 @@ void UpdateMenu(WINDOW *win, PhoneBook_t *resultList, sds menuName, sds menuModi
 
     menuList = buildMenuList(ptr, &nb_fields); //build the list from resultList
     do {
-        choice = flexMenu(win, menuList, nb_fields, menuName); //pass the contacts list to felxMenu to elaborate it
+        choice = flexMenu(win, menuList, menuName); //pass the contacts list to felxMenu to elaborate it
         if(choice) { //if a choice is made
             if(choice < 0) { //check if the contact is deleted
                 choice *= -1; //invert the sign to manage the right indexing
@@ -324,10 +326,9 @@ void ImpExpMenu(WINDOW *win) { //search menu
     _Bool quit = false; //check if option is valid
     int rows, n_choices; //number of menu items
     sds  *choices, menuName = sdsnew(" Import & Export Menu ");
-    char *items[] = { "Import from CSV", "Import from Google CSV", "Export to CSV", "Export to Google CSV", "Back to Main Menu" };
+    char *items[] = { "Import from CSV", "Import from Google CSV", "Export to CSV", "Export to Google CSV", "Back to Main Menu", NULL };
 
-    n_choices = ARRAY_SIZE(items) +1;  //calculate one more also for empity sds
-    choices = buildMenuItems(items, n_choices); //build the menu items
+    choices = buildMenuItems(items); //build the menu items
     if(!choices) {
         sdsfree(menuName); //free memory
 
@@ -338,7 +339,7 @@ void ImpExpMenu(WINDOW *win) { //search menu
     while(!quit) {
         sds csvFile = sdsempty(); //create an empty sds string
         char *message = NULL; //create a NULL string
-        switch(flexMenu(win, choices, n_choices, menuName)) {
+        switch(flexMenu(win, choices, menuName)) {
             case 1: //Import from CSV
                 csvFile = sdscpy(csvFile, DB_CSV); //assign the standard csv file name
             case 2: //Import from Google CSV
@@ -347,12 +348,17 @@ void ImpExpMenu(WINDOW *win) { //search menu
                 }
                 rows = importCSV(csvFile); //import the contacts from csv
                 if(rows > 0) { //check if records are exported
-                    asprintf(&message, " Imported %d records from '%s' successfully ", rows, csvFile); //build message string
+                    asprintf(&message, " Imported %d records from '%s' successfully. ", rows, csvFile); //build message string
                 } else {
                     asprintf(&message, " No records imported from '%s' ", csvFile); //build message string
                 }
-                messageBox(win, 15, message, COLOR_PAIR(PAIR_MODIFIED)); //display result
-                logfile("%s: %s\n", __func__, message); //write result to log file
+                messageBox(win, 15, message, COLOR_PAIR(PAIR_MODIFIED));
+                if(rows > 0) {
+                    rows = write_db(false); //write the imported contacts list to sqlite file database
+                    logfile("%s: Imported %d rows in '%s' DataBase\n", __func__, rows, DB);
+                } else {
+                    logfile("%s: %s\n", __func__, message); //write result to log file
+                }
                 break;
             case 3: //Export to CSV
                 rows = write_csv(DB_CSV, contacts); //write or append records to DB_CSV
@@ -361,7 +367,7 @@ void ImpExpMenu(WINDOW *win) { //search menu
                 } else {
                     asprintf(&message, " No records exported to '%s' ", DB_CSV); //build message string
                 }
-                messageBox(win, 15, message, COLOR_PAIR(PAIR_MODIFIED)); //display result
+                messageBox(win, 15, message, COLOR_PAIR(PAIR_MODIFIED));
                 logfile("%s: %s\n", __func__, message); //write result to log file
                 break;
             case 4: //Export to Google CSV
@@ -381,6 +387,7 @@ void ImpExpMenu(WINDOW *win) { //search menu
         wclear(win);
     }
 
+    n_choices = ARRAY_SIZE(items);
     for(int i = 0; i < n_choices; i++) { //walk through array index
         sdsfree(choices[i]); //free memory
     }
@@ -389,17 +396,19 @@ void ImpExpMenu(WINDOW *win) { //search menu
     return; //back to Main Menu
 }
 
-sds *buildMenuItems(char **items, int numbers) {
+sds *buildMenuItems(char **items) {
     sds *menuChoices;
-    int i;
+    int i, numbers;
 
     if(!items) {
         return NULL;
     }
 
+    for(i = 0; items[i]; i++); //count the number of items (NULL terminated)
+    numbers = i;
+
     menuChoices = (sds *) calloc(numbers, sizeof(sds)); //calculate one more also for empity sds
 
-    numbers--; //decrease the index in order to add the empty item after for cycle
     for(i = 0; i < numbers; i++) {
         menuChoices[i] = sdscatprintf(sdsempty(), "[%d] %s", i+1, items[i]);
     }
@@ -410,7 +419,7 @@ sds *buildMenuItems(char **items, int numbers) {
 
 sds *buildMenuList(PhoneBook_t *fromList, int *nb_fileds) {
     PhoneBook_t *ptr = fromList;
-    sds *menuList;
+    sds *menuList, fname, lname;
     int i;
 
     if(!ptr) { //check if the list is empty
@@ -424,7 +433,14 @@ sds *buildMenuList(PhoneBook_t *fromList, int *nb_fileds) {
     menuList = (sds *) calloc(i, sizeof(sds)); //allocate the memory for contact list
 
     for(i = 0; ptr; i++) { //walk thru the list
-        menuList[i] = (sds) sdscatprintf(sdsempty(), "%s %s", ptr->db.fname, ptr->db.lname); //build the menu list
+        fname = sdsdup(ptr->db.fname);
+        fname = sdschremove(fname, SPECIAL_CHARS);
+        lname = sdsdup(ptr->db.lname);
+        lname = sdschremove(lname, SPECIAL_CHARS);
+
+        menuList[i] = (sds) sdscatprintf(sdsempty(), "%s %s", fname, lname); //build the menu list
+        sdsfree(fname);
+        sdsfree(lname);
         NEXT(ptr);
     }
     menuList[i++] = sdsempty(); //assign NULL string to the last contact of the list

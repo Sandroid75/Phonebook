@@ -180,7 +180,11 @@ void destroyList(PhoneBook_t **list) {
         sdsfree((*list)->db.state);
         sdsfree((*list)->db.country);
 
-        free((*list)); //now to (*list) elment can be free
+/*
+        if((*list)) {
+            free((*list)); //now to (*list) elment can be free
+        }
+*/        
         (*list) = nextPtr; //step to next node
     }
 
