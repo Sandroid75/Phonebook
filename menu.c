@@ -2,7 +2,7 @@
 
 void MainMenu(WINDOW *win) { //main menu
     _Bool quit = false;
-    int ch, n_choices; //number of menu items
+    int ch;
     sds *choices;
     sds menuName = sdsnew(" Main Menu "), menuUpdate = sdsnew(" Show / Modify "), menuModify = sdsnew(" Modify ");
     char *items[] = { "Search Contact", "Add new Contact", "Show / Modify", "Import / Export", "Utility", "Exit", NULL };
@@ -69,10 +69,7 @@ void MainMenu(WINDOW *win) { //main menu
         wclear(win);
     } while(quit != true);
 
-    n_choices = ARRAY_SIZE(items);  //calculate
-    for(int i = 0; i < n_choices; i++) { //walk through array index
-        sdsfree(choices[i]); //free memory
-    }
+    sdsfreesplitres(choices, ARRAY_SIZE(items)); //free memory
     sdsfree(menuModify); //free memory
     sdsfree(menuUpdate); //free memory
     sdsfree(menuName); //free memory
@@ -82,7 +79,6 @@ void MainMenu(WINDOW *win) { //main menu
 
 void SearchMenu(WINDOW *win) { //search menu
     _Bool quit = false; //check if option is valid
-    int n_choices; //number of menu items
     sds *choices, menuName = sdsnew(" Search Menu ");
     char *items[] = { "Search with export to CSV", "Search only", "Back to Main Menu", NULL };
 
@@ -121,10 +117,7 @@ void SearchMenu(WINDOW *win) { //search menu
         wclear(win);
     }
 
-    n_choices = ARRAY_SIZE(items);
-    for(int i = 0; i < n_choices; i++) { //walk through array index
-        sdsfree(choices[i]); //free memory
-    }
+    sdsfreesplitres(choices, ARRAY_SIZE(items)); //free memory
     sdsfree(menuName); //free memory
 
     return; //back to Main Menu
@@ -256,6 +249,10 @@ void UpdateMenu(WINDOW *win, PhoneBook_t *resultList, sds menuName, sds menuModi
     }
 
     menuList = buildMenuList(ptr, &nb_fields); //build the list from resultList
+    if(!menuList) {
+        return;
+    }
+
     do {
         choice = flexMenu(win, menuList, menuName); //pass the contacts list to felxMenu to elaborate it
         if(choice) { //if a choice is made
@@ -270,7 +267,7 @@ void UpdateMenu(WINDOW *win, PhoneBook_t *resultList, sds menuName, sds menuModi
             }
             if(!ptr) {
                 logfile("%s: The menu item %d selected is out of list\n", __func__, choice);
-                freeMenuList(&menuList, nb_fields); //release the memory
+                sdsfreesplitres(menuList, nb_fields); //release the memory
 
                 return;
             }
@@ -281,7 +278,7 @@ void UpdateMenu(WINDOW *win, PhoneBook_t *resultList, sds menuName, sds menuModi
             }
             if(!ptr) {
                 logfile("%s: The menu item %d selected is out of list\n", __func__, choice);
-                freeMenuList(&menuList, nb_fields); //release the memory
+                sdsfreesplitres(menuList, nb_fields); //release the memory
 
                 return;
             }
@@ -311,8 +308,8 @@ void UpdateMenu(WINDOW *win, PhoneBook_t *resultList, sds menuName, sds menuModi
             }
         }
     } while(choice); //if no selection exit flexMenu return 0 if nothing was selected
-    
-    freeMenuList(&menuList, nb_fields); //release the memory
+
+    sdsfreesplitres(menuList, nb_fields); //release the memory
     
     if(modified) { //if at least one contact was modified
         nb_fields = write_db(true); //if the modification is accepted write the new db with param true means UPDATE
@@ -324,7 +321,7 @@ void UpdateMenu(WINDOW *win, PhoneBook_t *resultList, sds menuName, sds menuModi
 
 void ImpExpMenu(WINDOW *win) { //search menu
     _Bool quit = false; //check if option is valid
-    int rows, n_choices; //number of menu items
+    int rows;
     sds  *choices, menuName = sdsnew(" Import & Export Menu ");
     char *items[] = { "Import from CSV", "Import from Google CSV", "Export to CSV", "Export to Google CSV", "Back to Main Menu", NULL };
 
@@ -371,6 +368,14 @@ void ImpExpMenu(WINDOW *win) { //search menu
                 logfile("%s: %s\n", __func__, message); //write result to log file
                 break;
             case 4: //Export to Google CSV
+                rows = write_csv(GOOGLE_CSV, contacts); //write or append records to GOOGLE_CSV
+                if(rows > 0) { //check if records are exported
+                    asprintf(&message, " Exported %d records to '%s' successfully ", rows, GOOGLE_CSV); //build message string
+                } else {
+                    asprintf(&message, " No records exported to '%s' ", GOOGLE_CSV); //build message string
+                }
+                messageBox(win, 15, message, COLOR_PAIR(PAIR_MODIFIED));
+                logfile("%s: %s\n", __func__, message); //write result to log file
                 break;
             case 5: //Back to Main Menu
             case 0: //ESCape was pressed
@@ -387,10 +392,8 @@ void ImpExpMenu(WINDOW *win) { //search menu
         wclear(win);
     }
 
-    n_choices = ARRAY_SIZE(items);
-    for(int i = 0; i < n_choices; i++) { //walk through array index
-        sdsfree(choices[i]); //free memory
-    }
+    rows = ARRAY_SIZE(items);
+    sdsfreesplitres(choices, rows); //free memory
     sdsfree(menuName); //free memory
 
     return; //back to Main Menu
@@ -398,18 +401,16 @@ void ImpExpMenu(WINDOW *win) { //search menu
 
 sds *buildMenuItems(char **items) {
     sds *menuChoices;
-    int i, numbers;
+    int i, n;
 
     if(!items) {
         return NULL;
     }
 
-    for(i = 0; items[i]; i++); //count the number of items (NULL terminated)
-    numbers = i;
+    for(n = 0; items[n]; n++); //count the number of items (NULL terminated)
+    menuChoices = (sds *) calloc(n+1, sizeof(sds)); //calculate one more also for empity sds
 
-    menuChoices = (sds *) calloc(numbers, sizeof(sds)); //calculate one more also for empity sds
-
-    for(i = 0; i < numbers; i++) {
+    for(i = 0; i < n; i++) {
         menuChoices[i] = sdscatprintf(sdsempty(), "[%d] %s", i+1, items[i]);
     }
     menuChoices[i] = sdsempty(); //last item must be empty
@@ -433,10 +434,10 @@ sds *buildMenuList(PhoneBook_t *fromList, int *nb_fileds) {
     menuList = (sds *) calloc(i, sizeof(sds)); //allocate the memory for contact list
 
     for(i = 0; ptr; i++) { //walk thru the list
-        fname = sdsdup(ptr->db.fname);
-        fname = sdschremove(fname, SPECIAL_CHARS);
-        lname = sdsdup(ptr->db.lname);
-        lname = sdschremove(lname, SPECIAL_CHARS);
+        fname = sdsnew(ptr->db.fname);
+        fname = sdschremove(fname, SPECIAL_CHARS); //remove special chars from sds
+        lname = sdsnew(ptr->db.lname);
+        lname = sdschremove(lname, SPECIAL_CHARS); //remove special chars from sds
 
         menuList[i] = (sds) sdscatprintf(sdsempty(), "%s %s", fname, lname); //build the menu list
         sdsfree(fname);
@@ -447,16 +448,4 @@ sds *buildMenuList(PhoneBook_t *fromList, int *nb_fileds) {
     (*nb_fileds) = i; //assign the total menu items
 
     return (sds *) menuList;
-}
-
-void freeMenuList(sds **menuList, int nb_fields) {
-    for(int i = 0; i < nb_fields; i++) { //free the contacts list
-        sdsfree((*menuList)[i]); //free the current contact of the list
-    }
-    if((*menuList)) { //check if the pointer is valid
-        free((*menuList)); //release the memory
-    }
-    NULLSET((*menuList));
-
-    return;
 }

@@ -69,6 +69,10 @@
 #define GOOGLE_CSV "contacts.csv"	//Google CSV file name
 #define SEARCH_CSV "search_dump.csv" //search CSV dump file name
 
+#define REGEXP_PHONE "^\\+?[0-9]+ "
+#define REGEXP_EMAIL "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})"
+#define REGEXP_ZIP "^[0-9]*$"
+
 #ifndef MAX_BUFFER
 #define MAX_BUFFER SDS_MAX_PREALLOC //max text array dimension
 #endif
@@ -127,7 +131,8 @@
 
 #define CSV_HEADER "id,FirstName,LastName,Organization,Job,HPhone,WPhone,PMobile,BMobile,PEmail,BEmail,Address,Zip,City,State,Country,mDay,Mon,Year\r\n"
 #define CSV_SCHEMA "%d,\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",%d,%d,%d\r\n"
-#define CSV_GOOGLE_HEADER "Name,Given Name,Additional Name,Family Name,Yomi Name,Given Name Yomi,Additional Name Yomi,Family Name Yomi,Name Prefix,Name Suffix,Initials,Nickname,Short Name,Maiden Name,Birthday,Gender,Location,Billing Information,Directory Server,Mileage,Occupation,Hobby,Sensitivity,Priority,Subject,Notes,Language,Photo,Group Membership,E-mail 1 - Type,E-mail 1 - Value,E-mail 2 - Type,E-mail 2 - Value,E-mail 3 - Type,E-mail 3 - Value,Phone 1 - Type,Phone 1 - Value,Phone 2 - Type,Phone 2 - Value,Phone 3 - Type,Phone 3 - Value,Phone 4 - Type,Phone 4 - Value,Phone 5 - Type,Phone 5 - Value,Address 1 - Type,Address 1 - Formatted,Address 1 - Street,Address 1 - City,Address 1 - PO Box,Address 1 - Region,Address 1 - Postal Code,Address 1 - Country,Address 1 - Extended Address,Organization 1 - Type,Organization 1 - Name,Organization 1 - Yomi Name,Organization 1 - Title,Organization 1 - Department,Organization 1 - Symbol,Organization 1 - Location,Organization 1 - Job Description,Website 1 - Type,Website 1 - Value,Website 2 - Type,Website 2 - Value,Custom Field 1 - Type,Custom Field 1 - Value"
+#define CSV_GOOGLE_HEADER "Name,Given Name,Additional Name,Family Name,Yomi Name,Given Name Yomi,Additional Name Yomi,Family Name Yomi,Name Prefix,Name Suffix,Initials,Nickname,Short Name,Maiden Name,Birthday,Gender,Location,Billing Information,Directory Server,Mileage,Occupation,Hobby,Sensitivity,Priority,Subject,Notes,Language,Photo,Group Membership,E-mail 1 - Type,E-mail 1 - Value,E-mail 2 - Type,E-mail 2 - Value,E-mail 3 - Type,E-mail 3 - Value,Phone 1 - Type,Phone 1 - Value,Phone 2 - Type,Phone 2 - Value,Phone 3 - Type,Phone 3 - Value,Phone 4 - Type,Phone 4 - Value,Phone 5 - Type,Phone 5 - Value,Address 1 - Type,Address 1 - Formatted,Address 1 - Street,Address 1 - City,Address 1 - PO Box,Address 1 - Region,Address 1 - Postal Code,Address 1 - Country,Address 1 - Extended Address,Organization 1 - Type,Organization 1 - Name,Organization 1 - Yomi Name,Organization 1 - Title,Organization 1 - Department,Organization 1 - Symbol,Organization 1 - Location,Organization 1 - Job Description,Website 1 - Type,Website 1 - Value,Website 2 - Type,Website 2 - Value,Custom Field 1 - Type,Custom Field 1 - Value\r\n"
+#define CSV_GOOGLE_SCHEMA "%s %s,%s,,%s,,,,,,,,,,,%s,,,,,,,,,,,,,,* myContacts,,%s,,,,,Mobile,%s,,%s,,%s,,,,,,,%s,%s,,%s,%s,%s,,,%s,,%s,,,,,,,,,,\r\n"
 
 #define SPECIAL_CHARS "ÀÁÂÃÄÅĀĂĄÆàáâãäåāăąæÇĆČçćčĎĐđÈÉÊËĒĖĘĚĔèéêëēėęěĕĢĞģğÎÍÌĮĪÏîíìıįīïĶķŁĻĹłļĺŇŅŃÑňņńñÕÔÓÒŐØÖŒõôóòőøöœŔŘŕřŚŠŞśšşÞŤȚŢþțţÜÛÚÙŲŰŮŪüûúùųűůūµÝŸýÿŹŻŽźżž"
 
@@ -175,7 +180,8 @@ struct Counts {
 
 extern PhoneBook_t *contacts; //Global contatcts phonebook
 
-//function declarations db_func.c
+/* function declarations */
+//db_func.c
 int callback(void *NotUsed, int argc, char **argv, char **azColName);
 int read_db(void);
 int write_db(_Bool update);
@@ -184,9 +190,10 @@ sds SDSupdateSQL(sds sql, DBnode_t node);
 int doSQLstatement(sds sql);
 int write_csv(const char *csvFile, PhoneBook_t *contact_csv);
 sds SDSinsertCSV(sds csvRow, DBnode_t node);
+sds SDSgoogleCSV(sds csvRow, DBnode_t node);
 int importCSV(sds csvFile);
 
-//function declarations dblist.c
+//dblist.c
 PhoneBook_t *newNode(DBnode_t node);
 PhoneBook_t *addNode(PhoneBook_t **list, DBnode_t node); //push the element of db in contacts list, return the pointer of the new node
 DBnode_t *initNode(PhoneBook_t *list);
@@ -194,12 +201,12 @@ int countList(PhoneBook_t *list);
 void destroyNode(DBnode_t **node);
 void destroyList(PhoneBook_t **list);
 
-//function declarations functions.c
+//functions.c
 void logfile(const char *fmt, ...);
 void db_log(const char *funcname, char *comment, DBnode_t *db);
 int filecopy(const char* source, const char* destination);
 
-//function declarations menu.c
+//menu.c
 void MainMenu(WINDOW *win);	//main menu
 void SearchMenu(WINDOW *win);	//search menu
 int do_search(WINDOW *win, _Bool csv_export);	//main search function
@@ -208,9 +215,8 @@ void UpdateMenu(WINDOW *win, PhoneBook_t *resultList, sds menuName, sds menuModi
 void ImpExpMenu(WINDOW *win);
 sds *buildMenuItems(char **items);
 sds *buildMenuList(PhoneBook_t *fromList, int *nb_fileds);
-void freeMenuList(sds **menuList, int nb_fields);
 
-//function declarations ui_ncurses.c
+//ui_ncurses.c
 int flexMenu(WINDOW *win, sds *choices, char *menuName);
 int flexForm(WINDOW *win, DBnode_t *db, const char *menuName);
 int initField(FIELD **field, DBnode_t *db); //initialize all field with db

@@ -187,6 +187,7 @@ int write_csv(const char *csvFile, PhoneBook_t *contact_csv) {
     sds csv_table;
     int rows;
     size_t bytes;
+    _Bool isGoogle;
 
     REWIND(ptr);
     if(!ptr) {
@@ -195,14 +196,20 @@ int write_csv(const char *csvFile, PhoneBook_t *contact_csv) {
         return -1;
     }
 
+    isGoogle = strcmp(csvFile, GOOGLE_CSV) ? false : true; //check if is Google csv file
+
     if(access(csvFile, R_OK)) { //if the csvFile doesn't exist
-        csv_table = sdsnew(CSV_HEADER); //build the CSV header
+        csv_table = sdsnew(isGoogle ? CSV_GOOGLE_HEADER : CSV_HEADER); //build the CSV header
     } else { //the csvFile exist
         csv_table = sdsempty(); //init an empty table
     }
 
     for(rows = 0; ptr; rows++) { //build the CSV table with rows
-        csv_table = SDSinsertCSV(csv_table, ptr->db); //insert each row from db node
+        if(isGoogle) {
+            csv_table = SDSgoogleCSV(csv_table, ptr->db); //insert each row from db node
+        } else {
+            csv_table = SDSinsertCSV(csv_table, ptr->db); //insert each row from db node
+        }
         NEXT(ptr); //step to next
     }
 
@@ -238,6 +245,26 @@ sds SDSinsertCSV(sds csvRow, DBnode_t node) { //build INSERT statement from node
                 node.hphone, node.wphone, node.pmobile, node.bmobile, node.pemail, node.bemail,
                 node.address, node.zip, node.city, node.state, node.country,
                 node.birthday.tm_mday, node.birthday.tm_mon, node.birthday.tm_year);
+
+    return (sds) csvRow;
+}
+
+sds SDSgoogleCSV(sds csvRow, DBnode_t node) { //build INSERT statement from node
+    sds birthday = sdsempty();
+
+    if(node.birthday.tm_year != 1900 && node.birthday.tm_mon != 1 && node.birthday.tm_mday != 1) { //check if is birthday was not default
+        birthday = sdscatprintf(birthday, "%04d-%02d-%02d", node.birthday.tm_year, node.birthday.tm_mon, node.birthday.tm_mday);
+    }
+
+    csvRow = sdscatprintf(csvRow, CSV_GOOGLE_SCHEMA,
+                node.fname, node.lname, node.fname, node.lname,
+                birthday, //populate only if is a valid date
+                node.pemail, node.pmobile, node.hphone, node.wphone,
+                node.address, node.city, node.state, node.zip, node.country,
+                node.organization, node.job);
+                //node.pmobile, node.bmobile, node.pemail, node.bemail,
+
+    sdsfree(birthday);
 
     return (sds) csvRow;
 }
