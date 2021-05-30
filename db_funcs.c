@@ -42,7 +42,7 @@ int callback(void *NotUsed, int argc, char **argv, char **azColName) {
     db->birthday.tm_year = atoi(argv[i++]);
 
     addNode(&contacts, (*db)); //for each readed row push the assigned db in the global contacts list
-    destroyNode(&db); //destroy the node and all sds strings
+    destroyNode(db); //destroy the node and all sds strings
 
     return 0;
 }
@@ -82,7 +82,7 @@ int read_db(void) { //read existing SQL database or creat a new if doesn't exist
 }
 
 int write_db(_Bool update) {
-    PhoneBook_t *ptr;
+    PhoneBook_t *ptr, *pnext;
     int bytes, records = 0;
     sds sql;
 
@@ -107,11 +107,13 @@ int write_db(_Bool update) {
     }
 
     REWIND(contacts); //to be sure that contacts pointer go to head of the list
-    for(ptr = contacts; ptr; ptr = ptr->next) { //walk thru the complete contacts list
+    for(ptr = contacts; ptr; ptr = pnext) { //walk thru the complete contacts list
+        pnext = ptr->next;  //safe pointing to next node, in case of deletion of the node
         //build the SQLite3 statement to manage the contacts list in SQL DataBase
         if(ptr->db.delete) { //check if the contacts need to be deleted
             sql = sdscatprintf(sql, DELETE_SQL_RECORD_ID, ptr->db.id); //the id is used for statement WHERE SQLite
             logfile("%s: Record id=%d deleted...\n", __func__, ptr->db.id);
+            deleteNode(&contacts, ptr);
             records++; //counting the numbers of records to be write or update
         } else if(ptr->db.modified) { //check if the contacts was modified
             sql = update ? SDSupdateSQL(sql, ptr->db) : SDSinsertSQL(sql, ptr->db); //check if the use the UPDATE statement or INSERT statement
@@ -123,10 +125,6 @@ int write_db(_Bool update) {
     if(records) {
         if(doSQLstatement(sql) != SQLITE_OK) { //Execute the SQL statement and check that everything went well
             logfile("%s: Error %s %d records in the DataBase\n", __func__, update ? "updating" : "writing", records);
-        } else { //re-align the stored DB with memory DB
-            destroyList(&contacts); //in order to be alligned the memory list where destroy
-            bytes = read_db(); //in order to be alligned the stored list where re-readed
-            logfile("%s: Re-readed %d contacts from %s DataBase\n", __func__, bytes, DB);
         }
     }
     sdsfree(sql); //free memory
@@ -437,7 +435,7 @@ void csv_cb_row(int c, void *data) { //callback fuction called every row
     if(((Counts_t *)data)->rows) { //exclude the header of CSV
         ((Counts_t *)data)->db->modified = true;
         addNode(&contacts, *((Counts_t *)data)->db); //add the row to contacts list
-        destroyNode(&((Counts_t *)data)->db); //free memory of each sds strings
+        destroyNode(((Counts_t *)data)->db); //free memory of each sds strings
     }
 
     ((Counts_t *)data)->rows++; //increment the rows counter

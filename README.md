@@ -7,7 +7,6 @@ You need to install Ncurses and SQLite3 libraries first (search on Google how to
 Also you need my version of SDS library based on antirez original: https://github.com/Sandroid75/sds.git
 
 To Do
-- Duplicate contacts merging
 - Sorting function to order by name or family name
 
 Enjoy

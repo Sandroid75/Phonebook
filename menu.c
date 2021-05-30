@@ -54,6 +54,7 @@ void MainMenu(WINDOW *win) { //main menu
                 ImpExpMenu(win);
                 break;
             case 5: //Utility
+                UtilityMenu(win);
                 break;
             case 6: //Menu Exit is selected
             case 0: //ESCape key is pressed
@@ -138,11 +139,12 @@ int do_search(WINDOW *win, _Bool csv_export) {
     if(flexForm(win, dbFlex, menuCriteria) != 1) { //fill the criteria to search (1 mean confirm, 0 mean abort, -1 mean error)
         sdsfree(menuCriteria);
         sdsfree(menuName);
-        destroyNode(&dbFlex);
+        destroyNode(dbFlex);
 
         return 0;
     }
 
+    REWIND(contacts);
     for(nb_records = 0, ptr = contacts; ptr; ptr = ptr->next) { //search if with input filters match with some contacts
         found = false; //reset to false for every cycle that means every record
         if(sdscasesds(ptr->db.fname,        dbFlex->fname) >= 0)        found = true; //for better readability I have aligned the code
@@ -172,8 +174,8 @@ int do_search(WINDOW *win, _Bool csv_export) {
         messageBox(win, 10, " No contacts was found with input filters ", COLOR_PAIR(PAIR_EDIT));
         sdsfree(menuCriteria);
         sdsfree(menuName);
-        destroyNode(&dbFlex);
-        destroyList(&resultList); //destroy the result list
+        destroyNode(dbFlex);
+        destroyList(resultList); //destroy the result list
 
         return 0;
     }
@@ -184,8 +186,8 @@ int do_search(WINDOW *win, _Bool csv_export) {
         if(rows == -1) {
             sdsfree(menuCriteria); //destroy the criteeria string
             sdsfree(menuName); //destory the menu name
-            destroyNode(&dbFlex);
-            destroyList(&resultList); //destroy the result list
+            destroyNode(dbFlex);
+            destroyList(resultList); //destroy the result list
 
             return -1;
         }
@@ -197,8 +199,8 @@ int do_search(WINDOW *win, _Bool csv_export) {
  
     sdsfree(menuCriteria); //destroy the criteeria string
     sdsfree(menuName); //destory the menu name
-    destroyNode(&dbFlex);
-    destroyList(&resultList); //destroy the result list
+    destroyNode(dbFlex);
+    destroyList(resultList); //destroy the result list
 
     return nb_records;
 }
@@ -222,7 +224,7 @@ void AddMenu(WINDOW *win) { //add menu
             store = addNode(&contacts, (*dbFlex)) ? true : store; //if at least one time store is set to true, it remain true, otherwise false
             REWIND(contacts);
         }
-        destroyNode(&dbFlex);
+        destroyNode(dbFlex);
     } while(rc == 1); //cycle while the user inputs new contact
 
     if(store) {
@@ -272,7 +274,7 @@ void UpdateMenu(WINDOW *win, PhoneBook_t *resultList, sds menuName, sds menuModi
                 return;
             }
             REWIND(contacts); //in order to be sure that contacts pointer go to head of list
-            if(resultList != contacts) { //if the function is called from search menu this is true
+            if(resultList != contacts) { //if the function is called from MainMenu() this is false
                 id = ptr->db.id; //store the value of id
                 for(ptr = contacts; ptr && (ptr->db.id) != id; ptr = ptr->next); //walk contacts up to id
             }
@@ -399,6 +401,175 @@ void ImpExpMenu(WINDOW *win) { //search menu
     return; //back to Main Menu
 }
 
+void UtilityMenu(WINDOW *win) { //search menu
+    _Bool quit = false; //check if option is valid
+    sds *choices, menuName = sdsnew(" Utility Menu ");
+    char *items[] = { "Sort contacts by First Name", "Sort contacts by Last Name", "Find Duplicates", "Back to Main Menu", NULL };
+
+    REWIND(contacts);
+    if(!contacts) { //if no contacts in list
+        messageBox(win, 10, " No contacts found in the DataBase! ", COLOR_PAIR(PAIR_EDIT));
+        sdsfree(menuName);
+
+        return;
+    }
+
+    choices = buildMenuItems(items); //build the menu items
+    if(!choices) {
+        sdsfree(menuName); //free memory
+
+        return;
+    }
+
+    //start the operations
+    while(!quit) {
+        switch (flexMenu(win, choices, menuName)) {
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3: //back menu was selected
+                FindDuplicates(win);
+                break;
+            case 0: //ESCape was pressed
+                quit = true;
+                break; //back to Main Menu
+            default:
+                break;
+        }
+        wrefresh(win);
+        wclear(win);
+    }
+
+    sdsfreesplitres(choices, ARRAY_SIZE(items)); //free memory
+    sdsfree(menuName); //free memory
+
+    return; //back to Main Menu
+}
+
+int FindDuplicates(WINDOW *win) {
+    PhoneBook_t *match, *ptr, *mnext, *pnext;
+    unsigned int check = MATCH_NO_MATCH;
+    int nb_records = 0;
+    _Bool found = false;
+
+    REWIND(contacts);
+    for(match = contacts; match; match = mnext) {
+        mnext = match->next; //safe pointing to next node, in case of deletion of the node
+        for(ptr = match->next; ptr; ptr = pnext) { //search matches in phone numbers
+            pnext = ptr->next; //safe pointing to next node, in case of deletion of the node
+            check = checkMatch(match->db, ptr->db); //check matches and set the metch bits
+            if(check) { //check if a match was found in current contact field
+                mergeDuplicate(win, match->db, ptr->db, check); //let choice to the user if the match will be merged
+                found = true;
+                nb_records++; //count the numbers of records
+            }
+        }
+    }
+
+    if(!found) { //if nothing was found
+        messageBox(win, 10, " No duplicated contacts was found ", COLOR_PAIR(PAIR_EDIT));
+
+        return 0;
+    }
+    logfile("%s: Found %d pairs of records with duplicates!\n", __func__, nb_records);
+
+    return nb_records;
+}
+
+unsigned int checkMatch(DBnode_t first, DBnode_t second) {
+    unsigned int check = MATCH_NO_MATCH;
+
+    if(sdscasesds(first.hphone, second.hphone) >= 0) { check |= MATCH_HPHONE_HPONE; }
+    if(sdscasesds(first.hphone, second.wphone) >= 0) { check |= MATCH_HPHONE_WPHONE; }
+    if(sdscasesds(first.hphone, second.pmobile) >= 0) { check |= MATCH_HPHONE_PMOBILE; }
+    if(sdscasesds(first.hphone, second.bmobile) >= 0) { check |= MATCH_HPHONE_BMOBILE; }
+
+    if(sdscasesds(first.wphone, second.hphone) >= 0) { check |= MATCH_WPHONE_HPHONE; }
+    if(sdscasesds(first.wphone, second.wphone) >= 0) { check |= MATCH_WPHONE_WPHONE; }
+    if(sdscasesds(first.wphone, second.pmobile) >= 0) { check |= MATCH_WPHONE_PMOBILE; }
+    if(sdscasesds(first.wphone, second.bmobile) >= 0) { check |= MATCH_WPHONE_BMOBILE; }
+
+    if(sdscasesds(first.pmobile, second.hphone) >= 0) { check |= MATCH_PMOBILE_HPHONE; }
+    if(sdscasesds(first.pmobile, second.wphone) >= 0) { check |= MATCH_PMOBILE_WPHONE; }
+    if(sdscasesds(first.pmobile, second.pmobile) >= 0) { check |= MATCH_PMOBILE_PMOBILE; }
+    if(sdscasesds(first.pmobile, second.bmobile) >= 0) { check |= MATCH_PMOBILE_BMOBILE; }
+
+    if(sdscasesds(first.bmobile, second.hphone) >= 0) { check |= MATCH_BMOBILE_HPHONE; }
+    if(sdscasesds(first.bmobile, second.wphone) >= 0) { check |= MATCH_BMOBILE_WPHONE; }
+    if(sdscasesds(first.bmobile, second.pmobile) >= 0) { check |= MATCH_BMOBILE_PMOBILE; }
+    if(sdscasesds(first.bmobile, second.bmobile) >= 0) { check |= MATCH_BMOBILE_BMOBILE; }
+
+    return check;
+}
+
+void mergeDuplicate(WINDOW *win, DBnode_t first, DBnode_t second, unsigned int check) {
+    PhoneBook_t *ptr, *resultList = NULL;
+    DBnode_t *dbMerge = NULL;
+    int ch;
+    sds menuMatch = sdsnew(" Edit Duplicate "), menuName = sdsnew(" Show / Modify ");
+
+    ch = showMatch(win, first, second, check);
+    switch(ch) {
+        case KEY_F(1):
+            REWIND(contacts);
+            for(ptr = contacts; ptr; ptr = ptr->next) { //walk to the enteire list
+                if(ptr->db.id == first.id || ptr->db.id == second.id) { //find the duplicated contacts
+                    addNode(&resultList, ptr->db); //add the every single duplicate to temp list
+                }
+            }
+            REWIND(resultList);
+            UpdateMenu(win, resultList, menuName, menuMatch); //to modify the duplicated contacts
+            destroyList(resultList); //destroy the result list
+            break;
+        case KEY_F(4):
+            dbMerge = initNode(contacts);
+
+            dbMerge->fname = strlen(first.fname) > strlen(second.fname) ? sdsnew(first.fname) : sdsnew(second.fname);
+            dbMerge->lname = strlen(first.lname) > strlen(second.lname) ? sdsnew(first.lname) : sdsnew(second.lname);
+            dbMerge->organization = strlen(first.organization) > strlen(second.organization) ? sdsnew(first.organization) : sdsnew(second.organization);
+            dbMerge->job = strlen(first.job) > strlen(second.job) ? sdsnew(first.job) : sdsnew(second.job);
+            dbMerge->hphone = strlen(first.hphone) > strlen(second.hphone) ? sdsnew(first.hphone) : sdsnew(second.hphone);
+            dbMerge->wphone = strlen(first.wphone) > strlen(second.wphone) ? sdsnew(first.wphone) : sdsnew(second.wphone);
+            dbMerge->pmobile = strlen(first.pmobile) > strlen(second.pmobile) ? sdsnew(first.pmobile) : sdsnew(second.pmobile);
+            dbMerge->bmobile = strlen(first.bmobile) > strlen(second.bmobile) ? sdsnew(first.bmobile) : sdsnew(second.bmobile);
+            dbMerge->pemail = strlen(first.pemail) > strlen(second.pemail) ? sdsnew(first.pemail) : sdsnew(second.pemail);
+            dbMerge->bemail = strlen(first.bemail) > strlen(second.bemail) ? sdsnew(first.bemail) : sdsnew(second.bemail);
+            dbMerge->address = strlen(first.address) > strlen(second.address) ? sdsnew(first.address) : sdsnew(second.address);
+            dbMerge->zip = strlen(first.zip) > strlen(second.zip) ? sdsnew(first.zip) : sdsnew(second.zip);
+            dbMerge->city = strlen(first.city) > strlen(second.city) ? sdsnew(first.city) : sdsnew(second.city);
+            dbMerge->state = strlen(first.state) > strlen(second.state) ? sdsnew(first.state) : sdsnew(second.state);
+            dbMerge->country = strlen(first.country) > strlen(second.country) ? sdsnew(first.country) : sdsnew(second.country);
+
+            dbMerge->birthday.tm_year = first.birthday.tm_year > second.birthday.tm_year ? first.birthday.tm_year : second.birthday.tm_year;
+            dbMerge->birthday.tm_mon = first.birthday.tm_mon > second.birthday.tm_mon ? first.birthday.tm_mon : second.birthday.tm_mon;
+            dbMerge->birthday.tm_mday = first.birthday.tm_mday > second.birthday.tm_mday ? first.birthday.tm_mday : second.birthday.tm_mday;
+
+            dbMerge->modified = true; //set the merged contact to modified
+            addNode(&contacts, (*dbMerge)); //add the new merged contact to contacts list
+            destroyNode(dbMerge); //destroy the node
+
+            REWIND(contacts);
+            for(ptr = contacts; ptr; ptr = ptr->next) { //walk to the enteire list
+                if(ptr->db.id == first.id || ptr->db.id == second.id) { //find the duplicated contacts
+                    ptr->db.delete = true; //set the original contacto to delete
+                }
+            }
+            
+            write_db(true); //if the modification is accepted write the new db with param true means UPDATE
+            logfile("%s: Updated records in %s DataBase\n", __func__, DB);
+            break;
+        case KEY_ESC:
+        default:
+            break;
+    }
+    
+    sdsfree(menuMatch); //destroy the criteeria string
+    sdsfree(menuName); //destory the menu name
+
+    return;
+}
+
 sds *buildMenuItems(char **items) {
     sds *menuChoices;
     int i, n;
@@ -423,6 +594,7 @@ sds *buildMenuList(PhoneBook_t *fromList, int *nb_fileds) {
     sds *menuList, fname, lname;
     int i;
 
+    REWIND(ptr);
     if(!ptr) { //check if the list is empty
         logfile("%s: No contacts to build a list|\n", __func__);
         (*nb_fileds) = 0; //no items in the menu list

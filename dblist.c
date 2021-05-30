@@ -78,23 +78,7 @@ DBnode_t *initNode(PhoneBook_t *list) {
     node->modified = false; //always set modified flag to false
     FORWARD(ptr); //go to the tail of contacts list
     node->id = ptr ? (ptr->db.id +1) : 1; //if ptr is NULL means that it's a new list
-/* 
-    node->fname   		= sdsnewlen("", STEXT);
-    node->lname	        = sdsnewlen("", STEXT);
-    node->organization  = sdsnewlen("", MTEXT);
-    node->job	    	= sdsnewlen("", STEXT);
-    node->hphone	    = sdsnewlen("", PHONE);
-    node->wphone	    = sdsnewlen("", PHONE);
-    node->pmobile	    = sdsnewlen("", PHONE);
-    node->bmobile	    = sdsnewlen("", PHONE);
-    node->pemail	    = sdsnewlen("", MTEXT);
-    node->bemail	    = sdsnewlen("", MTEXT);
-    node->address       = sdsnewlen("", LTEXT);
-    node->zip           = sdsnewlen("", ZIP);
-    node->city          = sdsnewlen("", MTEXT);
-    node->state         = sdsnewlen("", STATE);
-    node->country       = sdsnewlen("", STEXT);
-*/
+
     node->fname   		= sdsempty();
     node->lname	        = sdsempty();
     node->organization  = sdsempty();
@@ -118,6 +102,45 @@ DBnode_t *initNode(PhoneBook_t *list) {
     return (DBnode_t *) node;
 }
 
+void deleteNode(PhoneBook_t **list, PhoneBook_t *del) {
+    if (!(*list) || !del) { //nothing to delete
+        return;
+    }
+ 
+    if ((*list) == del) { // If node to be deleted is head node
+        (*list) = del->next;
+    }
+ 
+    if (del->next != NULL) { // Change next only if node to be deleted is NOT the last node
+        del->next->prev = del->prev;
+    }
+
+    if (del->prev != NULL) { /// Change prev only if node to be deleted is NOT the first node
+        del->prev->next = del->next;
+    }
+    //free all sds strings
+    sdsfree(del->db.fname);
+    sdsfree(del->db.lname);
+    sdsfree(del->db.organization);
+    sdsfree(del->db.job);
+    sdsfree(del->db.hphone);
+    sdsfree(del->db.wphone);
+    sdsfree(del->db.pmobile);
+    sdsfree(del->db.bmobile);
+    sdsfree(del->db.pemail);
+    sdsfree(del->db.bemail);
+    sdsfree(del->db.address);
+    sdsfree(del->db.zip);
+    sdsfree(del->db.city);
+    sdsfree(del->db.state);
+    sdsfree(del->db.country);
+
+    free(del); // Finally, free the memory occupied by del
+    NULLSET(del);
+
+    return;
+}
+
 int countList(PhoneBook_t *list) {
     PhoneBook_t *ptr = list;
     int count;
@@ -130,58 +153,40 @@ int countList(PhoneBook_t *list) {
     return count; //return the numbers of contacts counted
 }
 
-void destroyNode(DBnode_t **node) {
-    if((*node)) {
+void destroyNode(DBnode_t *node) {
+    if(node) {
 		//free all sds strings
-		sdsfree((*node)->fname);
-        sdsfree((*node)->lname);
-        sdsfree((*node)->organization);
-        sdsfree((*node)->job);
-        sdsfree((*node)->hphone);
-        sdsfree((*node)->wphone);
-        sdsfree((*node)->pmobile);
-        sdsfree((*node)->bmobile);
-        sdsfree((*node)->pemail);
-        sdsfree((*node)->bemail);
-        sdsfree((*node)->address);
-        sdsfree((*node)->zip);
-        sdsfree((*node)->city);
-        sdsfree((*node)->state);
-        sdsfree((*node)->country);
+		sdsfree(node->fname);
+        sdsfree(node->lname);
+        sdsfree(node->organization);
+        sdsfree(node->job);
+        sdsfree(node->hphone);
+        sdsfree(node->wphone);
+        sdsfree(node->pmobile);
+        sdsfree(node->bmobile);
+        sdsfree(node->pemail);
+        sdsfree(node->bemail);
+        sdsfree(node->address);
+        sdsfree(node->zip);
+        sdsfree(node->city);
+        sdsfree(node->state);
+        sdsfree(node->country);
 
-        free((*node)); //destroy the node
-        NULLSET((*node)); //set *node pointer to NULL
+        free(node); //destroy the node
+        NULLSET(node); //set *node pointer to NULL
     }
 
 	return;
 }
 
-void destroyList(PhoneBook_t **list) {
+void destroyList(PhoneBook_t *list) {
     PhoneBook_t *nextPtr;
 
-    REWIND((*list)); //rewind the list up to the first node
-    while((*list)) { //walk thru complete contacts list
-        nextPtr = (*list)->next; //store point nextPtr to next node before destroy it
-
-		//free all sds strings in each node
-        sdsfree((*list)->db.fname);
-        sdsfree((*list)->db.lname);
-        sdsfree((*list)->db.organization);
-        sdsfree((*list)->db.job);
-        sdsfree((*list)->db.hphone);
-        sdsfree((*list)->db.wphone);
-        sdsfree((*list)->db.pmobile);
-        sdsfree((*list)->db.bmobile);
-        sdsfree((*list)->db.pemail);
-        sdsfree((*list)->db.bemail);
-        sdsfree((*list)->db.address);
-        sdsfree((*list)->db.zip);
-        sdsfree((*list)->db.city);
-        sdsfree((*list)->db.state);
-        sdsfree((*list)->db.country);
-
-        free((*list)); //now to (*list) elment can be free
-        (*list) = nextPtr; //step to next node
+    REWIND(list); //rewind the list up to the first node
+    while(list) { //walk thru complete contacts list
+        nextPtr = list->next; //store point nextPtr to next node before destroy it
+        deleteNode(&list, list); //delete node
+        list = nextPtr; //step to next node
     }
 
 	return;

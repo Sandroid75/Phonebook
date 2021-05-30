@@ -57,6 +57,38 @@
 #define KEY_CTRL_RIGHT 560
 #endif
 
+#define MATCH_NO_MATCH          0x0
+
+#define MATCH_HPHONE_HPONE      0x1
+#define MATCH_HPHONE_WPHONE     0x2
+#define MATCH_HPHONE_PMOBILE    0x4
+#define MATCH_HPHONE_BMOBILE    0x8
+
+#define MATCH_WPHONE_HPHONE     0x10
+#define MATCH_WPHONE_WPHONE     0x20
+#define MATCH_WPHONE_PMOBILE    0x40
+#define MATCH_WPHONE_BMOBILE    0x80
+
+#define MATCH_PMOBILE_HPHONE    0x100
+#define MATCH_PMOBILE_WPHONE    0x200
+#define MATCH_PMOBILE_PMOBILE   0x400
+#define MATCH_PMOBILE_BMOBILE   0x800
+
+#define MATCH_BMOBILE_HPHONE    0x1000
+#define MATCH_BMOBILE_WPHONE    0x2000
+#define MATCH_BMOBILE_PMOBILE   0x4000
+#define MATCH_BMOBILE_BMOBILE   0x8000
+
+#define MATCH_FIRST_HPHONE      0xF
+#define MATCH_FIRST_WPHONE      0xF0
+#define MATCH_FIRST_PMOBILE     0xF00
+#define MATCH_FIRST_BMOBILE     0xF000
+
+#define MATCH_SECOND_HPHONE     0x1111
+#define MATCH_SECOND_WPHONE     0x2222
+#define MATCH_SECOND_PMOBILE    0x4444
+#define MATCH_SECOND_BMOBILE    0x8888
+
 #define PAIR_STD      1
 #define PAIR_TITLE    2
 #define PAIR_EDIT     3
@@ -76,6 +108,8 @@
 #ifndef MAX_BUFFER
 #define MAX_BUFFER SDS_MAX_PREALLOC //max text array dimension
 #endif
+#define PHONE_FIELDS 20 //total numbers of fields
+#define MATCH_FIELDS 29 //total numbers of fields in match duplicates
 #define LTEXT 72 //for long field
 #define MTEXT 35 //for medium field
 #define STEXT 24 //for short field
@@ -197,9 +231,10 @@ int importCSV(sds csvFile);
 PhoneBook_t *newNode(DBnode_t node);
 PhoneBook_t *addNode(PhoneBook_t **list, DBnode_t node); //push the element of db in contacts list, return the pointer of the new node
 DBnode_t *initNode(PhoneBook_t *list);
+void deleteNode(PhoneBook_t **list, PhoneBook_t *del);
 int countList(PhoneBook_t *list);
-void destroyNode(DBnode_t **node);
-void destroyList(PhoneBook_t **list);
+void destroyNode(DBnode_t *node);
+void destroyList(PhoneBook_t *list);
 
 //functions.c
 void logfile(const char *fmt, ...);
@@ -213,15 +248,21 @@ int do_search(WINDOW *win, _Bool csv_export);	//main search function
 void AddMenu(WINDOW *win);	//add menu
 void UpdateMenu(WINDOW *win, PhoneBook_t *resultList, sds menuName, sds menuModify);
 void ImpExpMenu(WINDOW *win);
+void UtilityMenu(WINDOW *win);
+int FindDuplicates(WINDOW *win);
+unsigned int checkMatch(DBnode_t first, DBnode_t second);
+void mergeDuplicate(WINDOW *win, DBnode_t first, DBnode_t second, unsigned int check);
 sds *buildMenuItems(char **items);
 sds *buildMenuList(PhoneBook_t *fromList, int *nb_fileds);
 
 //ui_ncurses.c
 int flexMenu(WINDOW *win, sds *choices, char *menuName);
 int flexForm(WINDOW *win, DBnode_t *db, const char *menuName);
-int initField(FIELD **field, DBnode_t *db); //initialize all field with db
+FIELD **initField(DBnode_t *db); //initialize all field with db
 int set_field_digit(FIELD *field, int buf, int digit); //like set_field_buffer but int values instead of char * return like set_field_buffer()
 int field_digit(FIELD *field, int buf); //return the int value of filed_buffer
+int showMatch(WINDOW *win, DBnode_t first, DBnode_t second, unsigned int check);
+FIELD **initMatchField(DBnode_t first, DBnode_t second, unsigned int check);
 void print_in_middle(WINDOW *win, int y, const char *string, chtype color);
 int messageBox(WINDOW *win, int y, const char *string, chtype color);
 void printLabels(WINDOW *win, chtype color);

@@ -12,7 +12,7 @@ int flexMenu(WINDOW *win, sds *choices, char *menuName) {
 
     /* Create items */
     my_items = (ITEM **) calloc(n_choices, sizeof(ITEM *)); //calculate the size of memory to allocate for menu items
-    if(my_items == NULL) {
+    if(!my_items) {
         logfile("%s: error allocationg memory for items\n", __func__);
         return -1;
     }
@@ -23,7 +23,7 @@ int flexMenu(WINDOW *win, sds *choices, char *menuName) {
 
     /* Crate menu */
     my_menu = new_menu((ITEM **) my_items);
-    if(my_menu == NULL) {
+    if(!my_menu) {
         logfile("%s: error menu initialization\n", __func__);
         return -1;
     }
@@ -127,32 +127,24 @@ int flexForm(WINDOW *win, DBnode_t *db, const char *formName) {
     WINDOW *my_form_win, *derWindow;
     DBnode_t *ptrDB = db;
     int i, ch, field_validation, frows, fcols, insertMode = REQ_INS_MODE;
-    _Bool quit = false, store = false;
+    _Bool quit = false, store = false, status;
 
     curs_set(true); //show cursor
 
-    field = (FIELD **) calloc(20, sizeof(FIELD *)); //allocate memory for fields there are 19 fields+1 NULL
-    if(field == NULL) {
-        logfile("%s: error allocationg memory for fields\n", __func__);
-
-        return -1;
-    }
-
-    initField(field, ptrDB); // Initialize the fields and respective labels
-
-    if(field == NULL) { //check if field are well initialized
+    field = initField(ptrDB); // Initialize the fields and respective labels
+    if(!field) { //check if field are well initialized
         logfile("%s: error initializing fields\n", __func__);
         return -1;
     }
 
     my_form = new_form(field); // Create the form and post it
-    if(my_form == NULL) {
+    if(!my_form) {
         logfile("%s: error form initialization\n", __func__);
 
         return -1;
     }
 
-    scale_form(my_form, & frows, & fcols); // Calculate the area required for the form
+    scale_form(my_form, &frows, &fcols); // Calculate the area required for the form
     frows += 4; //to fit the title and draw horizontal lines
     fcols += 3; //to draw the vertical lines
 
@@ -257,21 +249,21 @@ int flexForm(WINDOW *win, DBnode_t *db, const char *formName) {
                 break;
 
             case KEY_F(1): //F1 key was pressed
-                for(i = 0, ch = 0; field[i]; i++) { //exlude the last field as NULL
-                    ch += field_status(field[i]); //check if field as been modified
+                for(i = 0, status  = false; field[i]; i++) { //exlude the last field as NULL
+                    status |= field_status(field[i]); //check if field as been modified
                 }
-                if(ch) { //one or more fields it been modified
+                if(status) { //one or more fields it been modified
                     store = true;
                 }
                 quit = true;
                 break;
 
             case KEY_ESC: //ESCape
-                for(i = 0, ch = 0; field[i]; i++) { //exlude the last field as NULL
-                    ch += field_status(field[i]); //check if field as been modified
+                for(i = 0, status = false; field[i]; i++) { //exlude the last field as NULL
+                    status |= field_status(field[i]); //check if field as been modified
                 }
-                if(ch) { //one or more fields it been modified
-                    ch = messageBox(win, 18, "press any key to save, N to discard changes or ESC to continuing editing...", COLOR_PAIR(PAIR_EDIT));
+                if(status) { //one or more fields it been modified
+                    ch = messageBox(win, 18, "any key to save, 'N' to discard changes or ESC to continuing editing...", COLOR_PAIR(PAIR_EDIT));
                     if(toupper(ch) == 'N') { //discard changes
                         quit = true;
                     } else if(ch != KEY_ESC) { //confirm changes end exit
@@ -290,7 +282,7 @@ int flexForm(WINDOW *win, DBnode_t *db, const char *formName) {
                 form_driver(my_form, ch);
                 break;
         }
-    } while(quit != true);
+    } while(!quit);
 
     if(store) { //if input data was confirmed by user
         i = 0;
@@ -320,15 +312,19 @@ int flexForm(WINDOW *win, DBnode_t *db, const char *formName) {
     }
     /* Unpost form and free the memory */
     unpost_form(my_form);
-    for(i = 0; field[i]; i++) {
+    free_form(my_form);
+
+    for(i = 0; i <= PHONE_FIELDS; i++) {
+        set_field_fore(field[i], A_NORMAL);
+        set_field_back(field[i], A_NORMAL);
         free_field(field[i]);
+        NULLSET(field[i]);
     }
     if(field) {
         free(field);
         NULLSET(field);
     }
 
-    free_form(my_form);
     wclear(my_form_win);
     wclear(win);
     wrefresh(my_form_win);
@@ -341,9 +337,17 @@ int flexForm(WINDOW *win, DBnode_t *db, const char *formName) {
     return (int) store; //return true if there is something to store otherwise false
 }
 
-int initField(FIELD **field, DBnode_t *db) {
+FIELD **initField(DBnode_t *db) {
+    FIELD **field;
     DBnode_t *ptrDB = db;
     int i, rows, start_bday;
+
+    field = (FIELD **) calloc(PHONE_FIELDS, sizeof(FIELD *)); //allocate memory for fields there are 19 fields+1 NULL
+    if(!field) {
+        logfile("%s: error allocationg memory for fields\n", __func__);
+
+        return NULL;
+    }
 
     /* Initialize the fields */
     i = 0; //for array index
@@ -385,10 +389,10 @@ int initField(FIELD **field, DBnode_t *db) {
     set_field_type(field[i++], TYPE_INTEGER, 0, 1, 12); //set valid numbers and precision of month from 1 to 12
     field[i] = new_field(1, 4, rows, STEXT * 2 + 21, 0, 0); //year
     set_field_type(field[i++], TYPE_INTEGER, 0, 1900, 2100); //set valid numbers and precision of year from 1900 to 2100
+    
     NULLSET(field[i]);
-    rows = i; //store the numbers of counted fields
 
-    for(i = 0; i < rows; i++) { //exlude the last field as NULL
+    for(i = 0; i < PHONE_FIELDS; i++) { //exlude the last field as NULL
         if(i) { //all fields except id field [0]
             field_opts_on(field[i], O_VISIBLE);
             field_opts_on(field[i], O_PUBLIC);
@@ -433,11 +437,11 @@ int initField(FIELD **field, DBnode_t *db) {
     set_field_digit(field[i++], 0, ptrDB->birthday.tm_mon);
     set_field_digit(field[i++], 0, ptrDB->birthday.tm_year);
 
-    for(i = 0; i < rows; i++) { //exlude the last field as NULL
+    for(i = 0; i < PHONE_FIELDS; i++) { //exlude the last field as NULL
         set_field_status(field[i], false); //set the field as no modified
     }
 
-    return rows; //return the numbers of fields
+    return field; //return pointer to field
 }
 
 int set_field_digit(FIELD *field, int buf, int digit) { //the equivalent of set_field_buffer for INTEGER field
@@ -459,10 +463,216 @@ int field_digit(FIELD *field, int buf) { //the equivalent of field_buffer for IN
     return atoi(field_buffer(field, buf)); //return the integer value converting filed_buffer string
 }
 
+int showMatch(WINDOW *win, DBnode_t first, DBnode_t second, unsigned int check) {
+    FIELD **field;
+    FORM *my_form;
+    WINDOW *my_form_win, *derWindow;
+    int i, ch, frows, fcols;
+    _Bool quit = false;
+
+    field = initMatchField(first, second, check);
+    if(!field) { //check if field are well initialized
+        logfile("%s: error initializing fields\n", __func__);
+        return -1;
+    }
+
+    my_form = new_form(field); // Create the form and post it
+    if(!my_form) {
+        logfile("%s: error form initialization\n", __func__);
+
+        return -1;
+    }
+
+    scale_form(my_form, &frows, &fcols); // Calculate the area required for the form
+    frows += 4; //to fit the title and draw horizontal lines
+    fcols += 3; //to draw the vertical lines
+
+    my_form_win = newwin(frows, fcols, 1, 2); // Create the window to be associated with the form
+    keypad(my_form_win, true);
+
+    set_form_win(my_form, my_form_win); // Set main window and sub window
+    derWindow = derwin(my_form_win, frows - 4, fcols - 2, 3, 1); //create a sub window from form window
+    set_form_sub(my_form, derWindow); //set menu sub window by derivated window
+
+    /* Print a border around the main window and print a title */
+    box(my_form_win, 0, 0); //print the frame of menu window
+    print_in_middle(my_form_win, 1, " Contacts with Matches ", COLOR_PAIR(PAIR_TITLE)); //print the title of the menu in the middle using color pair 1
+    mvwaddch(my_form_win, 2, 0, ACS_LTEE); //print the intersection at left
+    mvwhline(my_form_win, 2, 1, ACS_HLINE, fcols - 2); //print the division line between the title and menu
+    mvwaddch(my_form_win, 2, fcols - 1, ACS_RTEE); //print the intersection at right
+    mvwprintw(win, LINES - 2, 0, "Press F1 to edit matches, F4 to auto merge, ESC ignore duplicates");
+    mvwprintw(win, LINES - 1, 0, "Note: the duplication match is highlighted");
+    wrefresh(win);
+    refresh();
+
+    post_form(my_form); // Post the form with all fields
+    mvwhline(my_form_win, 8, 1, ACS_HLINE, fcols - 2); //print the division line between the two matches
+    wrefresh(my_form_win);
+
+    do {
+        form_driver(my_form, REQ_VALIDATION);
+        ch = wgetch(my_form_win);
+        switch (ch) {
+            case KEY_F(1):
+            case KEY_F(4):
+            case KEY_ESC:
+                quit = true;
+                break;        
+            default:
+                quit = false;
+                break;
+        }
+    } while(!quit);
+    /* Unpost form and free the memory */
+    unpost_form(my_form);
+    free_form(my_form);
+
+    for(i = 0; i < MATCH_FIELDS; i++) {
+        set_field_fore(field[i], A_NORMAL);
+        set_field_back(field[i], A_NORMAL);
+        free_field(field[i]);
+        NULLSET(field[i]);
+    }
+    if(field) {
+        free(field);
+        NULLSET(field);
+    }
+
+    wclear(my_form_win);
+    wclear(win);
+    wrefresh(my_form_win);
+    wrefresh(win);
+    delwin(derWindow);
+    delwin(my_form_win);
+
+    return ch; //return user choice
+}
+
+FIELD **initMatchField(DBnode_t first, DBnode_t second, unsigned int check) {
+    FIELD **field;
+    int index, rows;
+
+    field = (FIELD **) calloc(MATCH_FIELDS, sizeof(FIELD *)); //allocate memory for fields there are 28 fields+1 NULL
+    if(!field) {
+        logfile("%s: error allocationg memory for fields\n", __func__);
+
+        return NULL;
+    }
+
+    /* Initialize the fields */
+    index = 0; //for array index
+    rows = 0; //for row counting where the field are on same row there is 3 more cols as spaced
+    
+    field[index] = new_field(1, 3, rows, 1, 0, 0); //id label
+    set_field_buffer(field[index++], 0, "id:");
+    field[index] = new_field(1, 4, rows++, 5, 0, 0); //id
+    set_field_type(field[index], TYPE_INTEGER); //id index
+    set_field_digit(field[index++], 0, first.id);
+
+    field[index] = new_field(1, STEXT, rows++, 1, 0, 0); //fname label
+    set_field_buffer(field[index++], 0, "name");
+    field[index] = new_field(1, STEXT, rows--, 1, 0, 0); //fname
+    set_field_buffer(field[index++], 0, first.fname);
+
+    field[index] = new_field(1, STEXT, rows++, STEXT + 3, 0, 0); //lname label
+    set_field_buffer(field[index++], 0, "last name");
+    field[index] = new_field(1, STEXT, rows++, STEXT + 3, 0, 0); //lname
+    set_field_buffer(field[index++], 0, first.lname);
+
+    field[index] = new_field(1, PHONE, rows++, 1, 0, 0); //hphone label
+    set_field_buffer(field[index++], 0, "home phone");
+    field[index] = new_field(1, PHONE, rows--, 1, 0, 0); //hphone
+    set_field_buffer(field[index++], 0, first.hphone);
+    if(check & MATCH_FIRST_HPHONE) { set_field_back(field[index -1], A_REVERSE); }
+
+    field[index] = new_field(1, PHONE, rows++, PHONE + 3, 0, 0); //wphone
+    set_field_buffer(field[index++], 0, "work phone");
+    field[index] = new_field(1, PHONE, rows--, PHONE + 3, 0, 0); //wphone
+    set_field_buffer(field[index++], 0, first.wphone);
+    if(check & MATCH_FIRST_WPHONE) { set_field_back(field[index -1], A_REVERSE); }
+
+    field[index] = new_field(1, PHONE, rows++, PHONE * 2 + 7, 0, 0); //pmobile label
+    set_field_buffer(field[index++], 0, "personal mobile");
+    field[index] = new_field(1, PHONE, rows--, PHONE * 2 + 7, 0, 0); //pmobile
+    set_field_buffer(field[index++], 0, first.pmobile);
+    if(check & MATCH_FIRST_PMOBILE) { set_field_back(field[index -1], A_REVERSE); }
+
+    field[index] = new_field(1, PHONE, rows++, PHONE * 3 + 9, 0, 0); //bmobile label
+    set_field_buffer(field[index++], 0, "business mobile");
+    field[index] = new_field(1, PHONE, rows++, PHONE * 3 + 9, 0, 0); //bmobile
+    set_field_buffer(field[index++], 0, first.bmobile);
+    if(check & MATCH_FIRST_BMOBILE) { set_field_back(field[index -1], A_REVERSE); }
+    
+    rows++;
+
+    field[index] = new_field(1, 3, rows, 1, 0, 0); //id label
+    set_field_buffer(field[index++], 0, "id:");
+    field[index] = new_field(1, 4, rows++, 5, 0, 0); //id
+    set_field_type(field[index], TYPE_INTEGER); //id index
+    set_field_digit(field[index++], 0, second.id);
+
+    field[index] = new_field(1, STEXT, rows++, 1, 0, 0); //fname label
+    set_field_buffer(field[index++], 0, "name");
+    field[index] = new_field(1, STEXT, rows--, 1, 0, 0); //fname
+    set_field_buffer(field[index++], 0, second.fname);
+
+    field[index] = new_field(1, STEXT, rows++, STEXT + 3, 0, 0); //lname label
+    set_field_buffer(field[index++], 0, "last name");
+    field[index] = new_field(1, STEXT, rows++, STEXT + 3, 0, 0); //lname
+    set_field_buffer(field[index++], 0, second.lname);
+
+    field[index] = new_field(1, PHONE, rows++, 1, 0, 0); //hphone label
+    set_field_buffer(field[index++], 0, "home phone");
+    field[index] = new_field(1, PHONE, rows--, 1, 0, 0); //hphone
+    set_field_buffer(field[index++], 0, second.hphone);
+    if(check & MATCH_SECOND_HPHONE) { set_field_back(field[index -1], A_REVERSE); }
+
+    field[index] = new_field(1, PHONE, rows++, PHONE + 3, 0, 0); //wphone
+    set_field_buffer(field[index++], 0, "work phone");
+    field[index] = new_field(1, PHONE, rows--, PHONE + 3, 0, 0); //wphone
+    set_field_buffer(field[index++], 0, second.wphone);
+    if(check & MATCH_SECOND_WPHONE) { set_field_back(field[index -1], A_REVERSE); }
+
+    field[index] = new_field(1, PHONE, rows++, PHONE * 2 + 7, 0, 0); //pmobile label
+    set_field_buffer(field[index++], 0, "personal mobile");
+    field[index] = new_field(1, PHONE, rows--, PHONE * 2 + 7, 0, 0); //pmobile
+    set_field_buffer(field[index++], 0, second.pmobile);
+    if(check & MATCH_SECOND_PMOBILE) { set_field_back(field[index -1], A_REVERSE); }
+
+    field[index] = new_field(1, PHONE, rows++, PHONE * 3 + 9, 0, 0); //bmobile label
+    set_field_buffer(field[index++], 0, "business mobile");
+    field[index] = new_field(1, PHONE, rows++, PHONE * 3 + 9, 0, 0); //bmobile
+    set_field_buffer(field[index++], 0, second.bmobile);
+    if(check & MATCH_SECOND_BMOBILE) { set_field_back(field[index -1], A_REVERSE); }
+
+    NULLSET(field[index]);
+
+    for(index = 0; index < MATCH_FIELDS; index++) { //exlude the last field as NULL
+        if(index % 2) { //all fields
+            field_opts_on(field[index], O_VISIBLE);
+            field_opts_on(field[index], O_PUBLIC);
+            field_opts_on(field[index], O_ACTIVE);
+            set_field_fore(field[index], A_BOLD);
+        } else { //all label
+            set_field_fore(field[index], A_NORMAL);
+            set_field_back(field[index], A_NORMAL);
+            //set_field_type(field[index], TYPE_ALPHA);        
+            //set_field_opts(field[index], O_VISIBLE | O_PUBLIC | O_AUTOSKIP);
+            //set_field_just(field[index], JUSTIFY_RIGHT);
+        }
+    }
+    
+    for(index = 0; index < MATCH_FIELDS; index++) { //exlude the last field as NULL
+        set_field_status(field[index], false); //set the field as no modified
+    }
+    
+    return field;
+}
+
 void print_in_middle(WINDOW *win, int y, const char *string, chtype color) {
     int x, length;
 
-    if(win == NULL)
+    if(!win)
         win = stdscr;
 
     length = (int) strlen(string);
@@ -482,7 +692,7 @@ int messageBox(WINDOW *win, int y, const char *string, chtype color) {
 
     prevCurs = curs_set(false);
 
-    if(win == NULL)
+    if(!win)
         win = stdscr;
 
     length = (int) strlen(string) + 6;

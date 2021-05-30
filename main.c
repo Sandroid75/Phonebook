@@ -44,7 +44,7 @@ int main(void) { //Phonebook main function
 
     curs_set(true); // show cursor
     endwin(); //close ncurses
-    destroyList(&contacts); //free memory routine for PhoneBook_t contacts
+    destroyList(contacts); //free memory routine for PhoneBook_t contacts
     logfile("%s: *** END SESSION ***\n", __func__);
 
     return 0;

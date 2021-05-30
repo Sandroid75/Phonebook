@@ -8,7 +8,7 @@ void logfile(const char *format, ...) {
 	static unsigned int errcount = 0; //each session start from 0
 
 	fd = fopen(LOGFILE, "a+"); // a+ (create + append) option will allow appending which is useful in a log file
-	if(fd == NULL) {
+	if(!fd) {
 		fprintf(stderr, "ERROR APPEND/WRITE LOG FILE\n");
 		sleep(3);
 
