@@ -1,14 +1,15 @@
+
 #include "phonebook.h"
 
 int flexMenu(WINDOW *win, sds *choices, char *menuName) {
     ITEM **my_items;
     MENU *my_menu;
     WINDOW *my_menu_win, *derWindow;
-    int n_choices, mrows, mcols, i, ch, index;
+    int n_choices, mrows, mcols, i, ch, index, xpos;
     _Bool quit = false;
 
     for(i = 0; sdslen(choices[i]); i++); //count the numbers of choices
-    n_choices = i + 1; //set the numbres of choics array
+    n_choices = i +1; //set the numbres of choics array
 
     /* Create items */
     my_items = (ITEM **) calloc(n_choices, sizeof(ITEM *)); //calculate the size of memory to allocate for menu items
@@ -35,7 +36,9 @@ int flexMenu(WINDOW *win, sds *choices, char *menuName) {
     mrows += 4; //to fit the title and draw horizontal lines
     mcols += 3; //to draw the vertical lines
 
-    my_menu_win = newwin(mrows, mcols, 1, 2); // Create the window to be associated with the menu
+    xpos = getmaxx(win); //get current window console surface dimension
+    xpos =  (xpos / 2) - (mcols / 2);
+    my_menu_win = newwin(mrows, mcols, 1, xpos); // Create the window to be associated with the menu
     keypad(my_menu_win, true); //initialize the keypad for menu window
 
     set_menu_win(my_menu, my_menu_win); // Set main window and sub window
@@ -55,6 +58,7 @@ int flexMenu(WINDOW *win, sds *choices, char *menuName) {
     wrefresh(win);
     refresh();
 
+    logo(win, 12);
     post_menu(my_menu); // Post the menu
     wrefresh(my_menu_win);
 
@@ -746,6 +750,32 @@ void printLabels(WINDOW *win, chtype color) {
     mvwprintw(win, row, STEXT * 2 + 18, "mm");
     mvwprintw(win, row, STEXT * 2 + 22, "yyyy");
     wattroff(win, color);
+
+    return;
+}
+
+void logo(WINDOW *win, int y) {
+    print_in_middle(win, y++, "      _____  _                      ____              _         ", COLOR_PAIR(PAIR_LOGO));
+    print_in_middle(win, y++, "     |  __ \\| |                    |  _ \\            | |        ", COLOR_PAIR(PAIR_LOGO));
+    print_in_middle(win, y++, "     | |__| | |__   ___  _ __   ___| |_| | ___   ___ | | __     ", COLOR_PAIR(PAIR_LOGO));
+    print_in_middle(win, y++, "     |  ___/| '_ \\ / _ \\| '_ \\ / _ \\  _ < / _ \\ / _ \\| |/ /     ", COLOR_PAIR(PAIR_LOGO));
+    print_in_middle(win, y++, "     | |    | | | | |_| | | | |  __/ |_| | |_| | |_| |   <      ", COLOR_PAIR(PAIR_LOGO));
+    print_in_middle(win, y++, "     |_|    |_| |_|\\___/|_| |_|\\___|____/ \\___/ \\___/|_|\\_\\     ", COLOR_PAIR(PAIR_LOGO));
+    print_in_middle(win, y++, "                                                                ", COLOR_PAIR(PAIR_LOGO));
+    wrefresh(win);
+
+    return;
+}
+
+void wrectangle(WINDOW *win, int y1, int x1, int y2, int x2) {
+    mvwhline(win, y1, x1, 0, x2-x1);
+    mvwhline(win, y2, x1, 0, x2-x1);
+    mvwvline(win, y1, x1, 0, y2-y1);
+    mvwvline(win, y1, x2, 0, y2-y1);
+    mvwaddch(win, y1, x1, ACS_ULCORNER);
+    mvwaddch(win, y2, x1, ACS_LLCORNER);
+    mvwaddch(win, y1, x2, ACS_URCORNER);
+    mvwaddch(win, y2, x2, ACS_LRCORNER);
 
     return;
 }

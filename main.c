@@ -4,6 +4,7 @@
  * Usage: ./phonebook
  *
  */
+#include <locale.h>
 #include "phonebook.h"
 
 PhoneBook_t *contacts = NULL; //Global contatcts phonebook
@@ -26,6 +27,7 @@ int main(void) { //Phonebook main function
     init_pair(PAIR_TITLE, COLOR_RED, COLOR_CYAN); //initializing 2 as a color pair for titles
     init_pair(PAIR_EDIT, COLOR_BLUE, COLOR_WHITE); //initializing 3 as a color pair for editing
     init_pair(PAIR_MODIFIED, COLOR_YELLOW, COLOR_BLUE); //initializing 4 as a color pair for modified
+    init_pair(PAIR_LOGO, COLOR_RED, COLOR_BLACK); //initializing 4 as a color pair for modified
 
     curs_set(false); // hide cursor
     timeout(100); //dalay for system
@@ -45,7 +47,8 @@ int main(void) { //Phonebook main function
     curs_set(true); // show cursor
     endwin(); //close ncurses
     destroyList(contacts); //free memory routine for PhoneBook_t contacts
+    
     logfile("%s: *** END SESSION ***\n", __func__);
 
-    return 0;
+    return EXIT_SUCCESS;
 }

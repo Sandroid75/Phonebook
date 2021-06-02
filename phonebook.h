@@ -1,33 +1,29 @@
+#ifndef _PHONEBOOK_H_
+#define _PHONEBOOK_H_
+
 #define _GNU_SOURCE
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <sqlite3.h>
-#include <ncurses.h>
 #include <malloc.h>
+#include <ncurses.h>
 #include <menu.h>
 #include <form.h>
 #include <time.h>
 #include <fcntl.h>
-//#include <unistd.h>
+#include <unistd.h>
 #include <sys/stat.h>
 #include <sys/sendfile.h>
-#include <locale.h>
-#include <assert.h>
-//#define __USE_GNU //strcasestr();
-//#define __STDC_WANT_LIB_EXT1__ 1 //memset_s()
 #include <string.h>
 #include <ctype.h>
-#include <stdarg.h>
 #include <errno.h>
 #include "../sds/sds.h"
 #include "../sds/sds_extra.h"
-#include "../libcsv/csv.h"
 
 //macro deinitions
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
-#define PREV(list)       { list = list->prev; }
-#define NEXT(list)       { list = list->next; }
+#define PREV(list)       list = list->prev
+#define NEXT(list)       list = list->next
 #define REWIND(list)    while(list && list->prev) { PREV(list); }
 #define FORWARD(list)   while(list && list->next) { NEXT(list); }
 #define NULLSET(pointer) if(pointer) { pointer = NULL; }
@@ -93,6 +89,7 @@
 #define PAIR_TITLE    2
 #define PAIR_EDIT     3
 #define PAIR_MODIFIED 4
+#define PAIR_LOGO     5
 
 #define LOGFILE "phonebook.log" //LOG file name
 #define DB "phonebook.sqlite3"  //database file name
@@ -266,3 +263,7 @@ FIELD **initMatchField(DBnode_t first, DBnode_t second, unsigned int check);
 void print_in_middle(WINDOW *win, int y, const char *string, chtype color);
 int messageBox(WINDOW *win, int y, const char *string, chtype color);
 void printLabels(WINDOW *win, chtype color);
+void logo(WINDOW *win, int y);
+void wrectangle(WINDOW *win, int y1, int x1, int y2, int x2);
+
+#endif

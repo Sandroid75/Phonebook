@@ -1,3 +1,5 @@
+#include <sqlite3.h>
+#include "../libcsv/csv.h"
 #include "phonebook.h"
 
 int callback(void *NotUsed, int argc, char **argv, char **azColName) {

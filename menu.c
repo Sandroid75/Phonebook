@@ -58,7 +58,8 @@ void MainMenu(WINDOW *win) { //main menu
                 break;
             case 6: //Menu Exit is selected
             case 0: //ESCape key is pressed
-                ch = messageBox(win, 10, " press Y to quit... ", COLOR_PAIR(PAIR_EDIT));
+                logo(win, 5);
+                ch = messageBox(win, 15, " press Y to quit... ", COLOR_PAIR(PAIR_EDIT));
                 if(toupper(ch) == 'Y') {
                     quit = true;
                 }
@@ -145,7 +146,7 @@ int do_search(WINDOW *win, _Bool csv_export) {
     }
 
     REWIND(contacts);
-    for(nb_records = 0, ptr = contacts; ptr; ptr = ptr->next) { //search if with input filters match with some contacts
+    for(nb_records = 0, ptr = contacts; ptr; NEXT(ptr)) { //search if with input filters match with some contacts
         found = false; //reset to false for every cycle that means every record
         if(sdscasesds(ptr->db.fname,        dbFlex->fname) >= 0)        found = true; //for better readability I have aligned the code
         if(sdscasesds(ptr->db.lname,        dbFlex->lname) >= 0)        found = true; //if only one of the filed match with criteria
@@ -276,7 +277,7 @@ void UpdateMenu(WINDOW *win, PhoneBook_t *resultList, sds menuName, sds menuModi
             REWIND(contacts); //in order to be sure that contacts pointer go to head of list
             if(resultList != contacts) { //if the function is called from MainMenu() this is false
                 id = ptr->db.id; //store the value of id
-                for(ptr = contacts; ptr && (ptr->db.id) != id; ptr = ptr->next); //walk contacts up to id
+                for(ptr = contacts; ptr && (ptr->db.id) != id; NEXT(ptr)); //walk contacts up to id
             }
             if(!ptr) {
                 logfile("%s: The menu item %d selected is out of list\n", __func__, choice);
@@ -513,7 +514,7 @@ void mergeDuplicate(WINDOW *win, DBnode_t first, DBnode_t second, unsigned int c
     switch(ch) {
         case KEY_F(1):
             REWIND(contacts);
-            for(ptr = contacts; ptr; ptr = ptr->next) { //walk to the enteire list
+            for(ptr = contacts; ptr; NEXT(ptr)) { //walk to the enteire list
                 if(ptr->db.id == first.id || ptr->db.id == second.id) { //find the duplicated contacts
                     addNode(&resultList, ptr->db); //add the every single duplicate to temp list
                 }
@@ -550,7 +551,7 @@ void mergeDuplicate(WINDOW *win, DBnode_t first, DBnode_t second, unsigned int c
             destroyNode(dbMerge); //destroy the node
 
             REWIND(contacts);
-            for(ptr = contacts; ptr; ptr = ptr->next) { //walk to the enteire list
+            for(ptr = contacts; ptr; NEXT(ptr)) { //walk to the enteire list
                 if(ptr->db.id == first.id || ptr->db.id == second.id) { //find the duplicated contacts
                     ptr->db.delete = true; //set the original contacto to delete
                 }
