@@ -64,10 +64,12 @@ void db_log(const char *funcname, char *comment, DBnode_t *db) {
 	return;
 }
 
-int filecopy(const char* source, const char* destination) {
-    int input, output, result = -1;
+ssize_t filecopy(const char* source, const char* destination) {
+    int input, output;
     struct stat fileinfo = { 0 };
+	ssize_t result = -1L;
     off_t bytesCopied = 0;
+	char *errnomsg;
 
     if((input = open(source, O_RDONLY)) == -1) { //try to open source file
         logfile("%s: Error opening '%s'\n", __func__, source);
@@ -82,7 +84,45 @@ int filecopy(const char* source, const char* destination) {
     }
 
     fstat(input, &fileinfo); //get the file attributes
+	errno = 0;
     result = sendfile(output, input, &bytesCopied, fileinfo.st_size); //sendfile will work with non-socket output (i.e. regular file) on Linux 2.6.33+
+
+	switch (errno) {
+		case EAGAIN:
+			errnomsg = "Nonblocking I/O has been selected using O_NONBLOCK and the write would block.";
+			break;
+		case EBADF:
+			errnomsg = "The input file was not opened for reading or the output file was not opened for writing.";
+			break;
+		case EFAULT:
+			errnomsg = "Bad address.";
+			break;
+		case EINVAL:
+			errnomsg = "Descriptor is not valid or locked, or an mmap(2)-like operation is not available for in_fd, or count is negative.";
+			break;
+		case EIO:
+			errnomsg = "Unspecified error while reading from in_fd.";
+			break;
+		case ENOMEM:
+			errnomsg = "Insufficient memory to read from in_fd.";
+			break;
+		case EOVERFLOW:
+			errnomsg = "count is too large, the operation would result in exceeding the maximum size of either the input file or the output file.";
+			break;
+		case ESPIPE:
+			errnomsg = "offset is not NULL but the input file is not seekable.";
+			break;
+		case 0:
+		default:
+			errnomsg = NULL;
+			break;
+	}
+	if(errno) {
+		logfile("%s: Error sendfile() returned errno %d %s\n", __func__, errno, errnomsg);
+	}
+	if(result != fileinfo.st_size) {
+		logfile("%s: Not all data copied, writed %ld on %ld requested\n", __func__, result, fileinfo.st_size);
+	}
 
     close(input); //close the handle
     close(output); //close the handle

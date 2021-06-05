@@ -1,4 +1,3 @@
-
 #include "phonebook.h"
 
 int flexMenu(WINDOW *win, sds *choices, char *menuName) {
@@ -36,8 +35,8 @@ int flexMenu(WINDOW *win, sds *choices, char *menuName) {
     mrows += 4; //to fit the title and draw horizontal lines
     mcols += 3; //to draw the vertical lines
 
-    xpos = getmaxx(win); //get current window console surface dimension
-    xpos =  (xpos / 2) - (mcols / 2);
+    xpos = getmaxx(win); //get current window max x
+    xpos =  (xpos / 2) - (mcols / 2); //determinate the start x position in order to center the menu
     my_menu_win = newwin(mrows, mcols, 1, xpos); // Create the window to be associated with the menu
     keypad(my_menu_win, true); //initialize the keypad for menu window
 
@@ -768,14 +767,19 @@ void logo(WINDOW *win, int y) {
 }
 
 void wrectangle(WINDOW *win, int y1, int x1, int y2, int x2) {
-    mvwhline(win, y1, x1, 0, x2-x1);
-    mvwhline(win, y2, x1, 0, x2-x1);
-    mvwvline(win, y1, x1, 0, y2-y1);
-    mvwvline(win, y1, x2, 0, y2-y1);
+    int width, height;
+
+    width = x2 - x1;
+    height = y2 - y1;
+    mvwhline(win, y1, x1, 0, width);
+    mvwhline(win, y2, x1, 0, width);
+    mvwvline(win, y1, x1, 0, height);
+    mvwvline(win, y1, x2, 0, height);
     mvwaddch(win, y1, x1, ACS_ULCORNER);
     mvwaddch(win, y2, x1, ACS_LLCORNER);
     mvwaddch(win, y1, x2, ACS_URCORNER);
     mvwaddch(win, y2, x2, ACS_LRCORNER);
+    wrefresh(win);
 
     return;
 }

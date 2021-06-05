@@ -352,31 +352,38 @@ void ImpExpMenu(WINDOW *win) { //search menu
                 } else {
                     asprintf(&message, " No records imported from '%s' ", csvFile); //build message string
                 }
-                messageBox(win, 15, message, COLOR_PAIR(PAIR_MODIFIED));
+                wattron(win, A_BLINK);
+                print_in_middle(win, 11, " Updating DataBase file, please waiting... ", COLOR_PAIR(PAIR_EDIT));
+                wattroff(win, A_BLINK);
+                wrectangle(win, 10, 15, 12, 63);
                 if(rows > 0) {
                     rows = write_db(false); //write the imported contacts list to sqlite file database
                     logfile("%s: Imported %d rows in '%s' DataBase\n", __func__, rows, DB);
                 } else {
                     logfile("%s: %s\n", __func__, message); //write result to log file
                 }
+                wclear(win);
+                wrefresh(win);
+                messageBox(win, 15, message, COLOR_PAIR(PAIR_MODIFIED));
                 break;
             case 3: //Export to CSV
-                rows = write_csv(DB_CSV, contacts); //write or append records to DB_CSV
-                if(rows > 0) { //check if records are exported
-                    asprintf(&message, " Exported %d records to '%s' successfully ", rows, DB_CSV); //build message string
-                } else {
-                    asprintf(&message, " No records exported to '%s' ", DB_CSV); //build message string
-                }
-                messageBox(win, 15, message, COLOR_PAIR(PAIR_MODIFIED));
-                logfile("%s: %s\n", __func__, message); //write result to log file
-                break;
+                csvFile = sdscpy(csvFile, DB_CSV); //assign the standard csv file name
             case 4: //Export to Google CSV
-                rows = write_csv(GOOGLE_CSV, contacts); //write or append records to GOOGLE_CSV
-                if(rows > 0) { //check if records are exported
-                    asprintf(&message, " Exported %d records to '%s' successfully ", rows, GOOGLE_CSV); //build message string
-                } else {
-                    asprintf(&message, " No records exported to '%s' ", GOOGLE_CSV); //build message string
+                if(sdslen(csvFile) == 0) { //check if the file name is already set
+                    csvFile = sdscpy(csvFile, GOOGLE_CSV); //assign the standard Google csv file name
                 }
+                wattron(win, A_BLINK);
+                print_in_middle(win, 11, " Writing CSV file, please waiting... ", COLOR_PAIR(PAIR_EDIT));
+                wattroff(win, A_BLINK);
+                wrectangle(win, 10, 18, 12, 60);
+                rows = write_csv(csvFile, contacts); //write or append records to DB_CSV
+                if(rows > 0) { //check if records are exported
+                    asprintf(&message, " Exported %d records to '%s' successfully ", rows, csvFile); //build message string
+                } else {
+                    asprintf(&message, " No records exported to '%s' ", csvFile); //build message string
+                }
+                wclear(win);
+                wrefresh(win);
                 messageBox(win, 15, message, COLOR_PAIR(PAIR_MODIFIED));
                 logfile("%s: %s\n", __func__, message); //write result to log file
                 break;
@@ -405,7 +412,7 @@ void ImpExpMenu(WINDOW *win) { //search menu
 void UtilityMenu(WINDOW *win) { //search menu
     _Bool quit = false; //check if option is valid
     sds *choices, menuName = sdsnew(" Utility Menu ");
-    char *items[] = { "Sort contacts by First Name", "Sort contacts by Last Name", "Find Duplicates", "Back to Main Menu", NULL };
+    char *items[] = { "Sort contacts by First Name A->Z", "Sort contacts by First Name Z->A", "Sort contacts by Last Name A->Z", "Sort contacts by Last Name Z->A", "Find Duplicates", "Back to Main Menu", NULL };
 
     REWIND(contacts);
     if(!contacts) { //if no contacts in list
@@ -424,15 +431,28 @@ void UtilityMenu(WINDOW *win) { //search menu
 
     //start the operations
     while(!quit) {
-        switch (flexMenu(win, choices, menuName)) {
-            case 1:
+        switch(flexMenu(win, choices, menuName)) {
+            case 1: //Sort by First Name A->Z
+                SortList(win, contacts, FirstNameAZ);
+                messageBox(win, 10, " Sorting done by First Name A->Z... ", COLOR_PAIR(PAIR_MODIFIED));
                 break;
-            case 2:
+            case 2: //Sort by First Name Z->A
+                SortList(win, contacts, FirstNameZA);
+                messageBox(win, 10, " Sorting done by First Name Z->A... ", COLOR_PAIR(PAIR_MODIFIED));
                 break;
-            case 3: //back menu was selected
+            case 3: //Sort by Last Name A->Z
+                SortList(win, contacts, LastNameAZ);
+                messageBox(win, 10, " Sorting done by Last Name A->Z... ", COLOR_PAIR(PAIR_MODIFIED));
+                break;
+            case 4: //Sort by Last Name A->A
+                SortList(win, contacts, LastNameZA);
+                messageBox(win, 10, " Sorting done by Last Name Z->A... ", COLOR_PAIR(PAIR_MODIFIED));
+                break;
+            case 5: //Find Duplicate
                 FindDuplicates(win);
                 break;
             case 0: //ESCape was pressed
+            case 6:
                 quit = true;
                 break; //back to Main Menu
             default:
@@ -441,7 +461,6 @@ void UtilityMenu(WINDOW *win) { //search menu
         wrefresh(win);
         wclear(win);
     }
-
     sdsfreesplitres(choices, ARRAY_SIZE(items)); //free memory
     sdsfree(menuName); //free memory
 

@@ -85,7 +85,8 @@ int read_db(void) { //read existing SQL database or creat a new if doesn't exist
 
 int write_db(_Bool update) {
     PhoneBook_t *ptr, *pnext;
-    int bytes, records = 0;
+    int records = 0;
+    ssize_t bytes;
     sds sql;
 
     if(!contacts) {
@@ -95,14 +96,14 @@ int write_db(_Bool update) {
     }
 
     if(access(DB, R_OK) == 0) { //if the file DataBase exist
-        remove(DBAK); //delete the sqlitefile backup file
+        unlink(DBAK); //delete the sqlitefile backup file
         bytes = filecopy(DB, DBAK); //copy the current db file in backup file before write it
         if(bytes < 0) {
             logfile("%s: Error copying '%s' to '%s'\n", __func__, DB, DBAK);
 
             return -1;
         }
-        logfile("%s: %d byte copyed from '%s' to '%s'\n", __func__, bytes, DB, DBAK);
+        logfile("%s: %ld bytes copyed from '%s' to '%s'\n", __func__, (long) bytes, DB, DBAK);
         sql = sdsempty(); //init the sql statement for existing DataBase
     } else { //the file DataBase exist
         sql = sdsnew(DEFAULT_SQL_TABLE); //no DataBase exist, than create new table using default schema
@@ -127,6 +128,8 @@ int write_db(_Bool update) {
     if(records) {
         if(doSQLstatement(sql) != SQLITE_OK) { //Execute the SQL statement and check that everything went well
             logfile("%s: Error %s %d records in the DataBase\n", __func__, update ? "updating" : "writing", records);
+        } else {
+            logfile("%s: %d records %s in the DataBase\n", __func__, records, update ? "updated" : "writed");
         }
     }
     sdsfree(sql); //free memory

@@ -28,6 +28,7 @@ int main(void) { //Phonebook main function
     init_pair(PAIR_EDIT, COLOR_BLUE, COLOR_WHITE); //initializing 3 as a color pair for editing
     init_pair(PAIR_MODIFIED, COLOR_YELLOW, COLOR_BLUE); //initializing 4 as a color pair for modified
     init_pair(PAIR_LOGO, COLOR_RED, COLOR_BLACK); //initializing 4 as a color pair for modified
+    init_pair(PAIR_ERROR, COLOR_YELLOW, COLOR_RED); //initializing 4 as a color pair for modified
 
     curs_set(false); // hide cursor
     timeout(100); //dalay for system

@@ -90,6 +90,7 @@
 #define PAIR_EDIT     3
 #define PAIR_MODIFIED 4
 #define PAIR_LOGO     5
+#define PAIR_ERROR    6
 
 #define LOGFILE "phonebook.log" //LOG file name
 #define DB "phonebook.sqlite3"  //database file name
@@ -135,28 +136,27 @@
                             "Year INTEGER);"
 
 #define UPDATE_SQL_ROW      "UPDATE Contacts SET " \
-                            "FirstName = '%s', " \
-                            "LastName = '%s', " \
-                            "Organization = '%s', " \
-                            "Job = '%s', " \
-                            "HPhone = '%s', " \
-                            "WPhone = '%s', " \
-                            "PMobile = '%s', " \
-                            "BMobile = '%s', " \
-                            "PEmail = '%s', " \
-                            "BEmail = '%s', " \
-                            "Address = '%s', " \
-                            "Zip = '%s', " \
-                            "City = '%s', " \
-                            "State = '%s', " \
-                            "Country = '%s', " \
+                            "FirstName = \"%s\", " \
+                            "LastName = \"%s\", " \
+                            "Organization = \"%s\", " \
+                            "Job = \"%s\", " \
+                            "HPhone = \"%s\", " \
+                            "WPhone = \"%s\", " \
+                            "PMobile = \"%s\", " \
+                            "BMobile = \"%s\", " \
+                            "PEmail = \"%s\", " \
+                            "BEmail = \"%s\", " \
+                            "Address = \"%s\", " \
+                            "Zip = \"%s\", " \
+                            "City = \"%s\", " \
+                            "State = \"%s\", " \
+                            "Country = \"%s\", " \
                             "mDay = %d, " \
                             "Mon = %d, " \
                             "Year = %d " \
                             "WHERE ID = %d;"
 
 #define INSERT_SQL_VALUE "INSERT INTO Contacts VALUES (%u, \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", %d, %d, %d);"
-//#define INSERT_SQL_VALUE "INSERT INTO Contacts VALUES (%u, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d, %d, %d);"
 #define SELECT_FROM_CONTACTS "SELECT * FROM Contacts"
 #define DELETE_SQL_RECORD_ID "DELETE FROM Contacts WHERE ID = %d;"
 
@@ -232,11 +232,20 @@ void deleteNode(PhoneBook_t **list, PhoneBook_t *del);
 int countList(PhoneBook_t *list);
 void destroyNode(DBnode_t *node);
 void destroyList(PhoneBook_t *list);
+void nodeDBswap(PhoneBook_t *left, PhoneBook_t *right);
+PhoneBook_t *partition(PhoneBook_t *head, PhoneBook_t *tail, _Bool compare(PhoneBook_t *first, PhoneBook_t *second));
+void QuickSort(PhoneBook_t *head, PhoneBook_t *tail, _Bool compare(PhoneBook_t *first, PhoneBook_t *second));
+_Bool FirstNameAZ(PhoneBook_t *first, PhoneBook_t *second);
+_Bool FirstNameZA(PhoneBook_t *first, PhoneBook_t *second);
+_Bool LastNameAZ(PhoneBook_t *first, PhoneBook_t *second);
+_Bool LastNameZA(PhoneBook_t *first, PhoneBook_t *second);
+void RenumberListID(PhoneBook_t *list);
+void SortList(WINDOW *win, PhoneBook_t *list, _Bool compare(PhoneBook_t *first, PhoneBook_t *second));
 
 //functions.c
 void logfile(const char *fmt, ...);
 void db_log(const char *funcname, char *comment, DBnode_t *db);
-int filecopy(const char* source, const char* destination);
+ssize_t filecopy(const char* source, const char* destination);
 
 //menu.c
 void MainMenu(WINDOW *win);	//main menu
