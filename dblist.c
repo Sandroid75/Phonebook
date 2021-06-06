@@ -193,93 +193,66 @@ void destroyList(PhoneBook_t *list) {
 }
 
 void nodeDBswap(PhoneBook_t *left, PhoneBook_t *right) {
-    DBnode_t tmp;
+    DBnode_t tmp = left->db; //assign temporary db values to tmp
 
-    tmp = left->db;
-    left->db = right->db;
-    right->db = tmp;
-
-    left->db.modified = right->db.modified = true;
+    left->db = right->db; //store right db values to left
+    right->db = tmp; //store tmp (ex left) db values to right
 
     return;
 }
 
 PhoneBook_t *partition(PhoneBook_t *head, PhoneBook_t *tail, _Bool compare(PhoneBook_t *first, PhoneBook_t *second)) {
-	PhoneBook_t *ptr, *prevHead = head->prev;
+	PhoneBook_t *ptr, *prevHead = head->prev; //assign the value before head
 
-	for(ptr = head; ptr != tail; NEXT(ptr)) {
-		if(compare(ptr, tail)) {
-			prevHead = prevHead ? prevHead->next : head;
+	for(ptr = head; ptr != tail; NEXT(ptr)) { //walk from head to tail passed pointers
+		if(compare(ptr, tail)) { //compare ASCII string for ordering
+			prevHead = prevHead ? prevHead->next : head; //check if prevHead is true assign next otherwise assign head
 
-			nodeDBswap(prevHead, ptr);
+			nodeDBswap(prevHead, ptr); //swap the db values
 		}
 	}
-	prevHead = prevHead ? prevHead->next : head;
-	nodeDBswap(prevHead, tail);
+	prevHead = prevHead ? prevHead->next : head; //check if prevHead is true assign next otherwise assign head
+	nodeDBswap(prevHead, tail); //swap the db values
 
-	return prevHead;
+	return prevHead; //return the pointer
 }
 
 void QuickSort(PhoneBook_t *head, PhoneBook_t *tail, _Bool compare(PhoneBook_t *first, PhoneBook_t *second)) {
-	if(tail && head != tail && head != tail->next) {
-        PhoneBook_t *ptr = partition(head, tail, compare);
-		QuickSort(head, ptr->prev, compare);
-		QuickSort(ptr->next, tail, compare);
+    PhoneBook_t *ptr;
+
+	if(tail && head != tail && head != tail->next) { //check the conditions
+        ptr = partition(head, tail, compare); //partitioning the list
+		QuickSort(head, ptr->prev, compare); //recursive order by head
+		QuickSort(ptr->next, tail, compare); //recursive order by tail
 	}
 
     return;
 }
 
 _Bool FirstNameAZ(PhoneBook_t *first, PhoneBook_t *second) {
-    return (strcasecmp(first->db.fname, second->db.fname) < 0) ? true : false;
+    return (strcasecmp(first->db.fname, second->db.fname) < 0);
 }
 
 _Bool FirstNameZA(PhoneBook_t *first, PhoneBook_t *second) {
-    return (strcasecmp(first->db.fname, second->db.fname) > 0) ? true : false;
+    return (strcasecmp(first->db.fname, second->db.fname) > 0);
 }
 
 _Bool LastNameAZ(PhoneBook_t *first, PhoneBook_t *second) {
-    return (strcasecmp(first->db.lname, second->db.lname) < 0) ? true : false;
+    return (strcasecmp(first->db.lname, second->db.lname) < 0);
 }
 
 _Bool LastNameZA(PhoneBook_t *first, PhoneBook_t *second) {
-    return (strcasecmp(first->db.lname, second->db.lname) > 0) ? true : false;
+    return (strcasecmp(first->db.lname, second->db.lname) > 0);
 }
 
 void RenumberListID(PhoneBook_t *list) {
     PhoneBook_t *ptr = list;
 
     REWIND(ptr);
-    for(int index = 1; ptr; index++, NEXT(ptr)) {
-        ptr->db.id = index;
+    for(int index = 1; ptr; index++, NEXT(ptr)) { //walk thru the enteire list
+        ptr->db.id = index; //assign the right index to id
+        ptr->db.modified = true; //set modified to true for each node
     }
-
-    return;
-}
-
-void SortList(WINDOW *win, PhoneBook_t *list, _Bool compare(PhoneBook_t *first, PhoneBook_t *second)) {
-    PhoneBook_t *head, *tail;
-    int nb_records;
-
-    head = tail = list; //point head and tail to list
-    REWIND(head); //move head to the begin of the list
-    FORWARD(tail); //move tail to the end of the list
-    wattron(win, A_BLINK);
-    print_in_middle(win, 11, " Sorting contacts list, please waiting... ", COLOR_PAIR(PAIR_EDIT));
-    wattroff(win, A_BLINK);
-    wrectangle(win, 10, 16, 12, 63);
-    QuickSort(head, tail, compare); //compute sorting with compare() criteria
-    RenumberListID(list); //renumber the ID of the enteire list
-    wclear(win);
-    wrefresh(win);
-    wattron(win, A_BLINK);
-    print_in_middle(win, 11, " Updating DataBase file, please waiting... ", COLOR_PAIR(PAIR_EDIT));
-    wattroff(win, A_BLINK);
-    wrectangle(win, 10, 15, 12, 63);
-    nb_records = write_db(true); //Updating database
-    logfile("%s: Updated %d records in %s DataBase after sorting\n", __func__, nb_records, DB);
-    wclear(win);
-    wrefresh(win);
 
     return;
 }

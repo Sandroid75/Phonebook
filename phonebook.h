@@ -6,9 +6,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
-#include <ncurses.h>
-#include <menu.h>
-#include <form.h>
+#include <ncursesw/ncurses.h>
+#include <ncursesw/menu.h>
+#include <ncursesw/form.h>
+#include <locale.h>
 #include <time.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -165,7 +166,9 @@
 #define CSV_GOOGLE_HEADER "Name,Given Name,Additional Name,Family Name,Yomi Name,Given Name Yomi,Additional Name Yomi,Family Name Yomi,Name Prefix,Name Suffix,Initials,Nickname,Short Name,Maiden Name,Birthday,Gender,Location,Billing Information,Directory Server,Mileage,Occupation,Hobby,Sensitivity,Priority,Subject,Notes,Language,Photo,Group Membership,E-mail 1 - Type,E-mail 1 - Value,E-mail 2 - Type,E-mail 2 - Value,E-mail 3 - Type,E-mail 3 - Value,Phone 1 - Type,Phone 1 - Value,Phone 2 - Type,Phone 2 - Value,Phone 3 - Type,Phone 3 - Value,Phone 4 - Type,Phone 4 - Value,Phone 5 - Type,Phone 5 - Value,Address 1 - Type,Address 1 - Formatted,Address 1 - Street,Address 1 - City,Address 1 - PO Box,Address 1 - Region,Address 1 - Postal Code,Address 1 - Country,Address 1 - Extended Address,Organization 1 - Type,Organization 1 - Name,Organization 1 - Yomi Name,Organization 1 - Title,Organization 1 - Department,Organization 1 - Symbol,Organization 1 - Location,Organization 1 - Job Description,Website 1 - Type,Website 1 - Value,Website 2 - Type,Website 2 - Value,Custom Field 1 - Type,Custom Field 1 - Value\r\n"
 #define CSV_GOOGLE_SCHEMA "%s %s,%s,,%s,,,,,,,,,,,%s,,,,,,,,,,,,,,* myContacts,,%s,,,,,Mobile,%s,,%s,,%s,,,,,,,%s,%s,,%s,%s,%s,,,%s,,%s,,,,,,,,,,\r\n"
 
+#ifndef NCURSES_WIDECHAR
 #define SPECIAL_CHARS "ÀÁÂÃÄÅĀĂĄÆàáâãäåāăąæÇĆČçćčĎĐđÈÉÊËĒĖĘĚĔèéêëēėęěĕĢĞģğÎÍÌĮĪÏîíìıįīïĶķŁĻĹłļĺŇŅŃÑňņńñÕÔÓÒŐØÖŒõôóòőøöœŔŘŕřŚŠŞśšşÞŤȚŢþțţÜÛÚÙŲŰŮŪüûúùųűůūµÝŸýÿŹŻŽźżž"
+#endif
 
 //char *Months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", };
 
@@ -240,7 +243,6 @@ _Bool FirstNameZA(PhoneBook_t *first, PhoneBook_t *second);
 _Bool LastNameAZ(PhoneBook_t *first, PhoneBook_t *second);
 _Bool LastNameZA(PhoneBook_t *first, PhoneBook_t *second);
 void RenumberListID(PhoneBook_t *list);
-void SortList(WINDOW *win, PhoneBook_t *list, _Bool compare(PhoneBook_t *first, PhoneBook_t *second));
 
 //functions.c
 void logfile(const char *fmt, ...);
@@ -260,6 +262,7 @@ unsigned int checkMatch(DBnode_t first, DBnode_t second);
 void mergeDuplicate(WINDOW *win, DBnode_t first, DBnode_t second, unsigned int check);
 sds *buildMenuItems(char **items);
 sds *buildMenuList(PhoneBook_t *fromList, int *nb_fileds);
+void SortList(WINDOW *win, PhoneBook_t *list, _Bool compare(PhoneBook_t *first, PhoneBook_t *second));
 
 //ui_ncurses.c
 int flexMenu(WINDOW *win, sds *choices, char *menuName);

@@ -324,9 +324,9 @@ void UpdateMenu(WINDOW *win, PhoneBook_t *resultList, sds menuName, sds menuModi
 
 void ImpExpMenu(WINDOW *win) { //search menu
     _Bool quit = false; //check if option is valid
-    int rows;
+    int rows, midx;
     sds  *choices, menuName = sdsnew(" Import & Export Menu ");
-    char *items[] = { "Import from CSV", "Import from Google CSV", "Export to CSV", "Export to Google CSV", "Back to Main Menu", NULL };
+    char *message, *csvFile, *items[] = { "Import from CSV", "Import from Google CSV", "Export to CSV", "Export to Google CSV", "Back to Main Menu", NULL };
 
     choices = buildMenuItems(items); //build the menu items
     if(!choices) {
@@ -337,14 +337,14 @@ void ImpExpMenu(WINDOW *win) { //search menu
 
     //start the operations
     while(!quit) {
-        sds csvFile = sdsempty(); //create an empty sds string
-        char *message = NULL; //create a NULL string
+        midx = getmaxx(win) /2;
+        csvFile = message = NULL; //set NULL
         switch(flexMenu(win, choices, menuName)) {
             case 1: //Import from CSV
-                csvFile = sdscpy(csvFile, DB_CSV); //assign the standard csv file name
+                csvFile = DB_CSV; //assign the standard csv file name
             case 2: //Import from Google CSV
-                if(sdslen(csvFile) == 0) { //check if the file name is already set
-                    csvFile = sdscpy(csvFile, GOOGLE_CSV); //assign the standard Google csv file name
+                if(!csvFile) { //check if the file name is already set
+                    csvFile = GOOGLE_CSV; //assign the standard Google csv file name
                 }
                 rows = importCSV(csvFile); //import the contacts from csv
                 if(rows > 0) { //check if records are exported
@@ -353,9 +353,9 @@ void ImpExpMenu(WINDOW *win) { //search menu
                     asprintf(&message, " No records imported from '%s' ", csvFile); //build message string
                 }
                 wattron(win, A_BLINK);
-                print_in_middle(win, 11, " Updating DataBase file, please waiting... ", COLOR_PAIR(PAIR_EDIT));
+                print_in_middle(win, 11, " Updating DataBase file, please wait... ", COLOR_PAIR(PAIR_EDIT));
                 wattroff(win, A_BLINK);
-                wrectangle(win, 10, 15, 12, 63);
+                wrectangle(win, 10, midx -22, 12, midx +21);
                 if(rows > 0) {
                     rows = write_db(false); //write the imported contacts list to sqlite file database
                     logfile("%s: Imported %d rows in '%s' DataBase\n", __func__, rows, DB);
@@ -367,15 +367,15 @@ void ImpExpMenu(WINDOW *win) { //search menu
                 messageBox(win, 15, message, COLOR_PAIR(PAIR_MODIFIED));
                 break;
             case 3: //Export to CSV
-                csvFile = sdscpy(csvFile, DB_CSV); //assign the standard csv file name
+                csvFile = DB_CSV; //assign the standard csv file name
             case 4: //Export to Google CSV
-                if(sdslen(csvFile) == 0) { //check if the file name is already set
-                    csvFile = sdscpy(csvFile, GOOGLE_CSV); //assign the standard Google csv file name
+                if(!csvFile) { //check if the file name is already set
+                    csvFile = GOOGLE_CSV; //assign the standard Google csv file name
                 }
                 wattron(win, A_BLINK);
                 print_in_middle(win, 11, " Writing CSV file, please waiting... ", COLOR_PAIR(PAIR_EDIT));
                 wattroff(win, A_BLINK);
-                wrectangle(win, 10, 18, 12, 60);
+                wrectangle(win, 10, midx -22, 12, midx +21);
                 rows = write_csv(csvFile, contacts); //write or append records to DB_CSV
                 if(rows > 0) { //check if records are exported
                     asprintf(&message, " Exported %d records to '%s' successfully ", rows, csvFile); //build message string
@@ -397,7 +397,6 @@ void ImpExpMenu(WINDOW *win) { //search menu
         if(message) {
             free(message); //realese the memory
         }
-        sdsfree(csvFile); //realese the memory
         wrefresh(win);
         wclear(win);
     }
@@ -627,9 +626,11 @@ sds *buildMenuList(PhoneBook_t *fromList, int *nb_fileds) {
 
     for(i = 0; ptr; i++) { //walk thru the list
         fname = sdsnew(ptr->db.fname);
-        fname = sdschremove(fname, SPECIAL_CHARS); //remove special chars from sds
         lname = sdsnew(ptr->db.lname);
+#ifndef NCURSES_WIDECHAR        
+        fname = sdschremove(fname, SPECIAL_CHARS); //remove special chars from sds
         lname = sdschremove(lname, SPECIAL_CHARS); //remove special chars from sds
+#endif
 
         menuList[i] = (sds) sdscatprintf(sdsempty(), "%s %s", fname, lname); //build the menu list
         sdsfree(fname);
@@ -640,4 +641,29 @@ sds *buildMenuList(PhoneBook_t *fromList, int *nb_fileds) {
     (*nb_fileds) = i; //assign the total menu items
 
     return (sds *) menuList;
+}
+
+void SortList(WINDOW *win, PhoneBook_t *list, _Bool compare(PhoneBook_t *first, PhoneBook_t *second)) {
+    PhoneBook_t *head, *tail;
+    int nb_records, midx;
+
+    head = tail = list; //point head and tail to list
+    REWIND(head); //move head to the begin of the list
+    FORWARD(tail); //move tail to the end of the list
+    QuickSort(head, tail, compare); //compute sorting with compare() criteria
+    RenumberListID(list); //renumber the ID of the enteire list
+
+    wattron(win, A_BLINK); //set text blinking ON
+    print_in_middle(win, 11, " Updating DataBase file, please wait... ", COLOR_PAIR(PAIR_EDIT));
+    wattroff(win, A_BLINK); //set text blinking OFF
+    midx = getmaxx(win) /2;
+    wrectangle(win, 10, midx -22, 12, midx +21);
+
+    nb_records = write_db(true); //Updating database
+    logfile("%s: Updated %d records in %s DataBase after sorting\n", __func__, nb_records, DB);
+
+    wclear(win);
+    wrefresh(win);
+
+    return;
 }

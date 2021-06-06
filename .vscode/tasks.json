@@ -21,9 +21,9 @@
 				"-L../libcsv/",
 				"-lcsv",
 				"-lpthread",
-				"-lncurses",
-				"-lmenu",
-				"-lform",
+				"-lncursesw",
+				"-lmenuw",
+				"-lformw",
 				"-lsqlite3"
 			],
 			"options": {

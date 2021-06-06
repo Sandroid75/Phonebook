@@ -4,7 +4,6 @@
  * Usage: ./phonebook
  *
  */
-#include <locale.h>
 #include "phonebook.h"
 
 PhoneBook_t *contacts = NULL; //Global contatcts phonebook
