@@ -367,120 +367,120 @@ void csv_cb_field(void *s, size_t len, void *data) { // callback fuction called 
 
     if (((Counts_t *)data)->isGoogle) {       // if parsing Google CSV file
         switch (((Counts_t *)data)->fields) { // check the field number
-        case 2:                               // FirstName
-            ((Counts_t *)data)->db->fname = sdsnewlen(field, STEXT);
-            break;
-        case 4: // LastName
-            ((Counts_t *)data)->db->lname = sdsnewlen(field, STEXT);
-            break;
-        case 15: // Birthday '1975-03-28'
-            tokens = sdssplitlen(field, len, "-", 1, &count);
-            ((Counts_t *)data)->db->birthday.tm_year = atoi(tokens[0]);
-            ((Counts_t *)data)->db->birthday.tm_mon = atoi(tokens[1]);
-            ((Counts_t *)data)->db->birthday.tm_mday = atoi(tokens[2]);
-            sdsfreesplitres(tokens, count);
-            break;
-        case 31: // Pemail
-            ((Counts_t *)data)->db->pemail = sdsnewlen(field, MTEXT);
-            break;
-        case 37:                             // Pmobile
-            field = sdschremove(field, " "); // remove spaces form field sds string
-            ((Counts_t *)data)->db->pmobile = sdsnewlen(field, PHONE);
-            break;
-        case 39:                             // Wphone
-            field = sdschremove(field, " "); // remove spaces form field sds string
-            ((Counts_t *)data)->db->wphone = sdsnewlen(field, PHONE);
-            break;
-        case 41:                             // Hphone
-            field = sdschremove(field, " "); // remove spaces form field sds string
-            ((Counts_t *)data)->db->hphone = sdsnewlen(field, PHONE);
-            break;
-        case 48: // Address
-            ((Counts_t *)data)->db->address = sdsnewlen(field, LTEXT);
-            break;
-        case 49: // City
-            ((Counts_t *)data)->db->city = sdsnewlen(field, MTEXT);
-            break;
-        case 51: // State
-            ((Counts_t *)data)->db->state = sdsnewlen(field, STATE);
-            break;
-        case 52: // zip
-            ((Counts_t *)data)->db->zip = sdsnewlen(field, ZIP);
-            break;
-        case 53: // Country
-            ((Counts_t *)data)->db->country = sdsnewlen(field, STEXT);
-            break;
-        case 56: // Organizzation
-            ((Counts_t *)data)->db->organization = sdsnewlen(field, MTEXT);
-            break;
-        case 58: // Job
-            ((Counts_t *)data)->db->job = sdsnewlen(field, STEXT);
-            break;
+            case 2:                           // FirstName
+                ((Counts_t *)data)->db->fname = sdsnewlen(field, STEXT);
+                break;
+            case 4: // LastName
+                ((Counts_t *)data)->db->lname = sdsnewlen(field, STEXT);
+                break;
+            case 15: // Birthday '1975-03-28'
+                tokens = sdssplitlen(field, len, "-", 1, &count);
+                ((Counts_t *)data)->db->birthday.tm_year = atoi(tokens[0]);
+                ((Counts_t *)data)->db->birthday.tm_mon = atoi(tokens[1]);
+                ((Counts_t *)data)->db->birthday.tm_mday = atoi(tokens[2]);
+                sdsfreesplitres(tokens, count);
+                break;
+            case 31: // Pemail
+                ((Counts_t *)data)->db->pemail = sdsnewlen(field, MTEXT);
+                break;
+            case 37:                             // Pmobile
+                field = sdschremove(field, " "); // remove spaces form field sds string
+                ((Counts_t *)data)->db->pmobile = sdsnewlen(field, PHONE);
+                break;
+            case 39:                             // Wphone
+                field = sdschremove(field, " "); // remove spaces form field sds string
+                ((Counts_t *)data)->db->wphone = sdsnewlen(field, PHONE);
+                break;
+            case 41:                             // Hphone
+                field = sdschremove(field, " "); // remove spaces form field sds string
+                ((Counts_t *)data)->db->hphone = sdsnewlen(field, PHONE);
+                break;
+            case 48: // Address
+                ((Counts_t *)data)->db->address = sdsnewlen(field, LTEXT);
+                break;
+            case 49: // City
+                ((Counts_t *)data)->db->city = sdsnewlen(field, MTEXT);
+                break;
+            case 51: // State
+                ((Counts_t *)data)->db->state = sdsnewlen(field, STATE);
+                break;
+            case 52: // zip
+                ((Counts_t *)data)->db->zip = sdsnewlen(field, ZIP);
+                break;
+            case 53: // Country
+                ((Counts_t *)data)->db->country = sdsnewlen(field, STEXT);
+                break;
+            case 56: // Organizzation
+                ((Counts_t *)data)->db->organization = sdsnewlen(field, MTEXT);
+                break;
+            case 58: // Job
+                ((Counts_t *)data)->db->job = sdsnewlen(field, STEXT);
+                break;
 
-        default: // do nothing
-            break;
+            default: // do nothing
+                break;
         }
     } else {                                  // parsing PhoneBook CSV file
         switch (((Counts_t *)data)->fields) { // check the field number
-        case 1:                               // id
-            break;
-        case 2: // FirstName
-            ((Counts_t *)data)->db->fname = sdsnew(field);
-            break;
-        case 3: // LastName
-            ((Counts_t *)data)->db->lname = sdsnew(field);
-            break;
-        case 4: // Organization
-            ((Counts_t *)data)->db->organization = sdsnew(field);
-            break;
-        case 5: // Job
-            ((Counts_t *)data)->db->job = sdsnew(field);
-            break;
-        case 6: // HPhone
-            ((Counts_t *)data)->db->hphone = sdsnew(field);
-            break;
-        case 7: // WPhone
-            ((Counts_t *)data)->db->wphone = sdsnew(field);
-            break;
-        case 8: // PMobile
-            ((Counts_t *)data)->db->pmobile = sdsnew(field);
-            break;
-        case 9: // BMobile
-            ((Counts_t *)data)->db->bmobile = sdsnew(field);
-            break;
-        case 10: // PEmail
-            ((Counts_t *)data)->db->pemail = sdsnew(field);
-            break;
-        case 11: // BEmail
-            ((Counts_t *)data)->db->bemail = sdsnew(field);
-            break;
-        case 12: // Address
-            ((Counts_t *)data)->db->address = sdsnew(field);
-            break;
-        case 13: // Zip
-            ((Counts_t *)data)->db->zip = sdsnew(field);
-            break;
-        case 14: // City
-            ((Counts_t *)data)->db->city = sdsnew(field);
-            break;
-        case 15: // State
-            ((Counts_t *)data)->db->state = sdsnew(field);
-            break;
-        case 16: // Country
-            ((Counts_t *)data)->db->country = sdsnew(field);
-            break;
-        case 17: // mDay
-            ((Counts_t *)data)->db->birthday.tm_mday = atoi(field);
-            break;
-        case 18: // Mon
-            ((Counts_t *)data)->db->birthday.tm_mon = atoi(field);
-            break;
-        case 19: // Year
-            ((Counts_t *)data)->db->birthday.tm_year = atoi(field);
-            break;
+            case 1:                           // id
+                break;
+            case 2: // FirstName
+                ((Counts_t *)data)->db->fname = sdsnew(field);
+                break;
+            case 3: // LastName
+                ((Counts_t *)data)->db->lname = sdsnew(field);
+                break;
+            case 4: // Organization
+                ((Counts_t *)data)->db->organization = sdsnew(field);
+                break;
+            case 5: // Job
+                ((Counts_t *)data)->db->job = sdsnew(field);
+                break;
+            case 6: // HPhone
+                ((Counts_t *)data)->db->hphone = sdsnew(field);
+                break;
+            case 7: // WPhone
+                ((Counts_t *)data)->db->wphone = sdsnew(field);
+                break;
+            case 8: // PMobile
+                ((Counts_t *)data)->db->pmobile = sdsnew(field);
+                break;
+            case 9: // BMobile
+                ((Counts_t *)data)->db->bmobile = sdsnew(field);
+                break;
+            case 10: // PEmail
+                ((Counts_t *)data)->db->pemail = sdsnew(field);
+                break;
+            case 11: // BEmail
+                ((Counts_t *)data)->db->bemail = sdsnew(field);
+                break;
+            case 12: // Address
+                ((Counts_t *)data)->db->address = sdsnew(field);
+                break;
+            case 13: // Zip
+                ((Counts_t *)data)->db->zip = sdsnew(field);
+                break;
+            case 14: // City
+                ((Counts_t *)data)->db->city = sdsnew(field);
+                break;
+            case 15: // State
+                ((Counts_t *)data)->db->state = sdsnew(field);
+                break;
+            case 16: // Country
+                ((Counts_t *)data)->db->country = sdsnew(field);
+                break;
+            case 17: // mDay
+                ((Counts_t *)data)->db->birthday.tm_mday = atoi(field);
+                break;
+            case 18: // Mon
+                ((Counts_t *)data)->db->birthday.tm_mon = atoi(field);
+                break;
+            case 19: // Year
+                ((Counts_t *)data)->db->birthday.tm_year = atoi(field);
+                break;
 
-        default: // do nothing
-            break;
+            default: // do nothing
+                break;
         }
     }
 

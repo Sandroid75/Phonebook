@@ -121,39 +121,39 @@ int flexMenu(WINDOW *win, sds *choices, char *menuName) {
         index = item_index(current_item(my_menu)) + 1; // set the current item index
         ch = wgetch(my_menu_win);                      // wait for user input
         switch (ch) {
-        case KEY_BTAB: // BACK TAB
-        case KEY_UP:
-            menu_driver(my_menu, REQ_UP_ITEM); // go to prev menu item
-            break;
-        case KEY_TAB: // TAB KEY
-        case KEY_DOWN:
-            menu_driver(my_menu, REQ_DOWN_ITEM); // go to next menu item
-            break;
-        case KEY_HOME:                            // HOME KEY
-            menu_driver(my_menu, REQ_FIRST_ITEM); // go up to the first item
-            break;
-        case KEY_END:                            // END KEY
-            menu_driver(my_menu, REQ_LAST_ITEM); // go up to the last item
-            break;
-        case KEY_PPAGE:                          // PREVIOUS PAGE
-            menu_driver(my_menu, REQ_SCR_UPAGE); // go to prev menu page
-            break;
-        case KEY_NPAGE:                          // NEXT PAGE
-            menu_driver(my_menu, REQ_SCR_DPAGE); // go to next menu page
-            break;
-        case KEY_SPACE:  // SPACE
-        case KEY_ENTER:  // ENTER numeric pad
-        case KEY_RETURN: // ENTER
-            quit = true; // quitting
-            break;
-        case KEY_ESC:    // ESC
-            index = 0;   // nothing selected
-            quit = true; // quitting
-            break;
-        case KEY_DC:     // CANC
-            index *= -1; // invert the sign
-            quit = true; // quitting
-            break;
+            case KEY_BTAB: // BACK TAB
+            case KEY_UP:
+                menu_driver(my_menu, REQ_UP_ITEM); // go to prev menu item
+                break;
+            case KEY_TAB: // TAB KEY
+            case KEY_DOWN:
+                menu_driver(my_menu, REQ_DOWN_ITEM); // go to next menu item
+                break;
+            case KEY_HOME:                            // HOME KEY
+                menu_driver(my_menu, REQ_FIRST_ITEM); // go up to the first item
+                break;
+            case KEY_END:                            // END KEY
+                menu_driver(my_menu, REQ_LAST_ITEM); // go up to the last item
+                break;
+            case KEY_PPAGE:                          // PREVIOUS PAGE
+                menu_driver(my_menu, REQ_SCR_UPAGE); // go to prev menu page
+                break;
+            case KEY_NPAGE:                          // NEXT PAGE
+                menu_driver(my_menu, REQ_SCR_DPAGE); // go to next menu page
+                break;
+            case KEY_SPACE:  // SPACE
+            case KEY_ENTER:  // ENTER numeric pad
+            case KEY_RETURN: // ENTER
+                quit = true; // quitting
+                break;
+            case KEY_ESC:    // ESC
+                index = 0;   // nothing selected
+                quit = true; // quitting
+                break;
+            case KEY_DC:     // CANC
+                index *= -1; // invert the sign
+                quit = true; // quitting
+                break;
         }
         if (is_wintouched(my_menu_win)) {
             touchwin(my_menu_win);
@@ -235,111 +235,111 @@ int flexForm(WINDOW *win, DBnode_t *db, const char *formName) {
         ch = wgetch(my_form_win);
         form_driver(my_form, insertMode); // set current insert mode status
         switch (ch) {
-        case KEY_TAB:    // TAB
-        case KEY_ENTER:  // ENTER numeric pad
-        case KEY_RETURN: // ENTER numeric pad
-        case KEY_DOWN:
-            if (field_validation == E_OK) {
-                set_field_back(current_field(my_form), A_UNDERLINE | A_NORMAL);
-                form_driver(my_form, REQ_NEXT_FIELD);
-                if (field_status(current_field(my_form)) == true) // is the field modified?
-                    form_driver(my_form, REQ_END_LINE);           // if true go to end of field line
-                set_field_back(current_field(my_form), A_UNDERLINE | A_REVERSE);
-            }
-            break;
-
-        case KEY_BTAB: // back tab
-        case KEY_UP:
-            if (field_validation == E_OK) {
-                set_field_back(current_field(my_form), A_UNDERLINE | A_NORMAL);
-                form_driver(my_form, REQ_PREV_FIELD);
-                if (field_status(current_field(my_form)) == true) // is the field modified?
-                    form_driver(my_form, REQ_END_LINE);           // if true go to end of field line
-                set_field_back(current_field(my_form), A_UNDERLINE | A_REVERSE);
-            }
-            break;
-
-        case KEY_LEFT: // move cursor to left
-            form_driver(my_form, REQ_PREV_CHAR);
-            break;
-
-        case KEY_RIGHT: // move cursor to right
-            form_driver(my_form, REQ_NEXT_CHAR);
-            break;
-
-        case KEY_HOME: // move cursor to begin of field
-            form_driver(my_form, REQ_BEG_FIELD);
-            break;
-
-        case KEY_END: // move cursor to end of field
-            form_driver(my_form, REQ_END_FIELD);
-            break;
-
-        case KEY_CTRL_LEFT: // move cursot to prev word
-            form_driver(my_form, REQ_PREV_WORD);
-            break;
-
-        case KEY_CTRL_RIGHT: // move cursot to next word
-            form_driver(my_form, REQ_NEXT_WORD);
-            break;
-
-        case KEY_CTRL_BS: // delete prev word
-            form_driver(my_form, REQ_PREV_WORD);
-            form_driver(my_form, REQ_NEXT_WORD);
-            form_driver(my_form, REQ_DEL_WORD);
-            break;
-
-        case KEY_CTRL_DEL: // delete next word
-            form_driver(my_form, REQ_DEL_WORD);
-            break;
-
-        case KEY_BACKSPACE: // Delete the char before cursor
-            form_driver(my_form, REQ_DEL_PREV);
-            break;
-
-        case KEY_DC: // Delete the char under the cursor
-            form_driver(my_form, REQ_DEL_CHAR);
-            break;
-
-        case KEY_IC: // toggle insert char mode
-            insertMode = insertMode == REQ_INS_MODE ? REQ_OVL_MODE : REQ_INS_MODE;
-            char *modemsg = insertMode == REQ_INS_MODE ? "OVL" : "INS";
-            mvwprintw(my_form_win, 1, getmaxx(my_form_win) - 6, modemsg); // print the insert mode in win_body
-            break;
-
-        case KEY_F(1):                                   // F1 key was pressed
-            for (i = 0, status = false; field[i]; i++) { // exlude the last field as NULL
-                status |= field_status(field[i]);        // check if field as been modified
-            }
-            if (status) { // one or more fields it been modified
-                store = true;
-            }
-            quit = true;
-            break;
-
-        case KEY_ESC:                                    // ESCape
-            for (i = 0, status = false; field[i]; i++) { // exlude the last field as NULL
-                status |= field_status(field[i]);        // check if field as been modified
-            }
-            if (status) { // one or more fields it been modified
-                ch = messageBox(win, 18, "any key to save, 'N' to discard changes or ESC to continuing editing...", COLOR_PAIR(PAIR_EDIT));
-                if (toupper(ch) == 'N') { // discard changes
-                    quit = true;
-                } else if (ch != KEY_ESC) { // confirm changes end exit
-                    store = true;
-                    quit = true;
-                } else { // ESCape was pressed back to editing form
-                    post_form(my_form);
-                    wrefresh(my_form_win);
+            case KEY_TAB:    // TAB
+            case KEY_ENTER:  // ENTER numeric pad
+            case KEY_RETURN: // ENTER numeric pad
+            case KEY_DOWN:
+                if (field_validation == E_OK) {
+                    set_field_back(current_field(my_form), A_UNDERLINE | A_NORMAL);
+                    form_driver(my_form, REQ_NEXT_FIELD);
+                    if (field_status(current_field(my_form)) == true) // is the field modified?
+                        form_driver(my_form, REQ_END_LINE);           // if true go to end of field line
+                    set_field_back(current_field(my_form), A_UNDERLINE | A_REVERSE);
                 }
-            } else { // no fields was modified than exit without ask
-                quit = true;
-            }
-            break;
+                break;
 
-        default:
-            form_driver(my_form, ch);
-            break;
+            case KEY_BTAB: // back tab
+            case KEY_UP:
+                if (field_validation == E_OK) {
+                    set_field_back(current_field(my_form), A_UNDERLINE | A_NORMAL);
+                    form_driver(my_form, REQ_PREV_FIELD);
+                    if (field_status(current_field(my_form)) == true) // is the field modified?
+                        form_driver(my_form, REQ_END_LINE);           // if true go to end of field line
+                    set_field_back(current_field(my_form), A_UNDERLINE | A_REVERSE);
+                }
+                break;
+
+            case KEY_LEFT: // move cursor to left
+                form_driver(my_form, REQ_PREV_CHAR);
+                break;
+
+            case KEY_RIGHT: // move cursor to right
+                form_driver(my_form, REQ_NEXT_CHAR);
+                break;
+
+            case KEY_HOME: // move cursor to begin of field
+                form_driver(my_form, REQ_BEG_FIELD);
+                break;
+
+            case KEY_END: // move cursor to end of field
+                form_driver(my_form, REQ_END_FIELD);
+                break;
+
+            case KEY_CTRL_LEFT: // move cursot to prev word
+                form_driver(my_form, REQ_PREV_WORD);
+                break;
+
+            case KEY_CTRL_RIGHT: // move cursot to next word
+                form_driver(my_form, REQ_NEXT_WORD);
+                break;
+
+            case KEY_CTRL_BS: // delete prev word
+                form_driver(my_form, REQ_PREV_WORD);
+                form_driver(my_form, REQ_NEXT_WORD);
+                form_driver(my_form, REQ_DEL_WORD);
+                break;
+
+            case KEY_CTRL_DEL: // delete next word
+                form_driver(my_form, REQ_DEL_WORD);
+                break;
+
+            case KEY_BACKSPACE: // Delete the char before cursor
+                form_driver(my_form, REQ_DEL_PREV);
+                break;
+
+            case KEY_DC: // Delete the char under the cursor
+                form_driver(my_form, REQ_DEL_CHAR);
+                break;
+
+            case KEY_IC: // toggle insert char mode
+                insertMode = insertMode == REQ_INS_MODE ? REQ_OVL_MODE : REQ_INS_MODE;
+                char *modemsg = insertMode == REQ_INS_MODE ? "OVL" : "INS";
+                mvwprintw(my_form_win, 1, getmaxx(my_form_win) - 6, modemsg); // print the insert mode in win_body
+                break;
+
+            case KEY_F(1):                                   // F1 key was pressed
+                for (i = 0, status = false; field[i]; i++) { // exlude the last field as NULL
+                    status |= field_status(field[i]);        // check if field as been modified
+                }
+                if (status) { // one or more fields it been modified
+                    store = true;
+                }
+                quit = true;
+                break;
+
+            case KEY_ESC:                                    // ESCape
+                for (i = 0, status = false; field[i]; i++) { // exlude the last field as NULL
+                    status |= field_status(field[i]);        // check if field as been modified
+                }
+                if (status) { // one or more fields it been modified
+                    ch = messageBox(win, 18, "any key to save, 'N' to discard changes or ESC to continuing editing...", COLOR_PAIR(PAIR_EDIT));
+                    if (toupper(ch) == 'N') { // discard changes
+                        quit = true;
+                    } else if (ch != KEY_ESC) { // confirm changes end exit
+                        store = true;
+                        quit = true;
+                    } else { // ESCape was pressed back to editing form
+                        post_form(my_form);
+                        wrefresh(my_form_win);
+                    }
+                } else { // no fields was modified than exit without ask
+                    quit = true;
+                }
+                break;
+
+            default:
+                form_driver(my_form, ch);
+                break;
         }
     } while (!quit);
 
@@ -587,14 +587,14 @@ int showMatch(WINDOW *win, DBnode_t first, DBnode_t second, unsigned int check) 
         form_driver(my_form, REQ_VALIDATION);
         ch = wgetch(my_form_win);
         switch (ch) {
-        case KEY_F(1):
-        case KEY_F(4):
-        case KEY_ESC:
-            quit = true;
-            break;
-        default:
-            quit = false;
-            break;
+            case KEY_F(1):
+            case KEY_F(4):
+            case KEY_ESC:
+                quit = true;
+                break;
+            default:
+                quit = false;
+                break;
         }
     } while (!quit);
     /* Unpost form and free the memory */
