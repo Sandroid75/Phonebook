@@ -58,8 +58,8 @@
 
 #define _GNU_SOURCE
 
-#include "../sds/sds.h"
-#include "../sds/sds_extra.h"
+#include "../../sds/sds.h"
+#include "../../sds/sds_extra.h"
 #include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -81,17 +81,17 @@
 #define PREV(list) list = list->prev
 #define NEXT(list) list = list->next
 #define REWIND(list)             \
-    while (list && list->prev) { \
-        PREV(list);              \
-    }
+	while (list && list->prev) { \
+		PREV(list);              \
+	}
 #define FORWARD(list)            \
-    while (list && list->next) { \
-        NEXT(list);              \
-    }
+	while (list && list->next) { \
+		NEXT(list);              \
+	}
 #define NULLSET(pointer) \
-    if (pointer) {       \
-        pointer = NULL;  \
-    }
+	if (pointer) {       \
+		pointer = NULL;  \
+	}
 
 #ifndef KEY_SPACE
 #define KEY_SPACE 32
@@ -157,11 +157,11 @@
 #define PAIR_LOGO 5
 #define PAIR_ERROR 6
 
-#define LOGFILE "phonebook.log"      // LOG file name
-#define DB "phonebook.sqlite3"       // database file name
-#define DBAK "phonebook.bak"         // database BAK file name
-#define DB_CSV "phonebook.csv"       // CSV file name
-#define GOOGLE_CSV "contacts.csv"    // Google CSV file name
+#define LOGFILE "phonebook.log" // LOG file name
+#define DB "phonebook.sqlite3" // database file name
+#define DBAK "phonebook.bak" // database BAK file name
+#define DB_CSV "phonebook.csv" // CSV file name
+#define GOOGLE_CSV "contacts.csv" // Google CSV file name
 #define SEARCH_CSV "search_dump.csv" // search CSV dump file name
 
 #define REGEXP_PHONE "^\\+?[0-9]+ "
@@ -173,53 +173,53 @@
 #endif
 #define PHONE_FIELDS 20 // total numbers of fields
 #define MATCH_FIELDS 29 // total numbers of fields in match duplicates
-#define LTEXT 72        // for long field
-#define MTEXT 35        // for medium field
-#define STEXT 24        // for short field
-#define PHONE 16        // for phone numbers
-#define ZIP 5           // for zip
-#define STATE 2         // for state or province
+#define LTEXT 72 // for long field
+#define MTEXT 35 // for medium field
+#define STEXT 24 // for short field
+#define PHONE 16 // for phone numbers
+#define ZIP 5 // for zip
+#define STATE 2 // for state or province
 #define DEFAULT_SQL_TABLE "DROP TABLE IF EXISTS Contacts;"                 \
-                          "CREATE TABLE Contacts (id INTEGER PRIMARY KEY," \
-                          "FirstName TEXT,"                                \
-                          "LastName TEXT,"                                 \
-                          "Organization TEXT,"                             \
-                          "Job TEXT,"                                      \
-                          "HPhone TEXT,"                                   \
-                          "WPhone TEXT,"                                   \
-                          "PMobile TEXT,"                                  \
-                          "BMobile TEXT,"                                  \
-                          "PEmail TEXT,"                                   \
-                          "BEmail TEXT,"                                   \
-                          "Address TEXT,"                                  \
-                          "Zip TEXT,"                                      \
-                          "City TEXT,"                                     \
-                          "State TEXT,"                                    \
-                          "Country TEXT,"                                  \
-                          "mDay INTEGER,"                                  \
-                          "Mon INTEGER,"                                   \
-                          "Year INTEGER);"
+						  "CREATE TABLE Contacts (id INTEGER PRIMARY KEY," \
+						  "FirstName TEXT,"                                \
+						  "LastName TEXT,"                                 \
+						  "Organization TEXT,"                             \
+						  "Job TEXT,"                                      \
+						  "HPhone TEXT,"                                   \
+						  "WPhone TEXT,"                                   \
+						  "PMobile TEXT,"                                  \
+						  "BMobile TEXT,"                                  \
+						  "PEmail TEXT,"                                   \
+						  "BEmail TEXT,"                                   \
+						  "Address TEXT,"                                  \
+						  "Zip TEXT,"                                      \
+						  "City TEXT,"                                     \
+						  "State TEXT,"                                    \
+						  "Country TEXT,"                                  \
+						  "mDay INTEGER,"                                  \
+						  "Mon INTEGER,"                                   \
+						  "Year INTEGER);"
 
 #define UPDATE_SQL_ROW "UPDATE Contacts SET "    \
-                       "FirstName = \"%s\", "    \
-                       "LastName = \"%s\", "     \
-                       "Organization = \"%s\", " \
-                       "Job = \"%s\", "          \
-                       "HPhone = \"%s\", "       \
-                       "WPhone = \"%s\", "       \
-                       "PMobile = \"%s\", "      \
-                       "BMobile = \"%s\", "      \
-                       "PEmail = \"%s\", "       \
-                       "BEmail = \"%s\", "       \
-                       "Address = \"%s\", "      \
-                       "Zip = \"%s\", "          \
-                       "City = \"%s\", "         \
-                       "State = \"%s\", "        \
-                       "Country = \"%s\", "      \
-                       "mDay = %d, "             \
-                       "Mon = %d, "              \
-                       "Year = %d "              \
-                       "WHERE ID = %d;"
+					   "FirstName = \"%s\", "    \
+					   "LastName = \"%s\", "     \
+					   "Organization = \"%s\", " \
+					   "Job = \"%s\", "          \
+					   "HPhone = \"%s\", "       \
+					   "WPhone = \"%s\", "       \
+					   "PMobile = \"%s\", "      \
+					   "BMobile = \"%s\", "      \
+					   "PEmail = \"%s\", "       \
+					   "BEmail = \"%s\", "       \
+					   "Address = \"%s\", "      \
+					   "Zip = \"%s\", "          \
+					   "City = \"%s\", "         \
+					   "State = \"%s\", "        \
+					   "Country = \"%s\", "      \
+					   "mDay = %d, "             \
+					   "Mon = %d, "              \
+					   "Year = %d "              \
+					   "WHERE ID = %d;"
 
 #define INSERT_SQL_VALUE "INSERT INTO Contacts VALUES (%u, \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", %d, %d, %d);"
 #define SELECT_FROM_CONTACTS "SELECT * FROM Contacts"
@@ -242,38 +242,38 @@ typedef struct csv_parser CSV_Parser_t;
 typedef struct Counts Counts_t;
 
 struct DBnode {
-    _Bool delete;
-    _Bool modified;
-    unsigned id;
-    sds fname;
-    sds lname;
-    sds organization;
-    sds job;
-    sds hphone;
-    sds wphone;
-    sds pmobile;
-    sds bmobile;
-    sds pemail;
-    sds bemail;
-    sds address;
-    sds zip;
-    sds city;
-    sds state;
-    sds country;
-    struct tm birthday;
+	_Bool delete;
+	_Bool modified;
+	unsigned id;
+	sds fname;
+	sds lname;
+	sds organization;
+	sds job;
+	sds hphone;
+	sds wphone;
+	sds pmobile;
+	sds bmobile;
+	sds pemail;
+	sds bemail;
+	sds address;
+	sds zip;
+	sds city;
+	sds state;
+	sds country;
+	struct tm birthday;
 };
 
 struct PhoneBook {
-    PhoneBook_t *prev;
-    DBnode_t db;
-    PhoneBook_t *next;
+	PhoneBook_t *prev;
+	DBnode_t db;
+	PhoneBook_t *next;
 };
 
 struct Counts {
-    unsigned int fields;
-    unsigned int rows;
-    _Bool isGoogle;
-    DBnode_t *db;
+	unsigned int fields;
+	unsigned int rows;
+	_Bool isGoogle;
+	DBnode_t *db;
 };
 
 extern PhoneBook_t *contacts; // Global contatcts phonebook
@@ -314,10 +314,10 @@ void db_log(const char *funcname, char *comment, DBnode_t *db);
 ssize_t filecopy(const char *source, const char *destination);
 
 // menu.c
-void MainMenu(WINDOW *win);                   // main menu
-void SearchMenu(WINDOW *win);                 // search menu
+void MainMenu(WINDOW *win); // main menu
+void SearchMenu(WINDOW *win); // search menu
 int do_search(WINDOW *win, _Bool csv_export); // main search function
-void AddMenu(WINDOW *win);                    // add menu
+void AddMenu(WINDOW *win); // add menu
 void UpdateMenu(WINDOW *win, PhoneBook_t *resultList, sds menuName, sds menuModify);
 void ImpExpMenu(WINDOW *win);
 void UtilityMenu(WINDOW *win);
@@ -331,9 +331,9 @@ void SortList(WINDOW *win, PhoneBook_t *list, _Bool compare(PhoneBook_t *first, 
 // ui_ncurses.c
 int flexMenu(WINDOW *win, sds *choices, char *menuName);
 int flexForm(WINDOW *win, DBnode_t *db, const char *menuName);
-FIELD **initField(DBnode_t *db);                       // initialize all field with db
+FIELD **initField(DBnode_t *db); // initialize all field with db
 int set_field_digit(FIELD *field, int buf, int digit); // like set_field_buffer but int values instead of char * return like set_field_buffer()
-int field_digit(FIELD *field, int buf);                // return the int value of filed_buffer
+int field_digit(FIELD *field, int buf); // return the int value of filed_buffer
 int showMatch(WINDOW *win, DBnode_t first, DBnode_t second, unsigned int check);
 FIELD **initMatchField(DBnode_t first, DBnode_t second, unsigned int check);
 void print_in_middle(WINDOW *win, int y, const char *string, chtype color);
