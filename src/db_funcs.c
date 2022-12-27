@@ -1,58 +1,3 @@
-/*********************************************************************************
-**                                                                              **
-**      Copyleft 1991-2021 by Sandroid75 with GNU General Public License.       **
-**                                                                              **
-**                                                                              **
-**  Redistribution and use in source and binary forms, with or without          **
-**  modification, are permitted provided that the following conditions are met: **
-**                                                                              **
-**   * Redistributions of source code must retain the above copyleft notice,    **
-**     this list of conditions and the following disclaimer.                    **
-**   * Redistributions in binary form must reproduce the above copyleft         **
-**     notice, this list of conditions and the following disclaimer in the      **
-**     documentation and/or other materials provided with the distribution.     **
-**   * Neither the name of Sandroid75 nor the names of its contributors may     **
-**     be used to endorse or promote products derived from this software        **
-**     without specific prior written permission.                               **
-**                                                                              **
-**  THIS SOFTWARE IS PROVIDED BY THE COPYLEFT HOLDERS AND CONTRIBUTORS "AS IS"  **
-**  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE   **
-**  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE  **
-**  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYLEFT OWNER OR CONTRIBUTORS BE     **
-**  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR         **
-**  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF        **
-**  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS    **
-**  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN     **
-**  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)     **
-**  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE  **
-**  POSSIBILITY OF SUCH DAMAGE.                                                 **
-**                                                                              **
-**  This code was made by Sandroid75 to illustrate various C language powers.   **
-**                                                                              **
-**  My recommendations for developing robust C code are:                        **
-**  - first of all read The C Programming Language: ANSI C Version by K&R (C)   **
-**  - after read K&R keep always in mind rules and methods                      **
-**  - one of the most characteristics and powers of the C is the pointers       **
-**  - pointers are very helpfull and flexibile to write efficient code          **
-**  - pointers can be dangerous for stable code if you forget the rules         **
-**  - if you use pointers for list of datas don't forget to reserve memory      **
-**  - if you use pointers for list of datas don't forget to release memory      **
-**  - write well-formatted code                                                 **
-**  - only good formatted code makes the code readable                          **
-**  - good formatting code reduces the risk of errors                           **
-**  - good formatting code facilitates the debugging                            **
-**  - good formatting code facilitates the maintenences                         **
-**  - good formatting code facilitates future implementantions                  **
-**  - commenting the code is another good and necessary practice                **
-**  - commenting the code means understanding what you are doing                **
-**  - commenting the code means understanding what you have done                **
-**  - commenting the code is not a waste of time                                **
-**  - at the last but not least, remember rules and methods                     **
-**                                                                              **
-**                  Have fun with C programming by Sandroid75                   **
-**                                                                              **
-**********************************************************************************/
-
 #include "../../libcsv/csv.h"
 #include "phonebook.h"
 #include <sqlite3.h>
@@ -75,28 +20,28 @@ int callback(void *NotUsed, int argc, char **argv, char **azColName)
 		return -1;
 	}
 	// read the entire row of sqlite file and put the value in each db variable
-	db->delete = false; // always set delete flag to false
+	db->delete   = false; // always set delete flag to false
 	db->modified = false; // always set modified flag to false
-	db->id = atoi(argv[i++]);
+	db->id       = atoi(argv[i++]);
 
-	db->fname = sdsnew(argv[i++]);
-	db->lname = sdsnew(argv[i++]);
+	db->fname        = sdsnew(argv[i++]);
+	db->lname        = sdsnew(argv[i++]);
 	db->organization = sdsnew(argv[i++]);
-	db->job = sdsnew(argv[i++]);
-	db->hphone = sdsnew(argv[i++]);
-	db->wphone = sdsnew(argv[i++]);
-	db->pmobile = sdsnew(argv[i++]);
-	db->bmobile = sdsnew(argv[i++]);
-	db->pemail = sdsnew(argv[i++]);
-	db->bemail = sdsnew(argv[i++]);
-	db->address = sdsnew(argv[i++]);
-	db->zip = sdsnew(argv[i++]);
-	db->city = sdsnew(argv[i++]);
-	db->state = sdsnew(argv[i++]);
-	db->country = sdsnew(argv[i++]);
+	db->job          = sdsnew(argv[i++]);
+	db->hphone       = sdsnew(argv[i++]);
+	db->wphone       = sdsnew(argv[i++]);
+	db->pmobile      = sdsnew(argv[i++]);
+	db->bmobile      = sdsnew(argv[i++]);
+	db->pemail       = sdsnew(argv[i++]);
+	db->bemail       = sdsnew(argv[i++]);
+	db->address      = sdsnew(argv[i++]);
+	db->zip          = sdsnew(argv[i++]);
+	db->city         = sdsnew(argv[i++]);
+	db->state        = sdsnew(argv[i++]);
+	db->country      = sdsnew(argv[i++]);
 
 	db->birthday.tm_mday = atoi(argv[i++]);
-	db->birthday.tm_mon = atoi(argv[i++]);
+	db->birthday.tm_mon  = atoi(argv[i++]);
 	db->birthday.tm_year = atoi(argv[i++]);
 
 	addNode(&contacts, (*db)); // for each readed row push the assigned db in the global contacts list
@@ -177,7 +122,7 @@ int write_db(_Bool update)
 			deleteNode(&contacts, ptr);
 			records++; // counting the numbers of records to be write or update
 		} else if (ptr->db.modified) { // check if the contacts was modified
-			sql = update ? SDSupdateSQL(sql, ptr->db) : SDSinsertSQL(sql, ptr->db); // check if the use the UPDATE statement or INSERT statement
+			sql              = update ? SDSupdateSQL(sql, ptr->db) : SDSinsertSQL(sql, ptr->db); // check if the use the UPDATE statement or INSERT statement
 			ptr->db.modified = false; // set the flag to false before push the contact into tobeupdate list
 			records++; // counting the numbers of records to be write or update
 		}
@@ -199,10 +144,10 @@ int write_db(_Bool update)
 sds SDSinsertSQL(sds sql, DBnode_t node)
 { // build INSERT statement from node
 	sql = sdscatprintf(sql, INSERT_SQL_VALUE,
-					   node.id, node.fname, node.lname, node.organization, node.job,
-					   node.hphone, node.wphone, node.pmobile, node.bmobile, node.pemail, node.bemail,
-					   node.address, node.zip, node.city, node.state, node.country,
-					   node.birthday.tm_mday, node.birthday.tm_mon, node.birthday.tm_year);
+	                   node.id, node.fname, node.lname, node.organization, node.job,
+	                   node.hphone, node.wphone, node.pmobile, node.bmobile, node.pemail, node.bemail,
+	                   node.address, node.zip, node.city, node.state, node.country,
+	                   node.birthday.tm_mday, node.birthday.tm_mon, node.birthday.tm_year);
 
 	return (sds)sql;
 }
@@ -210,11 +155,11 @@ sds SDSinsertSQL(sds sql, DBnode_t node)
 sds SDSupdateSQL(sds sql, DBnode_t node)
 { // build UPDATE statement from node
 	sql = sdscatprintf(sql, UPDATE_SQL_ROW,
-					   node.fname, node.lname, node.organization, node.job,
-					   node.hphone, node.wphone, node.pmobile, node.bmobile, node.pemail, node.bemail,
-					   node.address, node.zip, node.city, node.state, node.country,
-					   node.birthday.tm_mday, node.birthday.tm_mon, node.birthday.tm_year,
-					   node.id); // the id is used for statement WHERE SQLite
+	                   node.fname, node.lname, node.organization, node.job,
+	                   node.hphone, node.wphone, node.pmobile, node.bmobile, node.pemail, node.bemail,
+	                   node.address, node.zip, node.city, node.state, node.country,
+	                   node.birthday.tm_mday, node.birthday.tm_mon, node.birthday.tm_year,
+	                   node.id); // the id is used for statement WHERE SQLite
 
 	return (sds)sql;
 }
@@ -307,10 +252,10 @@ int write_csv(const char *csvFile, PhoneBook_t *contact_csv)
 sds SDSinsertCSV(sds csvRow, DBnode_t node)
 { // build INSERT statement from node
 	csvRow = sdscatprintf(csvRow, CSV_SCHEMA,
-						  node.id, node.fname, node.lname, node.organization, node.job,
-						  node.hphone, node.wphone, node.pmobile, node.bmobile, node.pemail, node.bemail,
-						  node.address, node.zip, node.city, node.state, node.country,
-						  node.birthday.tm_mday, node.birthday.tm_mon, node.birthday.tm_year);
+	                      node.id, node.fname, node.lname, node.organization, node.job,
+	                      node.hphone, node.wphone, node.pmobile, node.bmobile, node.pemail, node.bemail,
+	                      node.address, node.zip, node.city, node.state, node.country,
+	                      node.birthday.tm_mday, node.birthday.tm_mon, node.birthday.tm_year);
 
 	return (sds)csvRow;
 }
@@ -324,11 +269,11 @@ sds SDSgoogleCSV(sds csvRow, DBnode_t node)
 	}
 
 	csvRow = sdscatprintf(csvRow, CSV_GOOGLE_SCHEMA,
-						  node.fname, node.lname, node.fname, node.lname,
-						  birthday, // populate only if is a valid date
-						  node.pemail, node.pmobile, node.hphone, node.wphone,
-						  node.address, node.city, node.state, node.zip, node.country,
-						  node.organization, node.job);
+	                      node.fname, node.lname, node.fname, node.lname,
+	                      birthday, // populate only if is a valid date
+	                      node.pemail, node.pmobile, node.hphone, node.wphone,
+	                      node.address, node.city, node.state, node.zip, node.country,
+	                      node.organization, node.job);
 	// node.pmobile, node.bmobile, node.pemail, node.bemail,
 
 	sdsfree(birthday);
@@ -386,9 +331,9 @@ void csv_cb_field(void *s, size_t len, void *data)
 			((Counts_t *)data)->db->lname = sdsnewlen(field, STEXT);
 			break;
 		case 15: // Birthday '1975-03-28'
-			tokens = sdssplitlen(field, len, "-", 1, &count);
+			tokens                                   = sdssplitlen(field, len, "-", 1, &count);
 			((Counts_t *)data)->db->birthday.tm_year = atoi(tokens[0]);
-			((Counts_t *)data)->db->birthday.tm_mon = atoi(tokens[1]);
+			((Counts_t *)data)->db->birthday.tm_mon  = atoi(tokens[1]);
 			((Counts_t *)data)->db->birthday.tm_mday = atoi(tokens[2]);
 			sdsfreesplitres(tokens, count);
 			break;
@@ -396,15 +341,15 @@ void csv_cb_field(void *s, size_t len, void *data)
 			((Counts_t *)data)->db->pemail = sdsnewlen(field, MTEXT);
 			break;
 		case 37: // Pmobile
-			field = sdschremove(field, " "); // remove spaces form field sds string
+			field                           = sdschremove(field, " "); // remove spaces form field sds string
 			((Counts_t *)data)->db->pmobile = sdsnewlen(field, PHONE);
 			break;
 		case 39: // Wphone
-			field = sdschremove(field, " "); // remove spaces form field sds string
+			field                          = sdschremove(field, " "); // remove spaces form field sds string
 			((Counts_t *)data)->db->wphone = sdsnewlen(field, PHONE);
 			break;
 		case 41: // Hphone
-			field = sdschremove(field, " "); // remove spaces form field sds string
+			field                          = sdschremove(field, " "); // remove spaces form field sds string
 			((Counts_t *)data)->db->hphone = sdsnewlen(field, PHONE);
 			break;
 		case 48: // Address
@@ -526,8 +471,8 @@ int importCSV(sds csvFile)
 	unsigned char options = 0;
 	Counts_t data;
 
-	data.fields = 0;
-	data.rows = 0;
+	data.fields   = 0;
+	data.rows     = 0;
 	data.isGoogle = strcmp(csvFile, GOOGLE_CSV) ? false : true; // check if is Google csv file
 
 	if (csv_init(&parse, options)) {

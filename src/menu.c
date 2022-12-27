@@ -1,58 +1,3 @@
-/*********************************************************************************
-**                                                                              **
-**      Copyleft 1991-2021 by Sandroid75 with GNU General Public License.       **
-**                                                                              **
-**                                                                              **
-**  Redistribution and use in source and binary forms, with or without          **
-**  modification, are permitted provided that the following conditions are met: **
-**                                                                              **
-**   * Redistributions of source code must retain the above copyleft notice,    **
-**     this list of conditions and the following disclaimer.                    **
-**   * Redistributions in binary form must reproduce the above copyleft         **
-**     notice, this list of conditions and the following disclaimer in the      **
-**     documentation and/or other materials provided with the distribution.     **
-**   * Neither the name of Sandroid75 nor the names of its contributors may     **
-**     be used to endorse or promote products derived from this software        **
-**     without specific prior written permission.                               **
-**                                                                              **
-**  THIS SOFTWARE IS PROVIDED BY THE COPYLEFT HOLDERS AND CONTRIBUTORS "AS IS"  **
-**  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE   **
-**  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE  **
-**  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYLEFT OWNER OR CONTRIBUTORS BE     **
-**  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR         **
-**  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF        **
-**  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS    **
-**  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN     **
-**  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)     **
-**  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE  **
-**  POSSIBILITY OF SUCH DAMAGE.                                                 **
-**                                                                              **
-**  This code was made by Sandroid75 to illustrate various C language powers.   **
-**                                                                              **
-**  My recommendations for developing robust C code are:                        **
-**  - first of all read The C Programming Language: ANSI C Version by K&R (C)   **
-**  - after read K&R keep always in mind rules and methods                      **
-**  - one of the most characteristics and powers of the C is the pointers       **
-**  - pointers are very helpfull and flexibile to write efficient code          **
-**  - pointers can be dangerous for stable code if you forget the rules         **
-**  - if you use pointers for list of datas don't forget to reserve memory      **
-**  - if you use pointers for list of datas don't forget to release memory      **
-**  - write well-formatted code                                                 **
-**  - only good formatted code makes the code readable                          **
-**  - good formatting code reduces the risk of errors                           **
-**  - good formatting code facilitates the debugging                            **
-**  - good formatting code facilitates the maintenences                         **
-**  - good formatting code facilitates future implementantions                  **
-**  - commenting the code is another good and necessary practice                **
-**  - commenting the code means understanding what you are doing                **
-**  - commenting the code means understanding what you have done                **
-**  - commenting the code is not a waste of time                                **
-**  - at the last but not least, remember rules and methods                     **
-**                                                                              **
-**                  Have fun with C programming by Sandroid75                   **
-**                                                                              **
-**********************************************************************************/
-
 #include "phonebook.h"
 
 void MainMenu(WINDOW *win)
@@ -362,11 +307,11 @@ void UpdateMenu(WINDOW *win, PhoneBook_t *resultList, sds menuName, sds menuModi
 				return;
 			}
 			dbModify = &(ptr->db); // assign the choiced contact to modify ptr
-			i = choice - 1; // assign the correct index number
+			i        = choice - 1; // assign the correct index number
 			if (delete) {
 				if (ptr->db.delete) { // check if the contact is already set to delete
 					sdsfree(menuList[i]); // wipe the old field
-					menuList[i] = (sds)sdscatprintf(sdsempty(), "%s %s", ptr->db.fname, ptr->db.lname); // rebuild the modified contact
+					menuList[i]    = (sds)sdscatprintf(sdsempty(), "%s %s", ptr->db.fname, ptr->db.lname); // rebuild the modified contact
 					ptr->db.delete = false; // set delete to false
 				} else {
 					choice = messageBox(win, 10, " Press 'Y' to confirm deletion of any key to discard ", COLOR_PAIR(PAIR_EDIT));
@@ -374,16 +319,16 @@ void UpdateMenu(WINDOW *win, PhoneBook_t *resultList, sds menuName, sds menuModi
 						continue; // back to the begin of do-while
 					}
 					sdsfree(menuList[i]); // wipe the old field
-					menuList[i] = (sds)sdscatprintf(sdsempty(), "*%s %s* # CANC to Restore #", ptr->db.fname, ptr->db.lname); // rebuild the modified contact
+					menuList[i]    = (sds)sdscatprintf(sdsempty(), "*%s %s* # CANC to Restore #", ptr->db.fname, ptr->db.lname); // rebuild the modified contact
 					ptr->db.delete = true; // mark as deleted
 				}
 				modified = true; // set because of something is modified
-				delete = false; // restore delete to false
+				delete   = false; // restore delete to false
 			} else if (flexForm(win, dbModify, menuModify) == 1) { // pass the modify ptr to form for modification of contact (1 mean confirm, 0 mean abort, -1 mean error)
 				sdsfree(menuList[i]); // wipe the old field
-				menuList[i] = (sds)sdscatprintf(sdsempty(), "%s %s", ptr->db.fname, ptr->db.lname); // rebuild the modified contact
+				menuList[i]    = (sds)sdscatprintf(sdsempty(), "%s %s", ptr->db.fname, ptr->db.lname); // rebuild the modified contact
 				ptr->db.delete = false; // if was deleted now is restored
-				modified = true; // if contact is modified
+				modified       = true; // if contact is modified
 			}
 		}
 	} while (choice); // if no selection exit flexMenu return 0 if nothing was selected
@@ -414,7 +359,7 @@ void ImpExpMenu(WINDOW *win)
 
 	// start the operations
 	while (!quit) {
-		midx = getmaxx(win) / 2;
+		midx    = getmaxx(win) / 2;
 		csvFile = message = NULL; // set NULL
 		switch (flexMenu(win, choices, menuName)) {
 		case 1: // Import from CSV
@@ -548,8 +493,8 @@ int FindDuplicates(WINDOW *win)
 {
 	PhoneBook_t *match, *ptr, *mnext, *pnext;
 	unsigned int check = MATCH_NO_MATCH;
-	int nb_records = 0;
-	_Bool found = false;
+	int nb_records     = 0;
+	_Bool found        = false;
 
 	REWIND(contacts);
 	for (match = contacts; match; match = mnext) {
@@ -657,24 +602,24 @@ void mergeDuplicate(WINDOW *win, DBnode_t first, DBnode_t second, unsigned int c
 	case KEY_F(4):
 		dbMerge = initNode(contacts);
 
-		dbMerge->fname = strlen(first.fname) > strlen(second.fname) ? sdsnew(first.fname) : sdsnew(second.fname);
-		dbMerge->lname = strlen(first.lname) > strlen(second.lname) ? sdsnew(first.lname) : sdsnew(second.lname);
+		dbMerge->fname        = strlen(first.fname) > strlen(second.fname) ? sdsnew(first.fname) : sdsnew(second.fname);
+		dbMerge->lname        = strlen(first.lname) > strlen(second.lname) ? sdsnew(first.lname) : sdsnew(second.lname);
 		dbMerge->organization = strlen(first.organization) > strlen(second.organization) ? sdsnew(first.organization) : sdsnew(second.organization);
-		dbMerge->job = strlen(first.job) > strlen(second.job) ? sdsnew(first.job) : sdsnew(second.job);
-		dbMerge->hphone = strlen(first.hphone) > strlen(second.hphone) ? sdsnew(first.hphone) : sdsnew(second.hphone);
-		dbMerge->wphone = strlen(first.wphone) > strlen(second.wphone) ? sdsnew(first.wphone) : sdsnew(second.wphone);
-		dbMerge->pmobile = strlen(first.pmobile) > strlen(second.pmobile) ? sdsnew(first.pmobile) : sdsnew(second.pmobile);
-		dbMerge->bmobile = strlen(first.bmobile) > strlen(second.bmobile) ? sdsnew(first.bmobile) : sdsnew(second.bmobile);
-		dbMerge->pemail = strlen(first.pemail) > strlen(second.pemail) ? sdsnew(first.pemail) : sdsnew(second.pemail);
-		dbMerge->bemail = strlen(first.bemail) > strlen(second.bemail) ? sdsnew(first.bemail) : sdsnew(second.bemail);
-		dbMerge->address = strlen(first.address) > strlen(second.address) ? sdsnew(first.address) : sdsnew(second.address);
-		dbMerge->zip = strlen(first.zip) > strlen(second.zip) ? sdsnew(first.zip) : sdsnew(second.zip);
-		dbMerge->city = strlen(first.city) > strlen(second.city) ? sdsnew(first.city) : sdsnew(second.city);
-		dbMerge->state = strlen(first.state) > strlen(second.state) ? sdsnew(first.state) : sdsnew(second.state);
-		dbMerge->country = strlen(first.country) > strlen(second.country) ? sdsnew(first.country) : sdsnew(second.country);
+		dbMerge->job          = strlen(first.job) > strlen(second.job) ? sdsnew(first.job) : sdsnew(second.job);
+		dbMerge->hphone       = strlen(first.hphone) > strlen(second.hphone) ? sdsnew(first.hphone) : sdsnew(second.hphone);
+		dbMerge->wphone       = strlen(first.wphone) > strlen(second.wphone) ? sdsnew(first.wphone) : sdsnew(second.wphone);
+		dbMerge->pmobile      = strlen(first.pmobile) > strlen(second.pmobile) ? sdsnew(first.pmobile) : sdsnew(second.pmobile);
+		dbMerge->bmobile      = strlen(first.bmobile) > strlen(second.bmobile) ? sdsnew(first.bmobile) : sdsnew(second.bmobile);
+		dbMerge->pemail       = strlen(first.pemail) > strlen(second.pemail) ? sdsnew(first.pemail) : sdsnew(second.pemail);
+		dbMerge->bemail       = strlen(first.bemail) > strlen(second.bemail) ? sdsnew(first.bemail) : sdsnew(second.bemail);
+		dbMerge->address      = strlen(first.address) > strlen(second.address) ? sdsnew(first.address) : sdsnew(second.address);
+		dbMerge->zip          = strlen(first.zip) > strlen(second.zip) ? sdsnew(first.zip) : sdsnew(second.zip);
+		dbMerge->city         = strlen(first.city) > strlen(second.city) ? sdsnew(first.city) : sdsnew(second.city);
+		dbMerge->state        = strlen(first.state) > strlen(second.state) ? sdsnew(first.state) : sdsnew(second.state);
+		dbMerge->country      = strlen(first.country) > strlen(second.country) ? sdsnew(first.country) : sdsnew(second.country);
 
 		dbMerge->birthday.tm_year = first.birthday.tm_year > second.birthday.tm_year ? first.birthday.tm_year : second.birthday.tm_year;
-		dbMerge->birthday.tm_mon = first.birthday.tm_mon > second.birthday.tm_mon ? first.birthday.tm_mon : second.birthday.tm_mon;
+		dbMerge->birthday.tm_mon  = first.birthday.tm_mon > second.birthday.tm_mon ? first.birthday.tm_mon : second.birthday.tm_mon;
 		dbMerge->birthday.tm_mday = first.birthday.tm_mday > second.birthday.tm_mday ? first.birthday.tm_mday : second.birthday.tm_mday;
 
 		dbMerge->modified = true; // set the merged contact to modified
@@ -737,7 +682,7 @@ sds *buildMenuList(PhoneBook_t *fromList, int *nb_fileds)
 		return (sds *)NULL;
 	}
 
-	i = countList(ptr) + 1; // count the number of field found
+	i        = countList(ptr) + 1; // count the number of field found
 	menuList = (sds *)calloc(i, sizeof(sds)); // allocate the memory for contact list
 
 	for (i = 0; ptr; i++) { // walk thru the list
@@ -754,7 +699,7 @@ sds *buildMenuList(PhoneBook_t *fromList, int *nb_fileds)
 		NEXT(ptr);
 	}
 	menuList[i++] = sdsempty(); // assign NULL string to the last contact of the list
-	(*nb_fileds) = i; // assign the total menu items
+	(*nb_fileds)  = i; // assign the total menu items
 
 	return (sds *)menuList;
 }

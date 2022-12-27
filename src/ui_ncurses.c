@@ -1,58 +1,3 @@
-/*********************************************************************************
-**                                                                              **
-**      Copyleft 1991-2021 by Sandroid75 with GNU General Public License.       **
-**                                                                              **
-**                                                                              **
-**  Redistribution and use in source and binary forms, with or without          **
-**  modification, are permitted provided that the following conditions are met: **
-**                                                                              **
-**   * Redistributions of source code must retain the above copyleft notice,    **
-**     this list of conditions and the following disclaimer.                    **
-**   * Redistributions in binary form must reproduce the above copyleft         **
-**     notice, this list of conditions and the following disclaimer in the      **
-**     documentation and/or other materials provided with the distribution.     **
-**   * Neither the name of Sandroid75 nor the names of its contributors may     **
-**     be used to endorse or promote products derived from this software        **
-**     without specific prior written permission.                               **
-**                                                                              **
-**  THIS SOFTWARE IS PROVIDED BY THE COPYLEFT HOLDERS AND CONTRIBUTORS "AS IS"  **
-**  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE   **
-**  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE  **
-**  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYLEFT OWNER OR CONTRIBUTORS BE     **
-**  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR         **
-**  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF        **
-**  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS    **
-**  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN     **
-**  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)     **
-**  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE  **
-**  POSSIBILITY OF SUCH DAMAGE.                                                 **
-**                                                                              **
-**  This code was made by Sandroid75 to illustrate various C language powers.   **
-**                                                                              **
-**  My recommendations for developing robust C code are:                        **
-**  - first of all read The C Programming Language: ANSI C Version by K&R (C)   **
-**  - after read K&R keep always in mind rules and methods                      **
-**  - one of the most characteristics and powers of the C is the pointers       **
-**  - pointers are very helpfull and flexibile to write efficient code          **
-**  - pointers can be dangerous for stable code if you forget the rules         **
-**  - if you use pointers for list of datas don't forget to reserve memory      **
-**  - if you use pointers for list of datas don't forget to release memory      **
-**  - write well-formatted code                                                 **
-**  - only good formatted code makes the code readable                          **
-**  - good formatting code reduces the risk of errors                           **
-**  - good formatting code facilitates the debugging                            **
-**  - good formatting code facilitates the maintenences                         **
-**  - good formatting code facilitates future implementantions                  **
-**  - commenting the code is another good and necessary practice                **
-**  - commenting the code means understanding what you are doing                **
-**  - commenting the code means understanding what you have done                **
-**  - commenting the code is not a waste of time                                **
-**  - at the last but not least, remember rules and methods                     **
-**                                                                              **
-**                  Have fun with C programming by Sandroid75                   **
-**                                                                              **
-**********************************************************************************/
-
 #include "phonebook.h"
 
 int flexMenu(WINDOW *win, sds *choices, char *menuName)
@@ -86,19 +31,19 @@ int flexMenu(WINDOW *win, sds *choices, char *menuName)
 	}
 
 	scale_menu(my_menu, &mrows, &mcols); // calculates the right dimension of window menu to fit all elements
-	i = sdslen(menuName); // calclate the lenght of menu name
+	i     = sdslen(menuName); // calclate the lenght of menu name
 	mcols = mcols < i ? i : mcols; // check if the calculated scale of cols is less than menu name
 	mcols = mcols % 2 ? mcols + 1 : mcols; // check the numbers of cols if is even otherwise add 1
 	mrows += 4; // to fit the title and draw horizontal lines
 	mcols += 3; // to draw the vertical lines
 
-	xpos = getmaxx(win); // get current window max x
-	xpos = (xpos / 2) - (mcols / 2); // determinate the start x position in order to center the menu
+	xpos        = getmaxx(win); // get current window max x
+	xpos        = (xpos / 2) - (mcols / 2); // determinate the start x position in order to center the menu
 	my_menu_win = newwin(mrows, mcols, 1, xpos); // Create the window to be associated with the menu
 	keypad(my_menu_win, true); // initialize the keypad for menu window
 
 	set_menu_win(my_menu, my_menu_win); // Set main window and sub window
-	mrows = mrows - 3; // set the numbers of items (or rows) per page
+	mrows     = mrows - 3; // set the numbers of items (or rows) per page
 	derWindow = derwin(my_menu_win, mrows, mcols - 2, 3, 1); // create a sub window from menu window
 	set_menu_sub(my_menu, derWindow); // set menu sub window by derivated window
 
@@ -120,7 +65,7 @@ int flexMenu(WINDOW *win, sds *choices, char *menuName)
 
 	while (quit != true) {
 		index = item_index(current_item(my_menu)) + 1; // set the current item index
-		ch = wgetch(my_menu_win); // wait for user input
+		ch    = wgetch(my_menu_win); // wait for user input
 		switch (ch) {
 		case KEY_BTAB: // BACK TAB
 		case KEY_UP:
@@ -149,7 +94,7 @@ int flexMenu(WINDOW *win, sds *choices, char *menuName)
 			break;
 		case KEY_ESC: // ESC
 			index = 0; // nothing selected
-			quit = true; // quitting
+			quit  = true; // quitting
 			break;
 		case KEY_DC: // CANC
 			index *= -1; // invert the sign
@@ -234,7 +179,7 @@ int flexForm(WINDOW *win, DBnode_t *db, const char *formName)
 
 	do { // Loop through to get user requests to pass at form_driver function
 		field_validation = form_driver(my_form, REQ_VALIDATION);
-		ch = wgetch(my_form_win);
+		ch               = wgetch(my_form_win);
 		form_driver(my_form, insertMode); // set current insert mode status
 		switch (ch) {
 		case KEY_TAB: // TAB
@@ -328,7 +273,7 @@ int flexForm(WINDOW *win, DBnode_t *db, const char *formName)
 					quit = true;
 				} else if (ch != KEY_ESC) { // confirm changes end exit
 					store = true;
-					quit = true;
+					quit  = true;
 				} else { // ESCape was pressed back to editing form
 					post_form(my_form);
 					wrefresh(my_form_win);
@@ -345,9 +290,9 @@ int flexForm(WINDOW *win, DBnode_t *db, const char *formName)
 	} while (!quit);
 
 	if (store) { // if input data was confirmed by user
-		i = 0;
+		i               = 0;
 		ptrDB->modified = true; // set the field as modified in order to update db
-		ptrDB->id = field_digit(field[i++], 0);
+		ptrDB->id       = field_digit(field[i++], 0);
 
 		// in next lines assign the value returned by form fields than trim removing white space from the tail of th string
 		ptrDB->fname = sdsnew(field_buffer(field[i++], 0));
@@ -382,7 +327,7 @@ int flexForm(WINDOW *win, DBnode_t *db, const char *formName)
 		sdstrim(ptrDB->country, " ");
 
 		ptrDB->birthday.tm_mday = field_digit(field[i++], 0);
-		ptrDB->birthday.tm_mon = field_digit(field[i++], 0);
+		ptrDB->birthday.tm_mon  = field_digit(field[i++], 0);
 		ptrDB->birthday.tm_year = field_digit(field[i++], 0);
 	}
 	/* Unpost form and free the memory */
@@ -426,8 +371,8 @@ FIELD **initField(DBnode_t *db)
 	}
 
 	/* Initialize the fields */
-	i = 0; // for array index
-	rows = 0; // for row counting where the field are on same row there is 3 more cols as spaced
+	i          = 0; // for array index
+	rows       = 0; // for row counting where the field are on same row there is 3 more cols as spaced
 	field[i++] = new_field(1, 4, rows, 1, 0, 0); // id
 	rows += 2;
 	field[i++] = new_field(1, STEXT, rows, 1, 0, 0); // fname
@@ -457,9 +402,9 @@ FIELD **initField(DBnode_t *db)
 	field[i++] = new_field(1, MTEXT, rows, ZIP + 3, 0, 0); // city
 	field[i++] = new_field(1, STATE, rows, ZIP + MTEXT + 5, 0, 0); // state/province
 	field[i++] = new_field(1, STEXT, rows, ZIP + MTEXT + STATE + 7, 0, 0); // country
-	rows = 2; // birthday is on the same line of name
+	rows       = 2; // birthday is on the same line of name
 	start_bday = i; // store the first birthday field array index ***NB: the birthday is on the same line of name***
-	field[i] = new_field(1, 2, rows, STEXT * 2 + 13, 0, 0); // day
+	field[i]   = new_field(1, 2, rows, STEXT * 2 + 13, 0, 0); // day
 	set_field_type(field[i++], TYPE_INTEGER, 0, 1, 31); // set valid numbers and precision of day from 1 to 31
 	field[i] = new_field(1, 2, rows, STEXT * 2 + 17, 0, 0); // mon
 	set_field_type(field[i++], TYPE_INTEGER, 0, 1, 12); // set valid numbers and precision of month from 1 to 12
@@ -641,7 +586,7 @@ FIELD **initMatchField(DBnode_t first, DBnode_t second, unsigned int check)
 
 	/* Initialize the fields */
 	index = 0; // for array index
-	rows = 0; // for row counting where the field are on same row there is 3 more cols as spaced
+	rows  = 0; // for row counting where the field are on same row there is 3 more cols as spaced
 
 	field[index] = new_field(1, 3, rows, 1, 0, 0); // id label
 	set_field_buffer(field[index++], 0, "id:");
@@ -773,7 +718,7 @@ void print_in_middle(WINDOW *win, int y, const char *string, chtype color)
 		win = stdscr;
 
 	length = (int)strlen(string);
-	x = (int)((getmaxx(win) - length) / 2);
+	x      = (int)((getmaxx(win) - length) / 2);
 
 	wattron(win, color);
 	mvwprintw(win, y, x, "%s", string);
@@ -794,7 +739,7 @@ int messageBox(WINDOW *win, int y, const char *string, chtype color)
 		win = stdscr;
 
 	length = (int)strlen(string) + 6;
-	x = (int)((getmaxx(win) - length) / 2);
+	x      = (int)((getmaxx(win) - length) / 2);
 
 	msgWin = newwin(3, length, y, x); // create a message window
 	box(msgWin, 0, 0); // create a box around the message window
@@ -867,7 +812,7 @@ void wrectangle(WINDOW *win, int y1, int x1, int y2, int x2)
 {
 	int width, height;
 
-	width = x2 - x1;
+	width  = x2 - x1;
 	height = y2 - y1;
 	mvwhline(win, y1, x1, 0, width);
 	mvwhline(win, y2, x1, 0, width);

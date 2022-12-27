@@ -1,58 +1,3 @@
-/*********************************************************************************
-**                                                                              **
-**      Copyleft 1991-2021 by Sandroid75 with GNU General Public License.       **
-**                                                                              **
-**                                                                              **
-**  Redistribution and use in source and binary forms, with or without          **
-**  modification, are permitted provided that the following conditions are met: **
-**                                                                              **
-**   * Redistributions of source code must retain the above copyleft notice,    **
-**     this list of conditions and the following disclaimer.                    **
-**   * Redistributions in binary form must reproduce the above copyleft         **
-**     notice, this list of conditions and the following disclaimer in the      **
-**     documentation and/or other materials provided with the distribution.     **
-**   * Neither the name of Sandroid75 nor the names of its contributors may     **
-**     be used to endorse or promote products derived from this software        **
-**     without specific prior written permission.                               **
-**                                                                              **
-**  THIS SOFTWARE IS PROVIDED BY THE COPYLEFT HOLDERS AND CONTRIBUTORS "AS IS"  **
-**  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE   **
-**  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE  **
-**  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYLEFT OWNER OR CONTRIBUTORS BE     **
-**  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR         **
-**  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF        **
-**  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS    **
-**  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN     **
-**  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)     **
-**  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE  **
-**  POSSIBILITY OF SUCH DAMAGE.                                                 **
-**                                                                              **
-**  This code was made by Sandroid75 to illustrate various C language powers.   **
-**                                                                              **
-**  My recommendations for developing robust C code are:                        **
-**  - first of all read The C Programming Language: ANSI C Version by K&R (C)   **
-**  - after read K&R keep always in mind rules and methods                      **
-**  - one of the most characteristics and powers of the C is the pointers       **
-**  - pointers are very helpfull and flexibile to write efficient code          **
-**  - pointers can be dangerous for stable code if you forget the rules         **
-**  - if you use pointers for list of datas don't forget to reserve memory      **
-**  - if you use pointers for list of datas don't forget to release memory      **
-**  - write well-formatted code                                                 **
-**  - only good formatted code makes the code readable                          **
-**  - good formatting code reduces the risk of errors                           **
-**  - good formatting code facilitates the debugging                            **
-**  - good formatting code facilitates the maintenences                         **
-**  - good formatting code facilitates future implementantions                  **
-**  - commenting the code is another good and necessary practice                **
-**  - commenting the code means understanding what you are doing                **
-**  - commenting the code means understanding what you have done                **
-**  - commenting the code is not a waste of time                                **
-**  - at the last but not least, remember rules and methods                     **
-**                                                                              **
-**                  Have fun with C programming by Sandroid75                   **
-**                                                                              **
-**********************************************************************************/
-
 #include "phonebook.h"
 
 PhoneBook_t *newNode(DBnode_t node)
@@ -67,28 +12,28 @@ PhoneBook_t *newNode(DBnode_t node)
 	}
 
 	// copy all contents from DBnode passed from the call of addNode() function
-	dbNode->db.delete = node.delete;
+	dbNode->db.delete   = node.delete;
 	dbNode->db.modified = node.modified;
-	dbNode->db.id = node.id;
+	dbNode->db.id       = node.id;
 
-	dbNode->db.fname = sdsnew(node.fname);
-	dbNode->db.lname = sdsnew(node.lname);
+	dbNode->db.fname        = sdsnew(node.fname);
+	dbNode->db.lname        = sdsnew(node.lname);
 	dbNode->db.organization = sdsnew(node.organization);
-	dbNode->db.job = sdsnew(node.job);
-	dbNode->db.hphone = sdsnew(node.hphone);
-	dbNode->db.wphone = sdsnew(node.wphone);
-	dbNode->db.pmobile = sdsnew(node.pmobile);
-	dbNode->db.bmobile = sdsnew(node.bmobile);
-	dbNode->db.pemail = sdsnew(node.pemail);
-	dbNode->db.bemail = sdsnew(node.bemail);
-	dbNode->db.address = sdsnew(node.address);
-	dbNode->db.zip = sdsnew(node.zip);
-	dbNode->db.city = sdsnew(node.city);
-	dbNode->db.state = sdsnew(node.state);
-	dbNode->db.country = sdsnew(node.country);
+	dbNode->db.job          = sdsnew(node.job);
+	dbNode->db.hphone       = sdsnew(node.hphone);
+	dbNode->db.wphone       = sdsnew(node.wphone);
+	dbNode->db.pmobile      = sdsnew(node.pmobile);
+	dbNode->db.bmobile      = sdsnew(node.bmobile);
+	dbNode->db.pemail       = sdsnew(node.pemail);
+	dbNode->db.bemail       = sdsnew(node.bemail);
+	dbNode->db.address      = sdsnew(node.address);
+	dbNode->db.zip          = sdsnew(node.zip);
+	dbNode->db.city         = sdsnew(node.city);
+	dbNode->db.state        = sdsnew(node.state);
+	dbNode->db.country      = sdsnew(node.country);
 
 	dbNode->db.birthday.tm_mday = node.birthday.tm_mday;
-	dbNode->db.birthday.tm_mon = node.birthday.tm_mon;
+	dbNode->db.birthday.tm_mon  = node.birthday.tm_mon;
 	dbNode->db.birthday.tm_year = node.birthday.tm_year;
 
 	NULLSET(dbNode->prev); // set prev node to NULL pointer
@@ -114,7 +59,7 @@ PhoneBook_t *addNode(PhoneBook_t **list, DBnode_t node)
 		// contacts list exist now we have to found the right place to push the new node
 		FORWARD((*list)); // forward the list up to the last node
 		(*list)->next = dbNode;
-		dbNode->prev = (*list);
+		dbNode->prev  = (*list);
 	}
 
 	return (PhoneBook_t *)dbNode; // return the pointer to the new node
@@ -132,29 +77,29 @@ DBnode_t *initNode(PhoneBook_t *list)
 		return NULL;
 	}
 
-	node->delete = false; // always set delete flag to false
+	node->delete   = false; // always set delete flag to false
 	node->modified = false; // always set modified flag to false
 	FORWARD(ptr); // go to the tail of contacts list
 	node->id = ptr ? (ptr->db.id + 1) : 1; // if ptr is NULL means that it's a new list
 
-	node->fname = sdsempty();
-	node->lname = sdsempty();
+	node->fname        = sdsempty();
+	node->lname        = sdsempty();
 	node->organization = sdsempty();
-	node->job = sdsempty();
-	node->hphone = sdsempty();
-	node->wphone = sdsempty();
-	node->pmobile = sdsempty();
-	node->bmobile = sdsempty();
-	node->pemail = sdsempty();
-	node->bemail = sdsempty();
-	node->address = sdsempty();
-	node->zip = sdsempty();
-	node->city = sdsempty();
-	node->state = sdsempty();
-	node->country = sdsempty();
+	node->job          = sdsempty();
+	node->hphone       = sdsempty();
+	node->wphone       = sdsempty();
+	node->pmobile      = sdsempty();
+	node->bmobile      = sdsempty();
+	node->pemail       = sdsempty();
+	node->bemail       = sdsempty();
+	node->address      = sdsempty();
+	node->zip          = sdsempty();
+	node->city         = sdsempty();
+	node->state        = sdsempty();
+	node->country      = sdsempty();
 
 	node->birthday.tm_mday = 1;
-	node->birthday.tm_mon = 1;
+	node->birthday.tm_mon  = 1;
 	node->birthday.tm_year = 1900;
 
 	return (DBnode_t *)node;
@@ -258,7 +203,7 @@ void nodeDBswap(PhoneBook_t *left, PhoneBook_t *right)
 {
 	DBnode_t tmp = left->db; // assign temporary db values to tmp
 
-	left->db = right->db; // store right db values to left
+	left->db  = right->db; // store right db values to left
 	right->db = tmp; // store tmp (ex left) db values to right
 
 	return;
@@ -320,7 +265,7 @@ void RenumberListID(PhoneBook_t *list)
 
 	REWIND(ptr);
 	for (int index = 1; ptr; index++, NEXT(ptr)) { // walk thru the enteire list
-		ptr->db.id = index; // assign the right index to id
+		ptr->db.id       = index; // assign the right index to id
 		ptr->db.modified = true; // set modified to true for each node
 	}
 
