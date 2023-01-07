@@ -9,9 +9,8 @@ int callback(void *NotUsed, int argc, char **argv, char **azColName)
 
 	NotUsed = 0;
 
-	if (!argv) { // if argv is false means that DataBase doesn't exist
+	if (!argv) // if argv is false means that DataBase doesn't exist
 		return 0; // do nothing
-	}
 
 	db = (DBnode_t *)malloc(sizeof(DBnode_t)); // reserve memory for db
 	if (!db) {
@@ -108,9 +107,8 @@ int write_db(_Bool update)
 		}
 		logfile("%s: %ld bytes copyed from '%s' to '%s'\n", __func__, (long)bytes, DB, DBAK);
 		sql = sdsempty(); // init the sql statement for existing DataBase
-	} else { // the file DataBase exist
+	} else // the file DataBase exist
 		sql = sdsnew(DEFAULT_SQL_TABLE); // no DataBase exist, than create new table using default schema
-	}
 
 	REWIND(contacts); // to be sure that contacts pointer go to head of the list
 	for (ptr = contacts; ptr; ptr = pnext) { // walk thru the complete contacts list
@@ -208,18 +206,17 @@ int write_csv(const char *csvFile, PhoneBook_t *contact_csv)
 
 	isGoogle = strcmp(csvFile, GOOGLE_CSV) ? false : true; // check if is Google csv file
 
-	if (access(csvFile, R_OK)) { // if the csvFile doesn't exist
+	if (access(csvFile, R_OK)) // if the csvFile doesn't exist
 		csv_table = sdsnew(isGoogle ? CSV_GOOGLE_HEADER : CSV_HEADER); // build the CSV header
-	} else { // the csvFile exist
+	else // the csvFile exist
 		csv_table = sdsempty(); // init an empty table
-	}
 
 	for (rows = 0; ptr; rows++) { // build the CSV table with rows
-		if (isGoogle) {
+		if (isGoogle)
 			csv_table = SDSgoogleCSV(csv_table, ptr->db); // insert each row from db node
-		} else {
+		else
 			csv_table = SDSinsertCSV(csv_table, ptr->db); // insert each row from db node
-		}
+
 		NEXT(ptr); // step to next
 	}
 
@@ -264,9 +261,8 @@ sds SDSgoogleCSV(sds csvRow, DBnode_t node)
 { // build INSERT statement from node
 	sds birthday = sdsempty();
 
-	if (node.birthday.tm_year != 1900 && node.birthday.tm_mon != 1 && node.birthday.tm_mday != 1) { // check if is birthday was not default
+	if (node.birthday.tm_year != 1900 && node.birthday.tm_mon != 1 && node.birthday.tm_mday != 1) // check if is birthday was not default
 		birthday = sdscatprintf(birthday, "%04d-%02d-%02d", node.birthday.tm_year, node.birthday.tm_mon, node.birthday.tm_mday);
-	}
 
 	csvRow = sdscatprintf(csvRow, CSV_GOOGLE_SCHEMA,
 	                      node.fname, node.lname, node.fname, node.lname,
@@ -283,18 +279,16 @@ sds SDSgoogleCSV(sds csvRow, DBnode_t node)
 
 static int is_space(unsigned char c)
 {
-	if (c == CSV_SPACE || c == CSV_TAB) {
+	if (c == CSV_SPACE || c == CSV_TAB)
 		return 1;
-	}
 
 	return 0;
 }
 
 static int is_term(unsigned char c)
 {
-	if (c == CSV_CR || c == CSV_LF) {
+	if (c == CSV_CR || c == CSV_LF)
 		return 1;
-	}
 
 	return 0;
 }
@@ -304,19 +298,15 @@ void csv_cb_field(void *s, size_t len, void *data)
 	int count;
 	sds *tokens, field;
 
-	if (!((Counts_t *)data)->rows) { // if is the header row
+	if (!((Counts_t *)data)->rows) // if is the header row
 		return; // do nothing
-	}
 
-	if (!((Counts_t *)data)->fields) { // every first field
-		((Counts_t *)data)->db = initNode(contacts); // initializing the db node
-	}
+	if (!((Counts_t *)data)->fields) // every first field
 
-	((Counts_t *)data)->fields++; // increment the field counter
+		((Counts_t *)data)->fields++; // increment the field counter
 
-	if (!len) { // if the field is empty
+	if (!len) // if the field is empty
 		return; // do nothing
-	}
 
 	field = sdsnewlen(s, len); // cduplicate the field content
 	sdstrim(field, " \n"); // remove spaces and newlines from the left and the right of the sds string
@@ -496,9 +486,9 @@ int importCSV(sds csvFile)
 	while ((bytes_read = fread(buffer, 1, MAX_BUFFER, fp)) > 0) {
 		retVal = csv_parse(&parse, buffer, bytes_read, csv_cb_field, csv_cb_row, &data);
 		pos += bytes_read;
-		if (retVal == bytes_read) {
+		if (retVal == bytes_read)
 			logfile("%s: reading '%s' up to %lu bytes\n", __func__, csvFile, (unsigned long)pos);
-		} else if (csv_error(&parse) == CSV_EPARSE) {
+		else if (csv_error(&parse) == CSV_EPARSE) {
 			logfile("%s: malformed at byte %lu at row %u at field %u\n", __func__, (unsigned long)pos, data.rows, data.fields);
 			csv_fini(&parse, csv_cb_field, csv_cb_row, &data);
 			csv_free(&parse);

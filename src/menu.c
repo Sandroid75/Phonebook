@@ -19,11 +19,10 @@ void MainMenu(WINDOW *win)
 			sdsfree(menuName); // free memory
 
 			return;
-		} else if (ch > 0) {
+		} else if (ch > 0)
 			logfile("%s: DataBase '%s' is successfully opened, %d contacts readed...\n", __func__, DB, ch);
-		} else {
+		else
 			logfile("%s: No database found, new one will be created...\n", __func__);
-		}
 	}
 
 	wrefresh(win);
@@ -272,9 +271,8 @@ void UpdateMenu(WINDOW *win, PhoneBook_t *resultList, sds menuName, sds menuModi
 	}
 
 	menuList = buildMenuList(ptr, &nb_fields); // build the list from resultList
-	if (!menuList) {
+	if (!menuList)
 		return;
-	}
 
 	do {
 		choice = flexMenu(win, menuList, menuName); // pass the contacts list to felxMenu to elaborate it
@@ -365,15 +363,15 @@ void ImpExpMenu(WINDOW *win)
 		case 1: // Import from CSV
 			csvFile = DB_CSV; // assign the standard csv file name
 		case 2: // Import from Google CSV
-			if (!csvFile) { // check if the file name is already set
+			if (!csvFile) // check if the file name is already set
 				csvFile = GOOGLE_CSV; // assign the standard Google csv file name
-			}
+
 			rows = importCSV(csvFile); // import the contacts from csv
-			if (rows > 0) { // check if records are exported
+			if (rows > 0) // check if records are exported
 				asprintf(&message, " Imported %d records from '%s' successfully. ", rows, csvFile); // build message string
-			} else {
+			else
 				asprintf(&message, " No records imported from '%s' ", csvFile); // build message string
-			}
+
 			wattron(win, A_BLINK);
 			print_in_middle(win, 11, " Updating DataBase file, please wait... ", COLOR_PAIR(PAIR_EDIT));
 			wattroff(win, A_BLINK);
@@ -381,9 +379,9 @@ void ImpExpMenu(WINDOW *win)
 			if (rows > 0) {
 				rows = write_db(false); // write the imported contacts list to sqlite file database
 				logfile("%s: Imported %d rows in '%s' DataBase\n", __func__, rows, DB);
-			} else {
+			} else
 				logfile("%s: %s\n", __func__, message); // write result to log file
-			}
+
 			wclear(win);
 			wrefresh(win);
 			messageBox(win, 15, message, COLOR_PAIR(PAIR_MODIFIED));
@@ -391,19 +389,19 @@ void ImpExpMenu(WINDOW *win)
 		case 3: // Export to CSV
 			csvFile = DB_CSV; // assign the standard csv file name
 		case 4: // Export to Google CSV
-			if (!csvFile) { // check if the file name is already set
+			if (!csvFile) // check if the file name is already set
 				csvFile = GOOGLE_CSV; // assign the standard Google csv file name
-			}
+
 			wattron(win, A_BLINK);
 			print_in_middle(win, 11, " Writing CSV file, please waiting... ", COLOR_PAIR(PAIR_EDIT));
 			wattroff(win, A_BLINK);
 			wrectangle(win, 10, midx - 22, 12, midx + 21);
 			rows = write_csv(csvFile, contacts); // write or append records to DB_CSV
-			if (rows > 0) { // check if records are exported
+			if (rows > 0) // check if records are exported
 				asprintf(&message, " Exported %d records to '%s' successfully ", rows, csvFile); // build message string
-			} else {
+			else
 				asprintf(&message, " No records exported to '%s' ", csvFile); // build message string
-			}
+
 			wclear(win);
 			wrefresh(win);
 			messageBox(win, 15, message, COLOR_PAIR(PAIR_MODIFIED));
@@ -416,9 +414,9 @@ void ImpExpMenu(WINDOW *win)
 		default:
 			break;
 		}
-		if (message) {
-			free(message); // realese the memory
-		}
+		if (message)
+			FREE(message); // realese the memory
+
 		wrefresh(win);
 		wclear(win);
 	}
@@ -524,57 +522,41 @@ unsigned int checkMatch(DBnode_t first, DBnode_t second)
 {
 	unsigned int check = MATCH_NO_MATCH;
 
-	if (sdscasesds(first.hphone, second.hphone) >= 0) {
+	if (sdscasesds(first.hphone, second.hphone) >= 0)
 		check |= MATCH_HPHONE_HPONE;
-	}
-	if (sdscasesds(first.hphone, second.wphone) >= 0) {
+	if (sdscasesds(first.hphone, second.wphone) >= 0)
 		check |= MATCH_HPHONE_WPHONE;
-	}
-	if (sdscasesds(first.hphone, second.pmobile) >= 0) {
+	if (sdscasesds(first.hphone, second.pmobile) >= 0)
 		check |= MATCH_HPHONE_PMOBILE;
-	}
-	if (sdscasesds(first.hphone, second.bmobile) >= 0) {
+	if (sdscasesds(first.hphone, second.bmobile) >= 0)
 		check |= MATCH_HPHONE_BMOBILE;
-	}
 
-	if (sdscasesds(first.wphone, second.hphone) >= 0) {
+	if (sdscasesds(first.wphone, second.hphone) >= 0)
 		check |= MATCH_WPHONE_HPHONE;
-	}
-	if (sdscasesds(first.wphone, second.wphone) >= 0) {
+	if (sdscasesds(first.wphone, second.wphone) >= 0)
 		check |= MATCH_WPHONE_WPHONE;
-	}
-	if (sdscasesds(first.wphone, second.pmobile) >= 0) {
+	if (sdscasesds(first.wphone, second.pmobile) >= 0)
 		check |= MATCH_WPHONE_PMOBILE;
-	}
-	if (sdscasesds(first.wphone, second.bmobile) >= 0) {
+	if (sdscasesds(first.wphone, second.bmobile) >= 0)
 		check |= MATCH_WPHONE_BMOBILE;
-	}
 
-	if (sdscasesds(first.pmobile, second.hphone) >= 0) {
+	if (sdscasesds(first.pmobile, second.hphone) >= 0)
 		check |= MATCH_PMOBILE_HPHONE;
-	}
-	if (sdscasesds(first.pmobile, second.wphone) >= 0) {
+	if (sdscasesds(first.pmobile, second.wphone) >= 0)
 		check |= MATCH_PMOBILE_WPHONE;
-	}
-	if (sdscasesds(first.pmobile, second.pmobile) >= 0) {
+	if (sdscasesds(first.pmobile, second.pmobile) >= 0)
 		check |= MATCH_PMOBILE_PMOBILE;
-	}
-	if (sdscasesds(first.pmobile, second.bmobile) >= 0) {
+	if (sdscasesds(first.pmobile, second.bmobile) >= 0)
 		check |= MATCH_PMOBILE_BMOBILE;
-	}
 
-	if (sdscasesds(first.bmobile, second.hphone) >= 0) {
+	if (sdscasesds(first.bmobile, second.hphone) >= 0)
 		check |= MATCH_BMOBILE_HPHONE;
-	}
-	if (sdscasesds(first.bmobile, second.wphone) >= 0) {
+	if (sdscasesds(first.bmobile, second.wphone) >= 0)
 		check |= MATCH_BMOBILE_WPHONE;
-	}
-	if (sdscasesds(first.bmobile, second.pmobile) >= 0) {
+	if (sdscasesds(first.bmobile, second.pmobile) >= 0)
 		check |= MATCH_BMOBILE_PMOBILE;
-	}
-	if (sdscasesds(first.bmobile, second.bmobile) >= 0) {
+	if (sdscasesds(first.bmobile, second.bmobile) >= 0)
 		check |= MATCH_BMOBILE_BMOBILE;
-	}
 
 	return check;
 }
@@ -591,9 +573,8 @@ void mergeDuplicate(WINDOW *win, DBnode_t first, DBnode_t second, unsigned int c
 	case KEY_F(1):
 		REWIND(contacts);
 		for (ptr = contacts; ptr; NEXT(ptr)) { // walk to the enteire list
-			if (ptr->db.id == first.id || ptr->db.id == second.id) { // find the duplicated contacts
+			if (ptr->db.id == first.id || ptr->db.id == second.id) // find the duplicated contacts
 				addNode(&resultList, ptr->db); // add the every single duplicate to temp list
-			}
 		}
 		REWIND(resultList);
 		UpdateMenu(win, resultList, menuName, menuMatch); // to modify the duplicated contacts
@@ -628,9 +609,8 @@ void mergeDuplicate(WINDOW *win, DBnode_t first, DBnode_t second, unsigned int c
 
 		REWIND(contacts);
 		for (ptr = contacts; ptr; NEXT(ptr)) { // walk to the enteire list
-			if (ptr->db.id == first.id || ptr->db.id == second.id) { // find the duplicated contacts
+			if (ptr->db.id == first.id || ptr->db.id == second.id) // find the duplicated contacts
 				ptr->db.delete = true; // set the original contacto to delete
-			}
 		}
 
 		write_db(true); // if the modification is accepted write the new db with param true means UPDATE
@@ -660,9 +640,9 @@ sds *buildMenuItems(char **items)
 		; // count the number of items (NULL terminated)
 	menuChoices = (sds *)calloc(n + 1, sizeof(sds)); // calculate one more also for empity sds
 
-	for (i = 0; i < n; i++) {
+	for (i = 0; i < n; i++)
 		menuChoices[i] = sdscatprintf(sdsempty(), "[%d] %s", i + 1, items[i]);
-	}
+
 	menuChoices[i] = sdsempty(); // last item must be empty
 
 	return (sds *)menuChoices;

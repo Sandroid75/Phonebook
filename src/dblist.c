@@ -53,9 +53,9 @@ PhoneBook_t *addNode(PhoneBook_t **list, DBnode_t node)
 		return dbNode;
 	}
 
-	if (!(*list)) { // if no contacts lists exist
+	if (!(*list)) // if no contacts lists exist
 		(*list) = dbNode; // the node will be the only node in the list, no more thing to do than return
-	} else {
+	else {
 		// contacts list exist now we have to found the right place to push the new node
 		FORWARD((*list)); // forward the list up to the last node
 		(*list)->next = dbNode;
@@ -107,21 +107,18 @@ DBnode_t *initNode(PhoneBook_t *list)
 
 void deleteNode(PhoneBook_t **list, PhoneBook_t *del)
 {
-	if (!(*list) || !del) { // nothing to delete
+	if (!(*list) || !del) // nothing to delete
 		return;
-	}
 
-	if ((*list) == del) { // If node to be deleted is head node
+	if ((*list) == del) // If node to be deleted is head node
 		(*list) = del->next;
-	}
 
-	if (del->next != NULL) { // Change next only if node to be deleted is NOT the last node
+	if (del->next != NULL) // Change next only if node to be deleted is NOT the last node
 		del->next->prev = del->prev;
-	}
 
-	if (del->prev != NULL) { /// Change prev only if node to be deleted is NOT the first node
+	if (del->prev != NULL) /// Change prev only if node to be deleted is NOT the first node
 		del->prev->next = del->next;
-	}
+
 	// free all sds strings
 	sdsfree(del->db.fname);
 	sdsfree(del->db.lname);
@@ -139,8 +136,7 @@ void deleteNode(PhoneBook_t **list, PhoneBook_t *del)
 	sdsfree(del->db.state);
 	sdsfree(del->db.country);
 
-	free(del); // Finally, free the memory occupied by del
-	NULLSET(del);
+	FREE(del); // Finally, free the memory occupied by del
 
 	return;
 }
@@ -151,9 +147,8 @@ int countList(PhoneBook_t *list)
 	int count;
 
 	REWIND(ptr); // rewind the list up to the first node
-	for (count = 0; ptr; count++) { // walk thru the entire list to count the numbers of contacts
+	for (count = 0; ptr; count++) // walk thru the entire list to count the numbers of contacts
 		NEXT(ptr);
-	}
 
 	return count; // return the numbers of contacts counted
 }
@@ -178,8 +173,7 @@ void destroyNode(DBnode_t *node)
 		sdsfree(node->state);
 		sdsfree(node->country);
 
-		free(node); // destroy the node
-		NULLSET(node); // set *node pointer to NULL
+		FREE(node); // destroy the node
 	}
 
 	return;

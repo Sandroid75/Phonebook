@@ -38,29 +38,68 @@
 		pointer = NULL;  \
 	}
 
+#ifndef MIN
+#define MIN(a, b) ({ __typeof__ (a) _a = (a); __typeof__ (b) _b = (b); _a < _b ? _a : _b; })
+#endif
+#ifndef MAX
+#define MAX(a, b) ({ __typeof__ (a) _a = (a); __typeof__ (b) _b = (b); _a > _b ? _a : _b; })
+#endif
+
+/* Safe version of free() don't need assign NULL after free */
+#ifndef FREE
+#define FREE(p)        \
+	{                  \
+		if ((p))       \
+			free((p)); \
+		(p) = NULL;    \
+	}
+#endif
+
+/* https://stackoverflow.com/questions/42156041/copying-a-huge-file-using-read-write-and-open-apis-in-linux */
+#define DEFAULT_CHUNK ((ssize_t)262144L)
+
+/* KEY not defined by curses.h */
 #ifndef KEY_SPACE
-#define KEY_SPACE 32
+#define KEY_SPACE 0x20
 #endif
 #ifndef KEY_ESC
-#define KEY_ESC 27
+#define KEY_ESC 0x1B
 #endif
 #ifndef KEY_TAB
-#define KEY_TAB 9
+#define KEY_TAB 0x09
 #endif
 #ifndef KEY_RETURN
-#define KEY_RETURN 10
+#define KEY_RETURN 0x0A
 #endif
 #ifndef KEY_CTRL_DEL
-#define KEY_CTRL_DEL 519
+#define KEY_CTRL_DEL 0x207
 #endif
 #ifndef KEY_CTRL_BS
-#define KEY_CTRL_BS 8
+#define KEY_CTRL_BS 0x08
 #endif
 #ifndef KEY_CTRL_LEFT
-#define KEY_CTRL_LEFT 545
+#define KEY_CTRL_LEFT 0x221
 #endif
 #ifndef KEY_CTRL_RIGHT
-#define KEY_CTRL_RIGHT 560
+#define KEY_CTRL_RIGHT 0x230
+#endif
+#ifndef KEY_CTRL_X
+#define KEY_CTRL_X 0x18
+#endif
+#ifndef KEY_CTRL_C
+#define KEY_CTRL_C 0x03
+#endif
+#ifndef KEY_CTRL_V
+#define KEY_CTRL_V 0x16
+#endif
+#ifndef KEY_CTRL_A
+#define KEY_CTRL_A 0x01
+#endif
+#ifndef KEY_CTRL_S
+#define KEY_CTRL_S 0x13
+#endif
+#ifndef KEY_CTRL_D
+#define KEY_CTRL_D 0x04
 #endif
 
 #define MATCH_NO_MATCH 0x0
@@ -178,6 +217,12 @@
 #ifndef NCURSES_WIDECHAR
 #define SPECIAL_CHARS "ÀÁÂÃÄÅĀĂĄÆàáâãäåāăąæÇĆČçćčĎĐđÈÉÊËĒĖĘĚĔèéêëēėęěĕĢĞģğÎÍÌĮĪÏîíìıįīïĶķŁĻĹłļĺŇŅŃÑňņńñÕÔÓÒŐØÖŒõôóòőøöœŔŘŕřŚŠŞśšşÞŤȚŢþțţÜÛÚÙŲŰŮŪüûúùųűůūµÝŸýÿŹŻŽźżž"
 #endif
+
+/* filecopy() returns error */
+#define FC_ERROR -1L //unable to copy
+#define FC_SAMEF -2L //suorce and destination are the same file
+#define FC_NOOWD -3L //unable to overwrite the destination
+#define FC_USKIP -4L //user skiping overwrite
 
 // char *Months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", };
 

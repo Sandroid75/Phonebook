@@ -10,23 +10,25 @@ int flexMenu(WINDOW *win, sds *choices, char *menuName)
 
 	for (i = 0; sdslen(choices[i]); i++)
 		; // count the numbers of choices
+
 	n_choices = i + 1; // set the numbres of choics array
 
 	/* Create items */
 	my_items = (ITEM **)calloc(n_choices, sizeof(ITEM *)); // calculate the size of memory to allocate for menu items
 	if (!my_items) {
 		logfile("%s: error allocationg memory for items\n", __func__);
+
 		return -1;
 	}
 
-	for (i = 0; i < n_choices; ++i) {
+	for (i = 0; i < n_choices; ++i)
 		my_items[i] = new_item(choices[i], (char *)NULL); // insert each choice in each menu item
-	}
 
 	/* Crate menu */
 	my_menu = new_menu((ITEM **)my_items);
 	if (!my_menu) {
 		logfile("%s: error menu initialization\n", __func__);
+
 		return -1;
 	}
 
@@ -101,20 +103,19 @@ int flexMenu(WINDOW *win, sds *choices, char *menuName)
 			quit = true; // quitting
 			break;
 		}
-		if (is_wintouched(my_menu_win)) {
+		if (is_wintouched(my_menu_win))
 			touchwin(my_menu_win);
-		}
+
 		wrefresh(my_menu_win);
 	}
 
 	unpost_menu(my_menu); // Unpost and free all the memory taken up
 	free_menu(my_menu);
-	for (i = 0; i < n_choices; ++i) {
+	for (i = 0; i < n_choices; ++i)
 		free_item(my_items[i]);
-	}
-	if (my_items) {
-		free(my_items);
-	}
+
+	if (my_items)
+		FREE(my_items);
 
 	wclear(my_menu_win);
 	wclear(win);
@@ -140,6 +141,7 @@ int flexForm(WINDOW *win, DBnode_t *db, const char *formName)
 	field = initField(ptrDB); // Initialize the fields and respective labels
 	if (!field) { // check if field are well initialized
 		logfile("%s: error initializing fields\n", __func__);
+
 		return -1;
 	}
 
@@ -254,33 +256,32 @@ int flexForm(WINDOW *win, DBnode_t *db, const char *formName)
 			break;
 
 		case KEY_F(1): // F1 key was pressed
-			for (i = 0, status = false; field[i]; i++) { // exlude the last field as NULL
+			for (i = 0, status = false; field[i]; i++) // exlude the last field as NULL
 				status |= field_status(field[i]); // check if field as been modified
-			}
-			if (status) { // one or more fields it been modified
+
+			if (status) // one or more fields it been modified
 				store = true;
-			}
+
 			quit = true;
 			break;
 
 		case KEY_ESC: // ESCape
-			for (i = 0, status = false; field[i]; i++) { // exlude the last field as NULL
+			for (i = 0, status = false; field[i]; i++) // exlude the last field as NULL
 				status |= field_status(field[i]); // check if field as been modified
-			}
+
 			if (status) { // one or more fields it been modified
 				ch = messageBox(win, 18, "any key to save, 'N' to discard changes or ESC to continuing editing...", COLOR_PAIR(PAIR_EDIT));
-				if (toupper(ch) == 'N') { // discard changes
+				if (toupper(ch) == 'N') // discard changes
 					quit = true;
-				} else if (ch != KEY_ESC) { // confirm changes end exit
+				else if (ch != KEY_ESC) { // confirm changes end exit
 					store = true;
 					quit  = true;
 				} else { // ESCape was pressed back to editing form
 					post_form(my_form);
 					wrefresh(my_form_win);
 				}
-			} else { // no fields was modified than exit without ask
+			} else // no fields was modified than exit without ask
 				quit = true;
-			}
 			break;
 
 		default:
@@ -340,10 +341,8 @@ int flexForm(WINDOW *win, DBnode_t *db, const char *formName)
 		free_field(field[i]);
 		NULLSET(field[i]);
 	}
-	if (field) {
-		free(field);
-		NULLSET(field);
-	}
+	if (field)
+		FREE(field);
 
 	wclear(my_form_win);
 	wclear(win);
@@ -458,9 +457,8 @@ FIELD **initField(DBnode_t *db)
 	set_field_digit(field[i++], 0, ptrDB->birthday.tm_mon);
 	set_field_digit(field[i++], 0, ptrDB->birthday.tm_year);
 
-	for (i = 0; i < PHONE_FIELDS; i++) { // exlude the last field as NULL
+	for (i = 0; i < PHONE_FIELDS; i++) // exlude the last field as NULL
 		set_field_status(field[i], false); // set the field as no modified
-	}
 
 	return field; // return pointer to field
 }
@@ -470,9 +468,8 @@ int set_field_digit(FIELD *field, int buf, int digit)
 	sds string;
 	int retVal;
 
-	if (field_type(field) != TYPE_INTEGER) { // check if field is a integer type
+	if (field_type(field) != TYPE_INTEGER) // check if field is a integer type
 		return E_BAD_ARGUMENT;
-	}
 
 	string = sdsfromlonglong((long long)digit); // convert integer to sds string
 	retVal = set_field_buffer(field, buf, string); // set the buffer with the string value
@@ -497,6 +494,7 @@ int showMatch(WINDOW *win, DBnode_t first, DBnode_t second, unsigned int check)
 	field = initMatchField(first, second, check);
 	if (!field) { // check if field are well initialized
 		logfile("%s: error initializing fields\n", __func__);
+
 		return -1;
 	}
 
@@ -557,10 +555,8 @@ int showMatch(WINDOW *win, DBnode_t first, DBnode_t second, unsigned int check)
 		free_field(field[i]);
 		NULLSET(field[i]);
 	}
-	if (field) {
-		free(field);
-		NULLSET(field);
-	}
+	if (field)
+		FREE(field);
 
 	wclear(my_form_win);
 	wclear(win);
@@ -608,33 +604,29 @@ FIELD **initMatchField(DBnode_t first, DBnode_t second, unsigned int check)
 	set_field_buffer(field[index++], 0, "home phone");
 	field[index] = new_field(1, PHONE, rows--, 1, 0, 0); // hphone
 	set_field_buffer(field[index++], 0, first.hphone);
-	if (check & MATCH_FIRST_HPHONE) {
+	if (check & MATCH_FIRST_HPHONE)
 		set_field_back(field[index - 1], A_REVERSE);
-	}
 
 	field[index] = new_field(1, PHONE, rows++, PHONE + 3, 0, 0); // wphone
 	set_field_buffer(field[index++], 0, "work phone");
 	field[index] = new_field(1, PHONE, rows--, PHONE + 3, 0, 0); // wphone
 	set_field_buffer(field[index++], 0, first.wphone);
-	if (check & MATCH_FIRST_WPHONE) {
+	if (check & MATCH_FIRST_WPHONE)
 		set_field_back(field[index - 1], A_REVERSE);
-	}
 
 	field[index] = new_field(1, PHONE, rows++, PHONE * 2 + 7, 0, 0); // pmobile label
 	set_field_buffer(field[index++], 0, "personal mobile");
 	field[index] = new_field(1, PHONE, rows--, PHONE * 2 + 7, 0, 0); // pmobile
 	set_field_buffer(field[index++], 0, first.pmobile);
-	if (check & MATCH_FIRST_PMOBILE) {
+	if (check & MATCH_FIRST_PMOBILE)
 		set_field_back(field[index - 1], A_REVERSE);
-	}
 
 	field[index] = new_field(1, PHONE, rows++, PHONE * 3 + 9, 0, 0); // bmobile label
 	set_field_buffer(field[index++], 0, "business mobile");
 	field[index] = new_field(1, PHONE, rows++, PHONE * 3 + 9, 0, 0); // bmobile
 	set_field_buffer(field[index++], 0, first.bmobile);
-	if (check & MATCH_FIRST_BMOBILE) {
+	if (check & MATCH_FIRST_BMOBILE)
 		set_field_back(field[index - 1], A_REVERSE);
-	}
 
 	rows++;
 
@@ -658,33 +650,29 @@ FIELD **initMatchField(DBnode_t first, DBnode_t second, unsigned int check)
 	set_field_buffer(field[index++], 0, "home phone");
 	field[index] = new_field(1, PHONE, rows--, 1, 0, 0); // hphone
 	set_field_buffer(field[index++], 0, second.hphone);
-	if (check & MATCH_SECOND_HPHONE) {
+	if (check & MATCH_SECOND_HPHONE)
 		set_field_back(field[index - 1], A_REVERSE);
-	}
 
 	field[index] = new_field(1, PHONE, rows++, PHONE + 3, 0, 0); // wphone
 	set_field_buffer(field[index++], 0, "work phone");
 	field[index] = new_field(1, PHONE, rows--, PHONE + 3, 0, 0); // wphone
 	set_field_buffer(field[index++], 0, second.wphone);
-	if (check & MATCH_SECOND_WPHONE) {
+	if (check & MATCH_SECOND_WPHONE)
 		set_field_back(field[index - 1], A_REVERSE);
-	}
 
 	field[index] = new_field(1, PHONE, rows++, PHONE * 2 + 7, 0, 0); // pmobile label
 	set_field_buffer(field[index++], 0, "personal mobile");
 	field[index] = new_field(1, PHONE, rows--, PHONE * 2 + 7, 0, 0); // pmobile
 	set_field_buffer(field[index++], 0, second.pmobile);
-	if (check & MATCH_SECOND_PMOBILE) {
+	if (check & MATCH_SECOND_PMOBILE)
 		set_field_back(field[index - 1], A_REVERSE);
-	}
 
 	field[index] = new_field(1, PHONE, rows++, PHONE * 3 + 9, 0, 0); // bmobile label
 	set_field_buffer(field[index++], 0, "business mobile");
 	field[index] = new_field(1, PHONE, rows++, PHONE * 3 + 9, 0, 0); // bmobile
 	set_field_buffer(field[index++], 0, second.bmobile);
-	if (check & MATCH_SECOND_BMOBILE) {
+	if (check & MATCH_SECOND_BMOBILE)
 		set_field_back(field[index - 1], A_REVERSE);
-	}
 
 	NULLSET(field[index]);
 
@@ -703,9 +691,8 @@ FIELD **initMatchField(DBnode_t first, DBnode_t second, unsigned int check)
 		}
 	}
 
-	for (index = 0; index < MATCH_FIELDS; index++) { // exlude the last field as NULL
+	for (index = 0; index < MATCH_FIELDS; index++) // exlude the last field as NULL
 		set_field_status(field[index], false); // set the field as no modified
-	}
 
 	return field;
 }
@@ -750,7 +737,6 @@ int messageBox(WINDOW *win, int y, const char *string, chtype color)
 	wclear(msgWin); // clear message window contents
 	wrefresh(msgWin); // refresh message window contents
 	delwin(msgWin); // destroyu message window pointer
-
 	curs_set(prevCurs);
 
 	return key;
