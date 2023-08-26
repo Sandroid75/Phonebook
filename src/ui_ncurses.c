@@ -69,6 +69,13 @@ int flexMenu(WINDOW *win, sds *choices, char *menuName)
 		index = item_index(current_item(my_menu)) + 1; // set the current item index
 		ch    = wgetch(my_menu_win); // wait for user input
 		switch (ch) {
+		case '1' ... '9': // if user input a number between 1 to 9
+			i = (int) ch - '0'; // convert char to integer
+			if(n_choices <= 9 && i < n_choices) { //check if menu items are into range 1 to 9 and if the number entered is valid
+				index = i; // assign the menu item
+				quit = true; // quitting
+			}
+			break;
 		case KEY_BTAB: // BACK TAB
 		case KEY_UP:
 			menu_driver(my_menu, REQ_UP_ITEM); // go to prev menu item

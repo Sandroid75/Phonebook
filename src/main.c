@@ -27,9 +27,11 @@ int main(void)
 	curs_set(false); // hide cursor
 	timeout(100); // dalay for system
 	getmaxyx(stdscr, ymax, xmax); // get current window console surface dimension
-	if (ymax < 24 || xmax < 80) {
-		logfile("%s: Terminal height not enough you have %d rows, you need at least 24 rows\n", __func__, ymax);
-		logfile("%s: Terminal width not enough you have %d columns, you need at least 80 columns\n", __func__, xmax);
+	if (ymax < 24 || xmax < 80) { // check if the current console window have enough rows and columns
+		if(ymax < 24) // check the rows
+			logfile("%s: Terminal height not enough you have %d rows, you need at least 24 rows\n", __func__, ymax);
+		if(xmax < 80) // check the columns
+			logfile("%s: Terminal width not enough you have %d columns, you need at least 80 columns\n", __func__, xmax);
 
 		fprintf(stderr, "%s: Terminal error, see %s file please.", __func__, LOGFILE);
 		getchar();
