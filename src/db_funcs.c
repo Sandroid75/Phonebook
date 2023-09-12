@@ -75,9 +75,9 @@ int read_db(void)
 		sqlite3_free(sql_err_msg);
 
 		return -1; // error return code
-	} else {
+	} else
 		rc = countList(contacts);
-	}
+	
 	sqlite3_close(sqlDB); // close SQL database
 	REWIND(contacts); // to be sure that contacts pointer go to head of the list
 
@@ -127,11 +127,10 @@ int write_db(_Bool update)
 	}
 
 	if (records) {
-		if (doSQLstatement(sql) != SQLITE_OK) { // Execute the SQL statement and check that everything went well
+		if (doSQLstatement(sql) != SQLITE_OK) // Execute the SQL statement and check that everything went well
 			logfile("%s: Error %s %d records in the DataBase\n", __func__, update ? "updating" : "writing", records);
-		} else {
+		else
 			logfile("%s: %d records %s in the DataBase\n", __func__, records, update ? "updated" : "writed");
-		}
 	}
 	sdsfree(sql); // free memory
 	REWIND(contacts); // to be sure that contacts pointer go to head of the list
@@ -206,7 +205,7 @@ int write_csv(const char *csvFile, PhoneBook_t *contact_csv)
 
 	isGoogle = strcmp(csvFile, GOOGLE_CSV) ? false : true; // check if is Google csv file
 
-	if (access(csvFile, R_OK)) // if the csvFile doesn't exist
+	if (access(csvFile, R_OK))// if the csvFile doesn't exist
 		csv_table = sdsnew(isGoogle ? CSV_GOOGLE_HEADER : CSV_HEADER); // build the CSV header
 	else // the csvFile exist
 		csv_table = sdsempty(); // init an empty table
@@ -302,8 +301,9 @@ void csv_cb_field(void *s, size_t len, void *data)
 		return; // do nothing
 
 	if (!((Counts_t *)data)->fields) // every first field
+		((Counts_t *)data)->db = initNode(contacts); // initializing the db node
 
-		((Counts_t *)data)->fields++; // increment the field counter
+	((Counts_t *)data)->fields++; // increment the field counter
 
 	if (!len) // if the field is empty
 		return; // do nothing
@@ -312,7 +312,7 @@ void csv_cb_field(void *s, size_t len, void *data)
 	sdstrim(field, " \n"); // remove spaces and newlines from the left and the right of the sds string
 	field = sdschremove(field, "\""); // remove spaces and newlines from the left and the right of the sds string
 
-	if (((Counts_t *)data)->isGoogle) { // if parsing Google CSV file
+	if (((Counts_t *)data)->isGoogle)// if parsing Google CSV file
 		switch (((Counts_t *)data)->fields) { // check the field number
 		case 2: // FirstName
 			((Counts_t *)data)->db->fname = sdsnewlen(field, STEXT);
@@ -367,7 +367,7 @@ void csv_cb_field(void *s, size_t len, void *data)
 		default: // do nothing
 			break;
 		}
-	} else { // parsing PhoneBook CSV file
+	else // parsing PhoneBook CSV file
 		switch (((Counts_t *)data)->fields) { // check the field number
 		case 1: // id
 			break;
@@ -429,7 +429,6 @@ void csv_cb_field(void *s, size_t len, void *data)
 		default: // do nothing
 			break;
 		}
-	}
 
 	sdsfree(field); // release the memory
 
