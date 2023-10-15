@@ -8,6 +8,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <libintl.h>
 #include <locale.h>
 #include <malloc.h>
 #include <ncursesw/form.h>
@@ -44,6 +45,8 @@
 #ifndef MAX
 #define MAX(a, b) ({ __typeof__ (a) _a = (a); __typeof__ (b) _b = (b); _a > _b ? _a : _b; })
 #endif
+
+#define _(x) gettext(x)
 
 /* Safe version of free() don't need assign NULL after free */
 #ifndef FREE

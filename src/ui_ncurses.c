@@ -57,7 +57,7 @@ int flexMenu(WINDOW *win, sds *choices, char *menuName)
 	mvwaddch(my_menu_win, 2, 0, ACS_LTEE); // print the intersection at left
 	mvwhline(my_menu_win, 2, 1, ACS_HLINE, mcols - 2); // print the division line between the title and menu
 	mvwaddch(my_menu_win, 2, mcols - 1, ACS_RTEE); // print the intersection at right
-	mvwprintw(win, LINES - 2, 0, "Press ENTER or SPACE to Select, ESC to Exit");
+	mvwprintw(win, LINES - 2, 0, _("Press ENTER or SPACE to Select, ESC to Exit"));
 	wrefresh(win);
 	refresh();
 
@@ -177,8 +177,8 @@ int flexForm(WINDOW *win, DBnode_t *db, const char *formName)
 	mvwhline(my_form_win, 2, 1, ACS_HLINE, fcols - 2); // print the division line between the title and menu
 	mvwaddch(my_form_win, 2, fcols - 1, ACS_RTEE); // print the intersection at right
 	mvwprintw(my_form_win, 1, getmaxx(my_form_win) - 6, "INS"); // print the insert mode in win_body
-	mvwprintw(win, LINES - 2, 0, "Use arrow keys or TAB to move between fields");
-	mvwprintw(win, LINES - 1, 0, "Press F1 to confirm and Exit or press ESC to cancel and Exit");
+	mvwprintw(win, LINES - 2, 0, _("Use arrow keys or TAB to move between fields"));
+	mvwprintw(win, LINES - 1, 0, _("Press F1 to confirm and Exit or press ESC to cancel and Exit"));
 	wrefresh(win);
 	refresh();
 
@@ -277,7 +277,7 @@ int flexForm(WINDOW *win, DBnode_t *db, const char *formName)
 				status |= field_status(field[i]); // check if field as been modified
 
 			if (status) { // one or more fields it been modified
-				ch = messageBox(win, 18, "any key to save, 'N' to discard changes or ESC to continuing editing...", COLOR_PAIR(PAIR_EDIT));
+				ch = messageBox(win, 18, _("any key to save, 'N' to discard changes or ESC to continuing editing..."), COLOR_PAIR(PAIR_EDIT));
 				if (toupper(ch) == 'N') // discard changes
 					quit = true;
 				else if (ch != KEY_ESC) { // confirm changes end exit
@@ -525,12 +525,12 @@ int showMatch(WINDOW *win, DBnode_t first, DBnode_t second, unsigned int check)
 
 	/* Print a border around the main window and print a title */
 	box(my_form_win, 0, 0); // print the frame of menu window
-	print_in_middle(my_form_win, 1, " Contacts with Matches ", COLOR_PAIR(PAIR_TITLE)); // print the title of the menu in the middle using color pair 1
+	print_in_middle(my_form_win, 1, _(" Contacts with Matches "), COLOR_PAIR(PAIR_TITLE)); // print the title of the menu in the middle using color pair 1
 	mvwaddch(my_form_win, 2, 0, ACS_LTEE); // print the intersection at left
 	mvwhline(my_form_win, 2, 1, ACS_HLINE, fcols - 2); // print the division line between the title and menu
 	mvwaddch(my_form_win, 2, fcols - 1, ACS_RTEE); // print the intersection at right
-	mvwprintw(win, LINES - 2, 0, "Press F1 to edit matches, F4 to auto merge, ESC ignore duplicates");
-	mvwprintw(win, LINES - 1, 0, "Note: the duplication match is highlighted");
+	mvwprintw(win, LINES - 2, 0, _("Press F1 to edit matches, F4 to auto merge, ESC ignore duplicates"));
+	mvwprintw(win, LINES - 1, 0, _("Note: the duplication match is highlighted"));
 	wrefresh(win);
 	refresh();
 
@@ -592,44 +592,44 @@ FIELD **initMatchField(DBnode_t first, DBnode_t second, unsigned int check)
 	rows  = 0; // for row counting where the field are on same row there is 3 more cols as spaced
 
 	field[index] = new_field(1, 3, rows, 1, 0, 0); // id label
-	set_field_buffer(field[index++], 0, "id:");
+	set_field_buffer(field[index++], 0, _("id:"));
 	field[index] = new_field(1, 4, rows++, 5, 0, 0); // id
 	set_field_type(field[index], TYPE_INTEGER); // id index
 	set_field_digit(field[index++], 0, first.id);
 
 	field[index] = new_field(1, STEXT, rows++, 1, 0, 0); // fname label
-	set_field_buffer(field[index++], 0, "name");
+	set_field_buffer(field[index++], 0, _("name"));
 	field[index] = new_field(1, STEXT, rows--, 1, 0, 0); // fname
 	set_field_buffer(field[index++], 0, first.fname);
 
 	field[index] = new_field(1, STEXT, rows++, STEXT + 3, 0, 0); // lname label
-	set_field_buffer(field[index++], 0, "last name");
+	set_field_buffer(field[index++], 0, _("last name"));
 	field[index] = new_field(1, STEXT, rows++, STEXT + 3, 0, 0); // lname
 	set_field_buffer(field[index++], 0, first.lname);
 
 	field[index] = new_field(1, PHONE, rows++, 1, 0, 0); // hphone label
-	set_field_buffer(field[index++], 0, "home phone");
+	set_field_buffer(field[index++], 0, _("home phone"));
 	field[index] = new_field(1, PHONE, rows--, 1, 0, 0); // hphone
 	set_field_buffer(field[index++], 0, first.hphone);
 	if (check & MATCH_FIRST_HPHONE)
 		set_field_back(field[index - 1], A_REVERSE);
 
 	field[index] = new_field(1, PHONE, rows++, PHONE + 3, 0, 0); // wphone
-	set_field_buffer(field[index++], 0, "work phone");
+	set_field_buffer(field[index++], 0, _("work phone"));
 	field[index] = new_field(1, PHONE, rows--, PHONE + 3, 0, 0); // wphone
 	set_field_buffer(field[index++], 0, first.wphone);
 	if (check & MATCH_FIRST_WPHONE)
 		set_field_back(field[index - 1], A_REVERSE);
 
 	field[index] = new_field(1, PHONE, rows++, PHONE * 2 + 7, 0, 0); // pmobile label
-	set_field_buffer(field[index++], 0, "personal mobile");
+	set_field_buffer(field[index++], 0, _("personal mobile"));
 	field[index] = new_field(1, PHONE, rows--, PHONE * 2 + 7, 0, 0); // pmobile
 	set_field_buffer(field[index++], 0, first.pmobile);
 	if (check & MATCH_FIRST_PMOBILE)
 		set_field_back(field[index - 1], A_REVERSE);
 
 	field[index] = new_field(1, PHONE, rows++, PHONE * 3 + 9, 0, 0); // bmobile label
-	set_field_buffer(field[index++], 0, "business mobile");
+	set_field_buffer(field[index++], 0, _("business mobile"));
 	field[index] = new_field(1, PHONE, rows++, PHONE * 3 + 9, 0, 0); // bmobile
 	set_field_buffer(field[index++], 0, first.bmobile);
 	if (check & MATCH_FIRST_BMOBILE)
@@ -638,44 +638,44 @@ FIELD **initMatchField(DBnode_t first, DBnode_t second, unsigned int check)
 	rows++;
 
 	field[index] = new_field(1, 3, rows, 1, 0, 0); // id label
-	set_field_buffer(field[index++], 0, "id:");
+	set_field_buffer(field[index++], 0, _("id:"));
 	field[index] = new_field(1, 4, rows++, 5, 0, 0); // id
 	set_field_type(field[index], TYPE_INTEGER); // id index
 	set_field_digit(field[index++], 0, second.id);
 
 	field[index] = new_field(1, STEXT, rows++, 1, 0, 0); // fname label
-	set_field_buffer(field[index++], 0, "name");
+	set_field_buffer(field[index++], 0, _("name"));
 	field[index] = new_field(1, STEXT, rows--, 1, 0, 0); // fname
 	set_field_buffer(field[index++], 0, second.fname);
 
 	field[index] = new_field(1, STEXT, rows++, STEXT + 3, 0, 0); // lname label
-	set_field_buffer(field[index++], 0, "last name");
+	set_field_buffer(field[index++], 0, _("last name"));
 	field[index] = new_field(1, STEXT, rows++, STEXT + 3, 0, 0); // lname
 	set_field_buffer(field[index++], 0, second.lname);
 
 	field[index] = new_field(1, PHONE, rows++, 1, 0, 0); // hphone label
-	set_field_buffer(field[index++], 0, "home phone");
+	set_field_buffer(field[index++], 0, _("home phone"));
 	field[index] = new_field(1, PHONE, rows--, 1, 0, 0); // hphone
 	set_field_buffer(field[index++], 0, second.hphone);
 	if (check & MATCH_SECOND_HPHONE)
 		set_field_back(field[index - 1], A_REVERSE);
 
 	field[index] = new_field(1, PHONE, rows++, PHONE + 3, 0, 0); // wphone
-	set_field_buffer(field[index++], 0, "work phone");
+	set_field_buffer(field[index++], 0, _("work phone"));
 	field[index] = new_field(1, PHONE, rows--, PHONE + 3, 0, 0); // wphone
 	set_field_buffer(field[index++], 0, second.wphone);
 	if (check & MATCH_SECOND_WPHONE)
 		set_field_back(field[index - 1], A_REVERSE);
 
 	field[index] = new_field(1, PHONE, rows++, PHONE * 2 + 7, 0, 0); // pmobile label
-	set_field_buffer(field[index++], 0, "personal mobile");
+	set_field_buffer(field[index++], 0, _("personal mobile"));
 	field[index] = new_field(1, PHONE, rows--, PHONE * 2 + 7, 0, 0); // pmobile
 	set_field_buffer(field[index++], 0, second.pmobile);
 	if (check & MATCH_SECOND_PMOBILE)
 		set_field_back(field[index - 1], A_REVERSE);
 
 	field[index] = new_field(1, PHONE, rows++, PHONE * 3 + 9, 0, 0); // bmobile label
-	set_field_buffer(field[index++], 0, "business mobile");
+	set_field_buffer(field[index++], 0, _("business mobile"));
 	field[index] = new_field(1, PHONE, rows++, PHONE * 3 + 9, 0, 0); // bmobile
 	set_field_buffer(field[index++], 0, second.bmobile);
 	if (check & MATCH_SECOND_BMOBILE)
@@ -755,33 +755,33 @@ void printLabels(WINDOW *win, chtype color)
 
 	wattron(win, color);
 	row = 4;
-	mvwprintw(win, row, 2, "name");
-	mvwprintw(win, row, STEXT + 4, "last name");
+	mvwprintw(win, row, 2, _("name"));
+	mvwprintw(win, row, STEXT + 4, _("last name"));
 	row += 2;
-	mvwprintw(win, row, 2, "organizzation");
-	mvwprintw(win, row, MTEXT + 4, "job");
+	mvwprintw(win, row, 2, _("organizzation"));
+	mvwprintw(win, row, MTEXT + 4, _("job"));
 	row += 2;
-	mvwprintw(win, row, 2, "home phone");
-	mvwprintw(win, row, PHONE + 4, "work phone");
-	mvwprintw(win, row, PHONE * 2 + 8, "personal mobile");
-	mvwprintw(win, row, PHONE * 3 + 10, "business mobile");
+	mvwprintw(win, row, 2, _("home phone"));
+	mvwprintw(win, row, PHONE + 4, _("work phone"));
+	mvwprintw(win, row, PHONE * 2 + 8, _("personal mobile"));
+	mvwprintw(win, row, PHONE * 3 + 10, _("business mobile"));
 	row += 2;
-	mvwprintw(win, row, 2, "personal email");
-	mvwprintw(win, row, MTEXT + 4, "business email");
+	mvwprintw(win, row, 2, _("personal email"));
+	mvwprintw(win, row, MTEXT + 4, _("business email"));
 	row += 2;
-	mvwprintw(win, row, 2, "address");
+	mvwprintw(win, row, 2, _("address"));
 	row += 2;
-	mvwprintw(win, row, 2, "zip");
-	mvwprintw(win, row, ZIP + 4, "city");
+	mvwprintw(win, row, 2, _("zip"));
+	mvwprintw(win, row, ZIP + 4, _("city"));
 	mvwprintw(win, row + 1, ZIP + MTEXT + 5, "(");
 	mvwprintw(win, row + 1, ZIP + MTEXT + 8, ")");
-	mvwprintw(win, row, ZIP + MTEXT + STATE + 8, "country");
+	mvwprintw(win, row, ZIP + MTEXT + STATE + 8, _("country"));
 	row = 4; // birthday is on same line of name
-	mvwprintw(win, row, STEXT * 2 + 16, "birthday");
+	mvwprintw(win, row, STEXT * 2 + 16, _("birthday"));
 	row = 6; // format under the date field
-	mvwprintw(win, row, STEXT * 2 + 14, "dd");
-	mvwprintw(win, row, STEXT * 2 + 18, "mm");
-	mvwprintw(win, row, STEXT * 2 + 22, "yyyy");
+	mvwprintw(win, row, STEXT * 2 + 14, _("dd"));
+	mvwprintw(win, row, STEXT * 2 + 18, _("mm"));
+	mvwprintw(win, row, STEXT * 2 + 22, _("yyyy"));
 	wattroff(win, color);
 
 	return;

@@ -10,6 +10,9 @@ int main(void)
 	logfile("%s: *** NEW SESSION ***\n", __func__);
 
 	setlocale(LC_ALL, "");
+	bindtextdomain("phonebook", "./po/");
+	textdomain("phonebook");
+
 	initscr(); // init ncurses
 	start_color(); // initialize colour
 	cbreak(); // NOSTOP input

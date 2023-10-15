@@ -6,6 +6,7 @@
 *.ko
 *.obj
 *.elf
+*.mo
 
 # Linker output
 *.ilk
@@ -57,3 +58,4 @@ dkms.conf
 *.csv
 *.bak
 *.log
+

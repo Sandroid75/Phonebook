@@ -5,8 +5,8 @@ void MainMenu(WINDOW *win)
 	_Bool quit = false;
 	int ch;
 	sds *choices;
-	sds menuName = sdsnew(" Main Menu "), menuUpdate = sdsnew(" Show / Modify "), menuModify = sdsnew(" Modify ");
-	char *items[] = { "Search Contact", "Add new Contact", "Show / Modify", "Import / Export", "Utility", "Exit", NULL };
+	sds menuName = sdsnew(_(" Main Menu ")), menuUpdate = sdsnew(_(" Show / Modify ")), menuModify = sdsnew(_(" Modify "));
+	char *items[] = { _("Search Contact"), _("Add new Contact"), _("Show / Modify"), _("Import / Export"), _("Utility"), _("Exit"), NULL };
 
 	REWIND(contacts);
 	if (!contacts) { // the list is empty
@@ -59,7 +59,7 @@ void MainMenu(WINDOW *win)
 		case 6: // Menu Exit is selected
 		case 0: // ESCape key is pressed
 			logo(win, 5);
-			ch = messageBox(win, 15, " press Y to quit... ", COLOR_PAIR(PAIR_EDIT));
+			ch = messageBox(win, 15, _(" press Y to quit... "), COLOR_PAIR(PAIR_EDIT));
 			if (toupper(ch) == 'Y') {
 				quit = true;
 			}
@@ -82,12 +82,12 @@ void MainMenu(WINDOW *win)
 void SearchMenu(WINDOW *win)
 { // search menu
 	_Bool quit = false; // check if option is valid
-	sds *choices, menuName = sdsnew(" Search Menu ");
-	char *items[] = { "Search with export to CSV", "Search only", "Back to Main Menu", NULL };
+	sds *choices, menuName = sdsnew(_(" Search Menu "));
+	char *items[] = { _("Search with export to CSV"), _("Search only"), _("Back to Main Menu"), NULL };
 
 	REWIND(contacts);
 	if (!contacts) { // if no contacts in list
-		messageBox(win, 10, " No contacts found in the DataBase! ", COLOR_PAIR(PAIR_EDIT));
+		messageBox(win, 10, _(" No contacts found in the DataBase! "), COLOR_PAIR(PAIR_EDIT));
 		sdsfree(menuName);
 
 		return;
@@ -132,12 +132,12 @@ int do_search(WINDOW *win, _Bool csv_export)
 	PhoneBook_t *ptr, *resultList = NULL;
 	int nb_records, rows;
 	_Bool found, modified = false;
-	sds menuCriteria = sdsnew(" Search Filters "), menuName = sdsnew(" Show / Modify ");
+	sds menuCriteria = sdsnew(_(" Search Filters ")), menuName = sdsnew(_(" Show / Modify "));
 
 	dbFlex = malloc(sizeof(DBnode_t)); // reserve memory for node
 	memset(dbFlex, 0, sizeof(DBnode_t)); // set to 0 everything in the node
 	dbFlex->id = countList(contacts); // count the number of list contacts
-	mvwprintw(win, 18, 2, "* The number highlighted in the upper left corner shows the contacts count!");
+	mvwprintw(win, 18, 2, _("* The number highlighted in the upper left corner shows the contacts count!"));
 
 	if (flexForm(win, dbFlex, menuCriteria) != 1) { // fill the criteria to search (1 mean confirm, 0 mean abort, -1 mean error)
 		sdsfree(menuCriteria);
@@ -189,7 +189,7 @@ int do_search(WINDOW *win, _Bool csv_export)
 	}
 
 	if (!modified) { // if nothing was found
-		messageBox(win, 10, " No contacts was found with input filters ", COLOR_PAIR(PAIR_EDIT));
+		messageBox(win, 10, _(" No contacts was found with input filters "), COLOR_PAIR(PAIR_EDIT));
 		sdsfree(menuCriteria);
 		sdsfree(menuName);
 		destroyNode(dbFlex);
@@ -235,7 +235,7 @@ void AddMenu(WINDOW *win)
 
 			return;
 		}
-		rc = flexForm(win, dbFlex, " Add New Contact "); // create a new entry node only if the user confirm the input than 1 is returned
+		rc = flexForm(win, dbFlex, _(" Add New Contact ")); // create a new entry node only if the user confirm the input than 1 is returned
 		// flexForm can return 1 mean confirm, 0 mean abort, -1 mean error
 		if (rc == -1) { // error in func flexForm()
 			logfile("%s: Error adding new contact\n", __func__);
@@ -265,7 +265,7 @@ void UpdateMenu(WINDOW *win, PhoneBook_t *resultList, sds menuName, sds menuModi
 
 	REWIND(ptr); // in order to be sure that ptr pointer go to head of list
 	if (!ptr) { // if no contacts in list
-		messageBox(win, 10, " No contacts found in the DataBase! ", COLOR_PAIR(PAIR_EDIT));
+		messageBox(win, 10, _(" No contacts found in the DataBase! "), COLOR_PAIR(PAIR_EDIT));
 
 		return;
 	}
@@ -312,12 +312,12 @@ void UpdateMenu(WINDOW *win, PhoneBook_t *resultList, sds menuName, sds menuModi
 					menuList[i]    = (sds)sdscatprintf(sdsempty(), "%s %s", ptr->db.fname, ptr->db.lname); // rebuild the modified contact
 					ptr->db.delete = false; // set delete to false
 				} else {
-					choice = messageBox(win, 10, " Press 'Y' to confirm deletion of any key to discard ", COLOR_PAIR(PAIR_EDIT));
+					choice = messageBox(win, 10, _(" Press 'Y' to confirm deletion of any key to discard "), COLOR_PAIR(PAIR_EDIT));
 					if (toupper(choice) != 'Y') { // if confirm mark as deleted
 						continue; // back to the begin of do-while
 					}
 					sdsfree(menuList[i]); // wipe the old field
-					menuList[i]    = (sds)sdscatprintf(sdsempty(), "*%s %s* # CANC to Restore #", ptr->db.fname, ptr->db.lname); // rebuild the modified contact
+					menuList[i]    = (sds)sdscatprintf(sdsempty(), _("*%s %s* # CANC to Restore #"), ptr->db.fname, ptr->db.lname); // rebuild the modified contact
 					ptr->db.delete = true; // mark as deleted
 				}
 				modified = true; // set because of something is modified
@@ -345,8 +345,8 @@ void ImpExpMenu(WINDOW *win)
 { // search menu
 	_Bool quit = false; // check if option is valid
 	int rows, midx;
-	sds *choices, menuName = sdsnew(" Import & Export Menu ");
-	char *message, *csvFile, *items[] = { "Import from CSV", "Import from Google CSV", "Export to CSV", "Export to Google CSV", "Back to Main Menu", NULL };
+	sds *choices, menuName = sdsnew(_(" Import & Export Menu "));
+	char *message, *csvFile, *items[] = { _("Import from CSV"), _("Import from Google CSV"), _("Export to CSV"), _("Export to Google CSV"), _("Back to Main Menu"), NULL };
 
 	choices = buildMenuItems(items); // build the menu items
 	if (!choices) {
@@ -368,9 +368,9 @@ void ImpExpMenu(WINDOW *win)
 
 			rows = importCSV(csvFile); // import the contacts from csv
 			if (rows > 0) // check if records are exported
-				asprintf(&message, " Imported %d records from '%s' successfully. ", rows, csvFile); // build message string
+				asprintf(&message, _(" Imported %d records from '%s' successfully. "), rows, csvFile); // build message string
 			else
-				asprintf(&message, " No records imported from '%s' ", csvFile); // build message string
+				asprintf(&message, _(" No records imported from '%s' "), csvFile); // build message string
 
 			wattron(win, A_BLINK);
 			print_in_middle(win, 11, " Updating DataBase file, please wait... ", COLOR_PAIR(PAIR_EDIT));
@@ -393,14 +393,14 @@ void ImpExpMenu(WINDOW *win)
 				csvFile = GOOGLE_CSV; // assign the standard Google csv file name
 
 			wattron(win, A_BLINK);
-			print_in_middle(win, 11, " Writing CSV file, please waiting... ", COLOR_PAIR(PAIR_EDIT));
+			print_in_middle(win, 11, _(" Writing CSV file, please waiting... "), COLOR_PAIR(PAIR_EDIT));
 			wattroff(win, A_BLINK);
 			wrectangle(win, 10, midx - 22, 12, midx + 21);
 			rows = write_csv(csvFile, contacts); // write or append records to DB_CSV
 			if (rows > 0) // check if records are exported
-				asprintf(&message, " Exported %d records to '%s' successfully ", rows, csvFile); // build message string
+				asprintf(&message, _(" Exported %d records to '%s' successfully "), rows, csvFile); // build message string
 			else
-				asprintf(&message, " No records exported to '%s' ", csvFile); // build message string
+				asprintf(&message, _(" No records exported to '%s' "), csvFile); // build message string
 
 			wclear(win);
 			wrefresh(win);
@@ -431,12 +431,12 @@ void ImpExpMenu(WINDOW *win)
 void UtilityMenu(WINDOW *win)
 { // search menu
 	_Bool quit = false; // check if option is valid
-	sds *choices, menuName = sdsnew(" Utility Menu ");
-	char *items[] = { "Sort contacts by First Name A->Z", "Sort contacts by First Name Z->A", "Sort contacts by Last Name A->Z", "Sort contacts by Last Name Z->A", "Find Duplicates", "Back to Main Menu", NULL };
+	sds *choices, menuName = sdsnew(_(" Utility Menu "));
+	char *items[] = { _("Sort contacts by First Name A->Z"), _("Sort contacts by First Name Z->A"), _("Sort contacts by Last Name A->Z"), _("Sort contacts by Last Name Z->A"), _("Find Duplicates"), _("Back to Main Menu"), NULL };
 
 	REWIND(contacts);
 	if (!contacts) { // if no contacts in list
-		messageBox(win, 10, " No contacts found in the DataBase! ", COLOR_PAIR(PAIR_EDIT));
+		messageBox(win, 10, _(" No contacts found in the DataBase! "), COLOR_PAIR(PAIR_EDIT));
 		sdsfree(menuName);
 
 		return;
@@ -454,19 +454,19 @@ void UtilityMenu(WINDOW *win)
 		switch (flexMenu(win, choices, menuName)) {
 		case 1: // Sort by First Name A->Z
 			SortList(win, contacts, FirstNameAZ);
-			messageBox(win, 10, " Sorting done by First Name A->Z... ", COLOR_PAIR(PAIR_MODIFIED));
+			messageBox(win, 10, _(" Sorting done by First Name A->Z... "), COLOR_PAIR(PAIR_MODIFIED));
 			break;
 		case 2: // Sort by First Name Z->A
 			SortList(win, contacts, FirstNameZA);
-			messageBox(win, 10, " Sorting done by First Name Z->A... ", COLOR_PAIR(PAIR_MODIFIED));
+			messageBox(win, 10, _(" Sorting done by First Name Z->A... "), COLOR_PAIR(PAIR_MODIFIED));
 			break;
 		case 3: // Sort by Last Name A->Z
 			SortList(win, contacts, LastNameAZ);
-			messageBox(win, 10, " Sorting done by Last Name A->Z... ", COLOR_PAIR(PAIR_MODIFIED));
+			messageBox(win, 10, _(" Sorting done by Last Name A->Z... "), COLOR_PAIR(PAIR_MODIFIED));
 			break;
 		case 4: // Sort by Last Name A->A
 			SortList(win, contacts, LastNameZA);
-			messageBox(win, 10, " Sorting done by Last Name Z->A... ", COLOR_PAIR(PAIR_MODIFIED));
+			messageBox(win, 10, _(" Sorting done by Last Name Z->A... "), COLOR_PAIR(PAIR_MODIFIED));
 			break;
 		case 5: // Find Duplicate
 			FindDuplicates(win);
@@ -509,7 +509,7 @@ int FindDuplicates(WINDOW *win)
 	}
 
 	if (!found) { // if nothing was found
-		messageBox(win, 10, " No duplicated contacts was found ", COLOR_PAIR(PAIR_EDIT));
+		messageBox(win, 10, _(" No duplicated contacts was found "), COLOR_PAIR(PAIR_EDIT));
 
 		return 0;
 	}
@@ -566,7 +566,7 @@ void mergeDuplicate(WINDOW *win, DBnode_t first, DBnode_t second, unsigned int c
 	PhoneBook_t *ptr, *resultList = NULL;
 	DBnode_t *dbMerge = NULL;
 	int ch;
-	sds menuMatch = sdsnew(" Edit Duplicate "), menuName = sdsnew(" Show / Modify ");
+	sds menuMatch = sdsnew(_(" Edit Duplicate ")), menuName = sdsnew(_(" Show / Modify "));
 
 	ch = showMatch(win, first, second, check);
 	switch (ch) {
@@ -696,7 +696,7 @@ void SortList(WINDOW *win, PhoneBook_t *list, _Bool compare(PhoneBook_t *first, 
 	RenumberListID(list); // renumber the ID of the enteire list
 
 	wattron(win, A_BLINK); // set text blinking ON
-	print_in_middle(win, 11, " Updating DataBase file, please wait... ", COLOR_PAIR(PAIR_EDIT));
+	print_in_middle(win, 11, _(" Updating DataBase file, please wait... "), COLOR_PAIR(PAIR_EDIT));
 	wattroff(win, A_BLINK); // set text blinking OFF
 	midx = getmaxx(win) / 2;
 	wrectangle(win, 10, midx - 22, 12, midx + 21);
