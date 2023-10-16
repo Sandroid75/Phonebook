@@ -7,7 +7,7 @@
 			"type": "shell",
 			"label": "GetText",
 			"command": "${workspaceFolder}/i18n.sh",
-			"args": [ "${workspaceFolder}" ],
+			"args": [ "${workspaceFolder}", "${workspaceFolderBasename}" ],
 			"presentation": {
 				"echo": true,
 				"reveal": "always",

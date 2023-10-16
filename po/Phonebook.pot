@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the phonebook package.
+# This file is distributed under the same license as the Phonebook package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: phonebook 1.0\n"
+"Project-Id-Version: Phonebook 1.0\n"
 "Report-Msgid-Bugs-To: Sandroid75@github.com\n"
-"POT-Creation-Date: 2023-10-15 23:13+0200\n"
+"POT-Creation-Date: 2023-10-16 22:28+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
