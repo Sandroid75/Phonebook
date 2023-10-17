@@ -27,7 +27,7 @@ find $1 -type f \( -iname "*.c" -or -iname "*.h" \) -exec readlink -f "{}" \; > 
 
 # scan files
 echo Current system language is $language
-echo Genarating POT file from surce code
+echo Genarating POT file from source code
 xgettext --keyword=_ --force-po --add-comments --from-code=UTF-8 --language=C --package-name=$2 --package-version=1.0 --msgid-bugs-address=Sandroid75@github.com -o $1/po/$2.pot -f $1/po/files.txt
 
 # remove file list
