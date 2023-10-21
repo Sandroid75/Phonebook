@@ -1,5 +1,4 @@
-# Italian translations for Phonebook package
-# Traduzioni italiane per il pacchetto Phonebook..
+# English translations for Phonebook package.
 # Copyright (C) 2023 THE Phonebook'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the Phonebook package.
 # Automatically generated, 2023.
@@ -8,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phonebook 1.0\n"
 "Report-Msgid-Bugs-To: Sandroid75@github.com\n"
-"POT-Creation-Date: 2023-10-21 08:45-0400\n"
-"PO-Revision-Date: 2023-10-16 22:22+0200\n"
+"POT-Creation-Date: 2023-10-21 08:41-0400\n"
+"PO-Revision-Date: 2023-10-21 08:41-0400\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
-"Language: it\n"
+"Language: en_US\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -20,65 +19,65 @@ msgstr ""
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:8
 msgid " Main Menu "
-msgstr " Menu Principale "
+msgstr " Main Menu "
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:8
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:135
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:569
 msgid " Show / Modify "
-msgstr " Visualizza / Modifica "
+msgstr " Show / Modify "
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:8
 msgid " Modify "
-msgstr " Modifica "
+msgstr " Modify "
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:9
 msgid "Search Contact"
-msgstr "Cerca Contatto"
+msgstr "Search Contact"
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:9
 msgid "Add new Contact"
-msgstr "Aggiungi nuovo Contatto"
+msgstr "Add new Contact"
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:9
 msgid "Show / Modify"
-msgstr "Visualizza / Modifica"
+msgstr "Show / Modify"
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:9
 msgid "Import / Export"
-msgstr "Importa / Esporta"
+msgstr "Import / Export"
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:9
 msgid "Utility"
-msgstr "Utilità"
+msgstr "Utility"
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:9
 msgid "Exit"
-msgstr "Esci"
+msgstr "Exit"
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:62
 msgid " press Y to quit... "
-msgstr " premi Y per uscire... "
+msgstr " press Y to quit... "
 
 #. search menu
 #. check if option is valid
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:85
 msgid " Search Menu "
-msgstr " Menu Cerca "
+msgstr " Search Menu "
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:86
 msgid "Search with export to CSV"
-msgstr "Cerca ed esporta in CSV"
+msgstr "Search with export to CSV"
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:86
 msgid "Search only"
-msgstr "Cerca soltanto"
+msgstr "Search only"
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:86
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:349
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:435
 msgid "Back to Main Menu"
-msgstr "Ritorna al Menu Principale"
+msgstr "Back to Main Menu"
 
 #. if no contacts in list
 #. in order to be sure that ptr pointer go to head of list
@@ -87,11 +86,11 @@ msgstr "Ritorna al Menu Principale"
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:268
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:439
 msgid " No contacts found in the DataBase! "
-msgstr " Nessun contatto trovato in Rubrica! "
+msgstr " No contacts found in the DataBase! "
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:135
 msgid " Search Filters "
-msgstr " Filtri Ricerca "
+msgstr " Search Filters "
 
 #. reserve memory for node
 #. set to 0 everything in the node
@@ -100,49 +99,46 @@ msgstr " Filtri Ricerca "
 msgid ""
 "* The number highlighted in the upper left corner shows the contacts count!"
 msgstr ""
-"* In alto a sinistra è evidenziato il numero totale dei contatti trovati!"
+"* The number highlighted in the upper left corner shows the contacts count!"
 
 #. if nothing was found
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:192
-#, fuzzy
 msgid " No contacts was found with input filters "
-msgstr " Nessun contatto trovato in Rubrica! "
+msgstr " No contacts was found with input filters "
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:238
-#, fuzzy
 msgid " Add New Contact "
-msgstr "Aggiungi nuovo Contatto"
+msgstr " Add New Contact "
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:315
 msgid " Press 'Y' to confirm deletion of any key to discard "
-msgstr ""
-" Premi 'Y' per confermare l'eliminazione qualsiasi tasto per annullare "
+msgstr " Press 'Y' to confirm deletion of any key to discard "
 
 #. wipe the old field
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:320
 #, c-format
 msgid "*%s %s* # CANC to Restore #"
-msgstr "*%s %s* # CANC per Ripristinare #"
+msgstr "*%s %s* # CANC to Restore #"
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:348
 msgid " Import & Export Menu "
-msgstr " Menu Importa & Esporta "
+msgstr " Import & Export Menu "
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:349
 msgid "Import from CSV"
-msgstr "Importa da CSV"
+msgstr "Import from CSV"
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:349
 msgid "Import from Google CSV"
-msgstr "Importa da Google CSV"
+msgstr "Import from Google CSV"
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:349
 msgid "Export to CSV"
-msgstr "Esporta in CSV"
+msgstr "Export to CSV"
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:349
 msgid "Export to Google CSV"
-msgstr "Esporta in Google CSV"
+msgstr "Export to Google CSV"
 
 #. Import from CSV
 #. assign the standard csv file name
@@ -154,83 +150,79 @@ msgstr "Esporta in Google CSV"
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:371
 #, c-format
 msgid " Imported %d records from '%s' successfully. "
-msgstr " Importati %d contatti da '%s' con successo. "
+msgstr " Imported %d records from '%s' successfully. "
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:373
 #, c-format
 msgid " No records imported from '%s' "
-msgstr " Nessun contatto importato da '%s' "
+msgstr " No records imported from '%s' "
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:396
 msgid " Writing CSV file, please waiting... "
-msgstr " Scrivo il file CSV, attendere prego... "
+msgstr " Writing CSV file, please waiting... "
 
 #. write or append records to DB_CSV
 #. check if records are exported
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:401
 #, c-format
 msgid " Exported %d records to '%s' successfully "
-msgstr " Esportati %d contatti in '%s' con successo "
+msgstr " Exported %d records to '%s' successfully "
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:403
 #, c-format
 msgid " No records exported to '%s' "
-msgstr " Nessun contatto esportato in '%s' "
+msgstr " No records exported to '%s' "
 
 #. search menu
 #. check if option is valid
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:434
 msgid " Utility Menu "
-msgstr " Munu Utilità "
+msgstr " Utility Menu "
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:435
 msgid "Sort contacts by First Name A->Z"
-msgstr "Ordina contatti dal Nome A->Z"
+msgstr "Sort contacts by First Name A->Z"
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:435
 msgid "Sort contacts by First Name Z->A"
-msgstr "Ordina contatti dal Nome Z->A"
+msgstr "Sort contacts by First Name Z->A"
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:435
 msgid "Sort contacts by Last Name A->Z"
-msgstr "Ordina contatti dal Cognome A->z"
+msgstr "Sort contacts by Last Name A->Z"
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:435
 msgid "Sort contacts by Last Name Z->A"
-msgstr "Ordina contatti dal Cognome Z->A"
+msgstr "Sort contacts by Last Name Z->A"
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:435
 msgid "Find Duplicates"
-msgstr "Cerca Duplicati"
+msgstr "Find Duplicates"
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:457
-#, fuzzy
 msgid " Sorting done by First Name A->Z... "
-msgstr " Contatti ordinati dal Nome A->Z "
+msgstr " Sorting done by First Name A->Z... "
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:461
-#, fuzzy
 msgid " Sorting done by First Name Z->A... "
-msgstr " Contatti ordinati dal Nome Z->A "
+msgstr " Sorting done by First Name Z->A... "
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:465
-#, fuzzy
 msgid " Sorting done by Last Name A->Z... "
-msgstr " Contatti ordinati dal Cognome A->z "
+msgstr " Sorting done by Last Name A->Z... "
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:469
-#, fuzzy
 msgid " Sorting done by Last Name Z->A... "
-msgstr " Contatti ordinati dal Cognome Z->A"
+msgstr " Sorting done by Last Name Z->A... "
 
 #. if nothing was found
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:512
 msgid " No duplicated contacts was found "
-msgstr " Nessun duplicato è stato trovato "
+msgstr " No duplicated contacts was found "
 
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:569
 msgid " Edit Duplicate "
-msgstr " Modifica Duplicati "
+msgstr " Edit Duplicate "
 
 #. point head and tail to list
 #. move head to the begin of the list
@@ -240,7 +232,7 @@ msgstr " Modifica Duplicati "
 #. set text blinking ON
 #: /mnt/Shared/GitHub/Phonebook/src/menu.c:699
 msgid " Updating DataBase file, please wait... "
-msgstr " Aggiorno la Rubrica, attendere prego... "
+msgstr " Updating DataBase file, please wait... "
 
 #. calculates the right dimension of window menu to fit all elements
 #. calclate the lenght of menu name
@@ -265,7 +257,7 @@ msgstr " Aggiorno la Rubrica, attendere prego... "
 #. print the intersection at right
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:60
 msgid "Press ENTER or SPACE to Select, ESC to Exit"
-msgstr "Premi INVIO o SPAZIO per Selezionare, ESC per Uscire"
+msgstr "Press ENTER or SPACE to Select, ESC to Exit"
 
 #. Set main window and sub window
 #. create a sub window from form window
@@ -279,11 +271,11 @@ msgstr "Premi INVIO o SPAZIO per Selezionare, ESC per Uscire"
 #. print the insert mode in win_body
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:180
 msgid "Use arrow keys or TAB to move between fields"
-msgstr "Usa i tasti direzionali o il tasto TAB per moverti tra campi"
+msgstr "Use arrow keys or TAB to move between fields"
 
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:181
 msgid "Press F1 to confirm and Exit or press ESC to cancel and Exit"
-msgstr "Premi F1 per confermare e Uscire o premi ESC per annullare e Uscire"
+msgstr "Press F1 to confirm and Exit or press ESC to cancel and Exit"
 
 #. ESCape
 #. exlude the last field as NULL
@@ -292,9 +284,7 @@ msgstr "Premi F1 per confermare e Uscire o premi ESC per annullare e Uscire"
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:280
 msgid "any key to save, 'N' to discard changes or ESC to continuing editing..."
 msgstr ""
-"qualsiasi tasto per salvare, 'N' per annullare le modifiche o ESC per "
-"continuare...qualsiasi tasto per salvare, 'N' per annullare le modifiche o "
-"ESC per continuare..."
+"any key to save, 'N' to discard changes or ESC to continuing editing..."
 
 #. Set main window and sub window
 #. create a sub window from form window
@@ -303,7 +293,7 @@ msgstr ""
 #. print the frame of menu window
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:528
 msgid " Contacts with Matches "
-msgstr " Contati con Duplicati "
+msgstr " Contacts with Matches "
 
 #. print the title of the menu in the middle using color pair 1
 #. print the intersection at left
@@ -311,11 +301,11 @@ msgstr " Contati con Duplicati "
 #. print the intersection at right
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:532
 msgid "Press F1 to edit matches, F4 to auto merge, ESC ignore duplicates"
-msgstr "Premi F1 per modificare, F4 per unire, ESC per ignorare"
+msgstr "Press F1 to edit matches, F4 to auto merge, ESC ignore duplicates"
 
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:533
 msgid "Note: the duplication match is highlighted"
-msgstr "Nota: è evidenziata la parte duplicata"
+msgstr "Note: the duplication match is highlighted"
 
 #. Initialize the fields
 #. for array index
@@ -331,84 +321,84 @@ msgstr "id:"
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:647
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:758
 msgid "name"
-msgstr "nome"
+msgstr "name"
 
 #. lname label
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:606
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:652
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:759
 msgid "last name"
-msgstr "cognome"
+msgstr "last name"
 
 #. hphone label
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:611
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:657
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:764
 msgid "home phone"
-msgstr "telefono casa"
+msgstr "home phone"
 
 #. wphone
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:618
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:664
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:765
 msgid "work phone"
-msgstr "telefono lavoro"
+msgstr "work phone"
 
 #. pmobile label
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:625
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:671
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:766
 msgid "personal mobile"
-msgstr "cellulare"
+msgstr "personal mobile"
 
 #. bmobile label
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:632
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:678
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:767
 msgid "business mobile"
-msgstr "cellulare lavoro"
+msgstr "business mobile"
 
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:761
 msgid "organizzation"
-msgstr "organizzazione"
+msgstr "organizzation"
 
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:762
 msgid "job"
-msgstr "titolo"
+msgstr "job"
 
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:769
 msgid "personal email"
-msgstr "email personale"
+msgstr "personal email"
 
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:770
 msgid "business email"
-msgstr "email lavoro"
+msgstr "business email"
 
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:772
 msgid "address"
-msgstr "indirizzo"
+msgstr "address"
 
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:774
 msgid "zip"
-msgstr "cap"
+msgstr "zip"
 
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:775
 msgid "city"
-msgstr "città"
+msgstr "city"
 
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:778
 msgid "country"
-msgstr "nazione"
+msgstr "country"
 
 #. birthday is on same line of name
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:780
 msgid "birthday"
-msgstr "compleanno"
+msgstr "birthday"
 
 #. format under the date field
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:782
 msgid "dd"
-msgstr "gg"
+msgstr "dd"
 
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:783
 msgid "mm"
@@ -416,4 +406,4 @@ msgstr "mm"
 
 #: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:784
 msgid "yyyy"
-msgstr "aaaa"
+msgstr "yyyy"

@@ -18,7 +18,7 @@ fi
 language=$(locale | grep LANG | cut -d= -f2)
 lang=$(echo $language | cut -d_ -f1)
 
-# create dir structure
+# create dir structure for current system language
 mkdir -p $1/po/$lang/LC_MESSAGES
 
 # generate file list
@@ -43,8 +43,11 @@ else
 	msginit --no-translator --input=$1/po/$2.pot --locale=$language --output=$1/po/$lang/$2.po
 fi
 
+# creating dir structures for all existing PO lenguages
+find $1 -type f -iname "*.po" -exec bash -c 'mkdir -p "$( dirname "{}")/LC_MESSAGES"' \;
+
 # compile .po to .mo
-echo Compiling MO file
+echo Compiling MO files
 find $1 -type f -iname "*.po" -exec bash -c 'msgfmt "$( dirname "{}")/'$2'.po" -o "$( dirname "{}")/LC_MESSAGES/'$2'.mo"' \;
 
 exit 0

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phonebook 1.0\n"
 "Report-Msgid-Bugs-To: Sandroid75@github.com\n"
-"POT-Creation-Date: 2023-10-17 22:25+0200\n"
+"POT-Creation-Date: 2023-10-21 09:55-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,125 +17,125 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:8
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:8
 msgid " Main Menu "
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:8
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:135
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:569
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:8
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:135
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:569
 msgid " Show / Modify "
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:8
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:8
 msgid " Modify "
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:9
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:9
 msgid "Search Contact"
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:9
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:9
 msgid "Add new Contact"
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:9
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:9
 msgid "Show / Modify"
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:9
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:9
 msgid "Import / Export"
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:9
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:9
 msgid "Utility"
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:9
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:9
 msgid "Exit"
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:62
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:62
 msgid " press Y to quit... "
 msgstr ""
 
 #. search menu
 #. check if option is valid
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:85
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:85
 msgid " Search Menu "
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:86
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:86
 msgid "Search with export to CSV"
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:86
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:86
 msgid "Search only"
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:86
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:349
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:435
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:86
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:349
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:435
 msgid "Back to Main Menu"
 msgstr ""
 
 #. if no contacts in list
 #. in order to be sure that ptr pointer go to head of list
 #. if no contacts in list
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:90
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:268
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:439
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:90
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:268
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:439
 msgid " No contacts found in the DataBase! "
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:135
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:135
 msgid " Search Filters "
 msgstr ""
 
 #. reserve memory for node
 #. set to 0 everything in the node
 #. count the number of list contacts
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:140
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:140
 msgid ""
 "* The number highlighted in the upper left corner shows the contacts count!"
 msgstr ""
 
 #. if nothing was found
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:192
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:192
 msgid " No contacts was found with input filters "
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:238
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:238
 msgid " Add New Contact "
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:315
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:315
 msgid " Press 'Y' to confirm deletion of any key to discard "
 msgstr ""
 
 #. wipe the old field
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:320
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:320
 #, c-format
 msgid "*%s %s* # CANC to Restore #"
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:348
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:348
 msgid " Import & Export Menu "
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:349
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:349
 msgid "Import from CSV"
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:349
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:349
 msgid "Import from Google CSV"
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:349
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:349
 msgid "Export to CSV"
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:349
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:349
 msgid "Export to Google CSV"
 msgstr ""
 
@@ -146,80 +146,80 @@ msgstr ""
 #. assign the standard Google csv file name
 #. import the contacts from csv
 #. check if records are exported
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:371
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:371
 #, c-format
 msgid " Imported %d records from '%s' successfully. "
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:373
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:373
 #, c-format
 msgid " No records imported from '%s' "
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:396
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:396
 msgid " Writing CSV file, please waiting... "
 msgstr ""
 
 #. write or append records to DB_CSV
 #. check if records are exported
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:401
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:401
 #, c-format
 msgid " Exported %d records to '%s' successfully "
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:403
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:403
 #, c-format
 msgid " No records exported to '%s' "
 msgstr ""
 
 #. search menu
 #. check if option is valid
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:434
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:434
 msgid " Utility Menu "
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:435
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:435
 msgid "Sort contacts by First Name A->Z"
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:435
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:435
 msgid "Sort contacts by First Name Z->A"
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:435
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:435
 msgid "Sort contacts by Last Name A->Z"
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:435
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:435
 msgid "Sort contacts by Last Name Z->A"
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:435
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:435
 msgid "Find Duplicates"
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:457
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:457
 msgid " Sorting done by First Name A->Z... "
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:461
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:461
 msgid " Sorting done by First Name Z->A... "
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:465
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:465
 msgid " Sorting done by Last Name A->Z... "
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:469
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:469
 msgid " Sorting done by Last Name Z->A... "
 msgstr ""
 
 #. if nothing was found
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:512
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:512
 msgid " No duplicated contacts was found "
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:569
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:569
 msgid " Edit Duplicate "
 msgstr ""
 
@@ -229,7 +229,7 @@ msgstr ""
 #. compute sorting with compare() criteria
 #. renumber the ID of the enteire list
 #. set text blinking ON
-#: /home/sandro/Documenti/GitHub/Phonebook/src/menu.c:699
+#: /mnt/Shared/GitHub/Phonebook/src/menu.c:699
 msgid " Updating DataBase file, please wait... "
 msgstr ""
 
@@ -254,7 +254,7 @@ msgstr ""
 #. print the intersection at left
 #. print the division line between the title and menu
 #. print the intersection at right
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:60
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:60
 msgid "Press ENTER or SPACE to Select, ESC to Exit"
 msgstr ""
 
@@ -268,11 +268,11 @@ msgstr ""
 #. print the division line between the title and menu
 #. print the intersection at right
 #. print the insert mode in win_body
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:180
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:180
 msgid "Use arrow keys or TAB to move between fields"
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:181
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:181
 msgid "Press F1 to confirm and Exit or press ESC to cancel and Exit"
 msgstr ""
 
@@ -280,7 +280,7 @@ msgstr ""
 #. exlude the last field as NULL
 #. check if field as been modified
 #. one or more fields it been modified
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:280
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:280
 msgid "any key to save, 'N' to discard changes or ESC to continuing editing..."
 msgstr ""
 
@@ -289,7 +289,7 @@ msgstr ""
 #. set menu sub window by derivated window
 #. Print a border around the main window and print a title
 #. print the frame of menu window
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:528
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:528
 msgid " Contacts with Matches "
 msgstr ""
 
@@ -297,11 +297,11 @@ msgstr ""
 #. print the intersection at left
 #. print the division line between the title and menu
 #. print the intersection at right
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:532
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:532
 msgid "Press F1 to edit matches, F4 to auto merge, ESC ignore duplicates"
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:533
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:533
 msgid "Note: the duplication match is highlighted"
 msgstr ""
 
@@ -309,99 +309,99 @@ msgstr ""
 #. for array index
 #. for row counting where the field are on same row there is 3 more cols as spaced
 #. id label
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:595
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:641
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:595
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:641
 msgid "id:"
 msgstr ""
 
 #. fname label
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:601
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:647
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:758
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:601
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:647
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:758
 msgid "name"
 msgstr ""
 
 #. lname label
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:606
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:652
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:759
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:606
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:652
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:759
 msgid "last name"
 msgstr ""
 
 #. hphone label
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:611
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:657
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:764
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:611
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:657
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:764
 msgid "home phone"
 msgstr ""
 
 #. wphone
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:618
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:664
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:765
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:618
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:664
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:765
 msgid "work phone"
 msgstr ""
 
 #. pmobile label
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:625
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:671
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:766
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:625
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:671
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:766
 msgid "personal mobile"
 msgstr ""
 
 #. bmobile label
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:632
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:678
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:767
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:632
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:678
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:767
 msgid "business mobile"
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:761
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:761
 msgid "organizzation"
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:762
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:762
 msgid "job"
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:769
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:769
 msgid "personal email"
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:770
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:770
 msgid "business email"
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:772
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:772
 msgid "address"
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:774
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:774
 msgid "zip"
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:775
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:775
 msgid "city"
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:778
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:778
 msgid "country"
 msgstr ""
 
 #. birthday is on same line of name
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:780
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:780
 msgid "birthday"
 msgstr ""
 
 #. format under the date field
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:782
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:782
 msgid "dd"
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:783
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:783
 msgid "mm"
 msgstr ""
 
-#: /home/sandro/Documenti/GitHub/Phonebook/src/ui_ncurses.c:784
+#: /mnt/Shared/GitHub/Phonebook/src/ui_ncurses.c:784
 msgid "yyyy"
 msgstr ""
