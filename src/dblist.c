@@ -6,7 +6,7 @@ PhoneBook_t *newNode(DBnode_t node)
 
     dbNode = (PhoneBook_t *) malloc(sizeof(PhoneBook_t));
     if (!dbNode) {
-        logfile("%s: Memory allocation error\n", __func__);
+        log_perror("Memory allocation error");
 
         return dbNode;
     }
@@ -48,7 +48,7 @@ PhoneBook_t *addNode(PhoneBook_t **list, DBnode_t node)
 
     dbNode = newNode(node);
     if (!dbNode) {
-        logfile("%s: Memory allocation error\n", __func__);
+        log_perror("Memory allocation error");
 
         return dbNode;
     }
@@ -72,7 +72,7 @@ DBnode_t *initNode(PhoneBook_t *list)
 
     node = (DBnode_t *) malloc(sizeof(DBnode_t)); // reserve memory for db
     if (!node) {
-        logfile("%s: Error allocating memory\n", __func__);
+        log_perror("Error allocating memory");
 
         return NULL;
     }

@@ -2,7 +2,9 @@
 #define _PHONEBOOK_H_
 
 #define _GNU_SOURCE
+#define LOG_USE_COLOR
 
+#include "../../log/src/log.h"
 #include "../../sds/sds.h"
 #include "../../sds/sds_extra.h"
 #include <ctype.h>
@@ -302,7 +304,6 @@ _Bool LastNameZA(PhoneBook_t *first, PhoneBook_t *second);
 void RenumberListID(PhoneBook_t *list);
 
 // functions.c
-void logfile(const char *fmt, ...);
 void db_log(const char *funcname, char *comment, DBnode_t *db);
 ssize_t filecopy(const char *source, const char *destination);
 

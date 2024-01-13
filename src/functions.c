@@ -1,67 +1,36 @@
 #include "phonebook.h"
 
-void logfile(const char *format, ...)
-{
-    va_list args;
-    FILE *fd;
-    time_t current_time;
-    struct tm *local;
-    static unsigned int errcount = 0; // each session start from 0
-
-    fd = fopen(LOGFILE, "a+"); // a+ (create + append) option will allow appending which is useful in a log file
-    if (!fd) {
-        fprintf(stderr, "ERROR APPEND/WRITE LOG FILE\n");
-        sleep(3);
-
-        return;
-    }
-
-    time(&current_time);                                                                      // get time
-    local = localtime(&current_time);                                                         // convert to local
-    fprintf(fd, "%d/%02d/%02d - ", local->tm_year + 1900, local->tm_mon + 1, local->tm_mday); // write current date yyyy/mm/dd
-    fprintf(fd, "%02d:%02d:%02d ", local->tm_hour, local->tm_min, local->tm_sec);             // write local time hh:mm:ss
-    fprintf(fd, "[%03u] ", errcount++);                                                       // write the index log of current session
-
-    va_start(args, format);
-    vfprintf(fd, format, args); // write the info recieved from function arguments
-    va_end(args);
-
-    fclose(fd);
-
-    return;
-}
-
 void db_log(const char *funcname, char *comment, DBnode_t *db)
 {
     DBnode_t ptrDB;
 
-    logfile("%s: %s\n", funcname, comment);
+    log_info("%s", comment);
 
     if (db) {
-        logfile("%s: BNnode passed from %s\n", __func__, funcname);
+        log_info("BNnode passed from %s", funcname);
         memcpy(&ptrDB, db, sizeof(DBnode_t));
     } else {
-        logfile("%s: contacts->db\n", __func__);
+        log_info("contacts->db");
         memcpy(&ptrDB, &contacts->db, sizeof(DBnode_t));
     }
 
-    logfile("id: (%d)\n", ptrDB.id);
-    logfile("fname: (%s)\n", ptrDB.fname);
-    logfile("lname: (%s)\n", ptrDB.lname);
-    logfile("organization: (%s)\n", ptrDB.organization);
-    logfile("job: (%s)\n", ptrDB.job);
-    logfile("hphone: (%s)\n", ptrDB.hphone);
-    logfile("wphone: (%s)\n", ptrDB.wphone);
-    logfile("pmobile: (%s)\n", ptrDB.pmobile);
-    logfile("bmobile: (%s)\n", ptrDB.bmobile);
-    logfile("pemail: (%s)\n", ptrDB.pemail);
-    logfile("bemail: (%s)\n", ptrDB.bemail);
-    logfile("address: (%s)\n", ptrDB.address);
-    logfile("zip: (%s)\n", ptrDB.zip);
-    logfile("city: (%s)\n", ptrDB.city);
-    logfile("state: (%s)\n", ptrDB.state);
-    logfile("country: (%s)\n", ptrDB.country);
-    logfile("birthday: (%u/%u/%u)\n", ptrDB.birthday.tm_mday, ptrDB.birthday.tm_mon, ptrDB.birthday.tm_year);
+    log_trace("id: (%d)", ptrDB.id);
+    log_trace("fname: (%s)", ptrDB.fname);
+    log_trace("lname: (%s)", ptrDB.lname);
+    log_trace("organization: (%s)", ptrDB.organization);
+    log_trace("job: (%s)", ptrDB.job);
+    log_trace("hphone: (%s)", ptrDB.hphone);
+    log_trace("wphone: (%s)", ptrDB.wphone);
+    log_trace("pmobile: (%s)", ptrDB.pmobile);
+    log_trace("bmobile: (%s)", ptrDB.bmobile);
+    log_trace("pemail: (%s)", ptrDB.pemail);
+    log_trace("bemail: (%s)", ptrDB.bemail);
+    log_trace("address: (%s)", ptrDB.address);
+    log_trace("zip: (%s)", ptrDB.zip);
+    log_trace("city: (%s)", ptrDB.city);
+    log_trace("state: (%s)", ptrDB.state);
+    log_trace("country: (%s)", ptrDB.country);
+    log_trace("birthday: (%u/%u/%u)", ptrDB.birthday.tm_mday, ptrDB.birthday.tm_mon, ptrDB.birthday.tm_year);
 
     return;
 }
@@ -77,7 +46,7 @@ static int opennew(const char *fname, const struct stat sbi)
         if (sbi.st_ino == sbo.st_ino)
             return FC_SAMEF;
 
-        logfile("%s: Warning destination file %s exist\n", __func__, fname);
+        log_warn("Warning destination file %s exist", fname);
         if (unlink(fname))
             return FC_NOOWD;
     }
@@ -128,19 +97,19 @@ ssize_t filecopy(const char *source, const char *destination)
             errmsg = NULL;
             break;
         }
-        logfile("%s: File verification error %s\nerrno: [%d] %s\n", __func__, source, errno, errmsg);
+        log_perror("File verification error %s\nerrno: [%d] %s", source, errno, errmsg);
 
         return FC_ERROR;
     }
 
     if ((input = open(source, O_RDONLY)) < 0) { // try to open source file
-        logfile("%s: Error opening '%s'\n", __func__, source);
+        log_perror("Error opening '%s'", source);
 
         return (ssize_t) input;
     }
     if ((output = opennew(destination, sb)) < 0) { // try to create the destination file
         close(input);
-        logfile("%s: Error creating '%s'\n", __func__, destination);
+        log_perror("Error creating '%s'", destination);
 
         return (ssize_t) output;
     }
@@ -181,7 +150,7 @@ ssize_t filecopy(const char *source, const char *destination)
         break;
     }
     if (errno)
-        logfile("%s: Error sendfile() returned errno %d %s\n", __func__, errno, errmsg);
+        log_perror("Error sendfile() returned errno %d %s", errno, errmsg);
 
     if (tryAgain) { // read NOTES at https://man7.org/linux/man-pages/man2/sendfile.2.html
         close(output);
@@ -191,7 +160,7 @@ ssize_t filecopy(const char *source, const char *destination)
 
             return (ssize_t) output;
         }
-        logfile("%s: The application will try to copy again with a less performing strategy.\n", __func__);
+        log_warn("The application will try to copy again with a less performing strategy.");
         errno = 0;
         chunk = MIN(bytesTocopy, DEFAULT_CHUNK); // set better performance for copy
         data  = malloc((size_t) chunk);          // Allocate temporary data buffer.
@@ -217,14 +186,14 @@ ssize_t filecopy(const char *source, const char *destination)
             FREE(data);
 
             if (!errno)
-                logfile("%s: The new strategy worked, the file was copied!\n", __func__);
+                log_info("The new strategy worked, the file was copied!");
         }
     }
     close(input);  // close the handle
     close(output); // close the handle
 
     if (bytesCopied != bytesTocopy) { // verify that all bytes have been copied
-        logfile("\n%s: Error not all data was copied!\nWrited %ld bytes on %ld bytes\n", __func__, bytesCopied, bytesTocopy);
+        log_perror("Error not all data was copied!\nWrited %ld bytes on %ld bytes", bytesCopied, bytesTocopy);
         unlink(destination);
     }
 

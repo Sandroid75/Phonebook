@@ -14,7 +14,7 @@ int callback(void *NotUsed, int argc, char **argv, char **azColName)
 
     db = (DBnode_t *) malloc(sizeof(DBnode_t)); // reserve memory for db
     if (!db) {
-        logfile("%s: Error allocating memory\n", __func__);
+        log_perror("Error allocating memory");
 
         return -1;
     }
@@ -56,14 +56,14 @@ int read_db(void)
     int rc;
 
     if (access(DB, R_OK)) {
-        logfile("%s: The DataBase %s doesn't exist\n", __func__, DB);
+        log_perror("The DataBase %s doesn't exist", DB);
 
         return 0;
     }
 
     rc = sqlite3_open(DB, &sqlDB); // Open database
     if (rc != SQLITE_OK) {
-        logfile("%s: Can't open database: %s\n", __func__, sqlite3_errmsg(sqlDB));
+        log_perror("Can't open database: %s", sqlite3_errmsg(sqlDB));
         sqlite3_close(sqlDB);
 
         return -1; // error return code
@@ -71,7 +71,7 @@ int read_db(void)
 
     rc = sqlite3_exec(sqlDB, SELECT_FROM_CONTACTS, callback, 0, &sql_err_msg); // Execute SQL statement and call function callback to read the database rows by  SQL
     if (rc != SQLITE_OK) {
-        logfile("%s: SQL error: %s\n", __func__, sql_err_msg);
+        log_perror("SQL error: %s", sql_err_msg);
         sqlite3_free(sql_err_msg);
 
         return -1; // error return code
@@ -92,7 +92,7 @@ int write_db(_Bool update)
     sds sql;
 
     if (!contacts) {
-        logfile("%s: No records in contact to save!\n", __func__);
+        log_warn("No records in contact to save!");
 
         return records;
     }
@@ -101,11 +101,11 @@ int write_db(_Bool update)
         unlink(DBAK);               // delete the sqlitefile backup file
         bytes = filecopy(DB, DBAK); // copy the current db file in backup file before write it
         if (bytes < 0) {
-            logfile("%s: Error copying '%s' to '%s'\n", __func__, DB, DBAK);
+            log_perror("Error copying '%s' to '%s'", DB, DBAK);
 
             return -1;
         }
-        logfile("%s: %ld bytes copyed from '%s' to '%s'\n", __func__, (long) bytes, DB, DBAK);
+        log_info("%ld bytes copyed from '%s' to '%s'", (long) bytes, DB, DBAK);
         sql = sdsempty();                // init the sql statement for existing DataBase
     } else                               // the file DataBase exist
         sql = sdsnew(DEFAULT_SQL_TABLE); // no DataBase exist, than create new table using default schema
@@ -116,7 +116,7 @@ int write_db(_Bool update)
         // build the SQLite3 statement to manage the contacts list in SQL DataBase
         if (ptr->db.delete) {                                          // check if the contacts need to be deleted
             sql = sdscatprintf(sql, DELETE_SQL_RECORD_ID, ptr->db.id); // the id is used for statement WHERE SQLite
-            logfile("%s: Record id=%d deleted...\n", __func__, ptr->db.id);
+            log_info("Record id=%d deleted...", ptr->db.id);
             deleteNode(&contacts, ptr);
             records++;                                                                           // counting the numbers of records to be write or update
         } else if (ptr->db.modified) {                                                           // check if the contacts was modified
@@ -128,9 +128,9 @@ int write_db(_Bool update)
 
     if (records) {
         if (doSQLstatement(sql) != SQLITE_OK) // Execute the SQL statement and check that everything went well
-            logfile("%s: Error %s %d records in the DataBase\n", __func__, update ? "updating" : "writing", records);
+            log_perror("Error %s %d records in the DataBase", update ? "updating" : "writing", records);
         else
-            logfile("%s: %d records %s in the DataBase\n", __func__, records, update ? "updated" : "writed");
+            log_info("%d records %s in the DataBase", records, update ? "updated" : "writed");
     }
     sdsfree(sql);     // free memory
     REWIND(contacts); // to be sure that contacts pointer go to head of the list
@@ -169,7 +169,7 @@ int doSQLstatement(sds sql)
 
     rc = sqlite3_open(DB, &sqlDB); // Open existing database
     if (rc != SQLITE_OK) {
-        logfile("%s: Can't open database: %s\n", __func__, sqlite3_errmsg(sqlDB));
+        log_perror("Can't open database: %s", sqlite3_errmsg(sqlDB));
         sqlite3_close(sqlDB);
         sqlite3_free(sql_err_msg);
 
@@ -178,7 +178,7 @@ int doSQLstatement(sds sql)
 
     rc = sqlite3_exec(sqlDB, sql, NULL, 0, &sql_err_msg); // Execute SQL statement and call function to update the date to file
     if (rc != SQLITE_OK) {                                // check that everything went well
-        logfile("%s: SQL error: %s\n", __func__, sql_err_msg);
+        log_perror("SQL error: %s", sql_err_msg);
         sqlite3_free(sql_err_msg);
     }
 
@@ -198,7 +198,7 @@ int write_csv(const char *csvFile, PhoneBook_t *contact_csv)
 
     REWIND(ptr);
     if (!ptr) {
-        logfile("%s: There is no contacts to export in '%s'\n", __func__, csvFile);
+        log_warn("There is no contacts to export in '%s'", csvFile);
 
         return -1;
     }
@@ -221,7 +221,7 @@ int write_csv(const char *csvFile, PhoneBook_t *contact_csv)
 
     fp = fopen(csvFile, "a"); // open or create for appending
     if (!fp) {
-        logfile("%s: error creating %s\n", __func__, csvFile);
+        log_perror("error creating %s", csvFile);
 
         return -1;
     }
@@ -234,7 +234,7 @@ int write_csv(const char *csvFile, PhoneBook_t *contact_csv)
     sdsfree(csv_table); // free memory
 
     if (ferror(fp)) {
-        logfile("%s: error while writing file %s\n", __func__, csvFile);
+        log_perror("error while writing file %s", csvFile);
         fclose(fp); // close the file pointer
 
         return -1;
@@ -465,7 +465,7 @@ int importCSV(sds csvFile)
     data.isGoogle = strcmp(csvFile, GOOGLE_CSV) ? false : true; // check if is Google csv file
 
     if (csv_init(&parse, options)) {
-        logfile("%s: Failed to initialize csv parser\n", __func__);
+        log_perror("Failed to initialize csv parser");
 
         return -1;
     }
@@ -475,7 +475,7 @@ int importCSV(sds csvFile)
 
     fp = fopen(csvFile, "rb");
     if (!fp) {
-        logfile("%s: Failed to open %s: %s\n", __func__, csvFile, strerror(errno));
+        log_perror("Failed to open %s: %s", csvFile, strerror(errno));
         csv_fini(&parse, csv_cb_field, csv_cb_row, &data);
         csv_free(&parse);
 
@@ -486,15 +486,15 @@ int importCSV(sds csvFile)
         retVal = csv_parse(&parse, buffer, bytes_read, csv_cb_field, csv_cb_row, &data);
         pos += bytes_read;
         if (retVal == bytes_read)
-            logfile("%s: reading '%s' up to %lu bytes\n", __func__, csvFile, (unsigned long) pos);
+            log_info("reading '%s' up to %lu bytes", csvFile, (unsigned long) pos);
         else if (csv_error(&parse) == CSV_EPARSE) {
-            logfile("%s: malformed at byte %lu at row %u at field %u\n", __func__, (unsigned long) pos, data.rows, data.fields);
+            log_info("malformed at byte %lu at row %u at field %u", (unsigned long) pos, data.rows, data.fields);
             csv_fini(&parse, csv_cb_field, csv_cb_row, &data);
             csv_free(&parse);
 
             return -1;
         } else {
-            logfile("%s: error while parsing file '%s': %s\n", __func__, csvFile, csv_strerror(csv_error(&parse)));
+            log_perror("error while parsing file '%s': %s", csvFile, csv_strerror(csv_error(&parse)));
             csv_fini(&parse, csv_cb_field, csv_cb_row, &data);
             csv_free(&parse);
 
@@ -506,7 +506,7 @@ int importCSV(sds csvFile)
     csv_free(&parse);
 
     if (ferror(fp)) {
-        logfile("%s: error while reading file %s\n", __func__, csvFile);
+        log_perror("error while reading file %s", csvFile);
         csv_free(&parse);
         fclose(fp);
 

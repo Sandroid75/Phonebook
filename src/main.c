@@ -7,7 +7,11 @@ int main(void)
     WINDOW *win;
     int xmax, ymax;
 
-    logfile("%s: *** NEW SESSION ***\n", __func__);
+    log_set_level(LOG_FATAL);
+    log_set_filelog(LOGFILE);
+    log_set_file_level(LOG_TRACE);
+
+    log_info("*** NEW SESSION ***");
 
     setlocale(LC_ALL, "");
     bindtextdomain("Phonebook", "./po/");
@@ -32,11 +36,11 @@ int main(void)
     getmaxyx(stdscr, ymax, xmax); // get current window console surface dimension
     if (ymax < 24 || xmax < 80) { // check if the current console window have enough rows and columns
         if (ymax < 24)            // check the rows
-            logfile("%s: Terminal height not enough you have %d rows, you need at least 24 rows\n", __func__, ymax);
+            log_perror("Terminal height not enough you have %d rows, you need at least 24 rows", ymax);
         if (xmax < 80) // check the columns
-            logfile("%s: Terminal width not enough you have %d columns, you need at least 80 columns\n", __func__, xmax);
+            log_perror("Terminal width not enough you have %d columns, you need at least 80 columns", xmax);
 
-        fprintf(stderr, "%s: Terminal error, see %s file please.", __func__, LOGFILE);
+        log_fatal("Terminal error, see %s file please.", LOGFILE);
         getchar();
     } else {
         win = newwin(ymax, xmax, 0, 0); // create the main window
@@ -48,7 +52,7 @@ int main(void)
     endwin();              // close ncurses
     destroyList(contacts); // free memory routine for PhoneBook_t contacts
 
-    logfile("%s: *** END SESSION ***\n", __func__);
+    log_info("*** END SESSION ***");
 
     return EXIT_SUCCESS;
 }

@@ -12,7 +12,7 @@ void MainMenu(WINDOW *win)
     if (!contacts) {    // the list is empty
         ch = read_db(); // read the sqlite file database and store it in the contacts list
         if (ch == -1) { // an error was found reading db
-            logfile("%s: Error reading DB\n", __func__);
+            log_perror("Error reading DB");
 
             sdsfree(menuModify); // free memory
             sdsfree(menuUpdate); // free memory
@@ -20,9 +20,9 @@ void MainMenu(WINDOW *win)
 
             return;
         } else if (ch > 0)
-            logfile("%s: DataBase '%s' is successfully opened, %d contacts readed...\n", __func__, DB, ch);
+            log_info("DataBase '%s' is successfully opened, %d contacts readed...", DB, ch);
         else
-            logfile("%s: No database found, new one will be created...\n", __func__);
+            log_info("No database found, new one will be created...");
     }
 
     wrefresh(win);
@@ -197,7 +197,7 @@ int do_search(WINDOW *win, _Bool csv_export)
 
         return 0;
     }
-    logfile("%s: %d records found!\n", __func__, nb_records);
+    log_info("%d records found!", nb_records);
 
     if (csv_export) {                             // if the user choose with export
         rows = write_csv(SEARCH_CSV, resultList); // export the results to csv file
@@ -209,7 +209,7 @@ int do_search(WINDOW *win, _Bool csv_export)
 
             return -1;
         }
-        logfile("%s: Exported %d rows to %s\n", __func__, rows, SEARCH_CSV);
+        log_info("Exported %d rows to %s", rows, SEARCH_CSV);
     }
 
     REWIND(resultList);
@@ -231,14 +231,14 @@ void AddMenu(WINDOW *win)
     do {
         DBnode_t *dbFlex = initNode(contacts); // create and initialize a node
         if (!dbFlex) {
-            logfile("%s: Error allocating memory\n", __func__);
+            log_perror("Error allocating memory");
 
             return;
         }
         rc = flexForm(win, dbFlex, _(" Add New Contact ")); // create a new entry node only if the user confirm the input than 1 is returned
         // flexForm can return 1 mean confirm, 0 mean abort, -1 mean error
         if (rc == -1) { // error in func flexForm()
-            logfile("%s: Error adding new contact\n", __func__);
+            log_perror("Error adding new contact");
         } else if (rc == 1) {                                     // the user input a new contact
             store = addNode(&contacts, (*dbFlex)) ? true : store; // if at least one time store is set to true, it remain true, otherwise false
             REWIND(contacts);
@@ -248,7 +248,7 @@ void AddMenu(WINDOW *win)
 
     if (store) {
         rc = write_db(false); // write the contacts list to sqlite file database only if user confirm at least one time with param fale means INSERT
-        logfile("%s: Inserted %d records in %s DataBase\n", __func__, rc, DB);
+        log_info("Inserted %d records in %s DataBase", rc, DB);
     }
 
     return;
@@ -287,7 +287,7 @@ void UpdateMenu(WINDOW *win, PhoneBook_t *resultList, sds menuName, sds menuModi
                 NEXT(ptr);
             }
             if (!ptr) {
-                logfile("%s: The menu item %d selected is out of list\n", __func__, choice);
+                log_info("The menu item %d selected is out of list", choice);
                 sdsfreesplitres(menuList, nb_fields); // release the memory
 
                 return;
@@ -299,7 +299,7 @@ void UpdateMenu(WINDOW *win, PhoneBook_t *resultList, sds menuName, sds menuModi
                     ; // walk contacts up to id
             }
             if (!ptr) {
-                logfile("%s: The menu item %d selected is out of list\n", __func__, choice);
+                log_info("The menu item %d selected is out of list", choice);
                 sdsfreesplitres(menuList, nb_fields); // release the memory
 
                 return;
@@ -335,7 +335,7 @@ void UpdateMenu(WINDOW *win, PhoneBook_t *resultList, sds menuName, sds menuModi
 
     if (modified) {                 // if at least one contact was modified
         nb_fields = write_db(true); // if the modification is accepted write the new db with param true means UPDATE
-        logfile("%s: Updated %d records in %s DataBase\n", __func__, nb_fields, DB);
+        log_info("Updated %d records in %s DataBase", nb_fields, DB);
     }
 
     return;
@@ -378,9 +378,9 @@ void ImpExpMenu(WINDOW *win)
             wrectangle(win, 10, midx - 22, 12, midx + 21);
             if (rows > 0) {
                 rows = write_db(false); // write the imported contacts list to sqlite file database
-                logfile("%s: Imported %d rows in '%s' DataBase\n", __func__, rows, DB);
+                log_info("Imported %d rows in '%s' DataBase", rows, DB);
             } else
-                logfile("%s: %s\n", __func__, message); // write result to log file
+                log_info("%s", message); // write result to log file
 
             wclear(win);
             wrefresh(win);
@@ -405,7 +405,7 @@ void ImpExpMenu(WINDOW *win)
             wclear(win);
             wrefresh(win);
             messageBox(win, 15, message, COLOR_PAIR(PAIR_MODIFIED));
-            logfile("%s: %s\n", __func__, message); // write result to log file
+            log_info("%s", message); // write result to log file
             break;
         case 5: // Back to Main Menu
         case 0: // ESCape was pressed
@@ -513,7 +513,7 @@ int FindDuplicates(WINDOW *win)
 
         return 0;
     }
-    logfile("%s: Found %d pairs of records with duplicates!\n", __func__, nb_records);
+    log_info("Found %d pairs of records with duplicates!", nb_records);
 
     return nb_records;
 }
@@ -614,7 +614,7 @@ void mergeDuplicate(WINDOW *win, DBnode_t first, DBnode_t second, unsigned int c
         }
 
         write_db(true); // if the modification is accepted write the new db with param true means UPDATE
-        logfile("%s: Updated records in %s DataBase\n", __func__, DB);
+        log_info("Updated records in %s DataBase", DB);
         break;
     case KEY_ESC:
     default:
@@ -656,7 +656,7 @@ sds *buildMenuList(PhoneBook_t *fromList, int *nb_fileds)
 
     REWIND(ptr);
     if (!ptr) { // check if the list is empty
-        logfile("%s: No contacts to build a list|\n", __func__);
+        log_info("No contacts to build a list|");
         (*nb_fileds) = 0; // no items in the menu list
 
         return (sds *) NULL;
@@ -702,7 +702,7 @@ void SortList(WINDOW *win, PhoneBook_t *list, _Bool compare(PhoneBook_t *first, 
     wrectangle(win, 10, midx - 22, 12, midx + 21);
 
     nb_records = write_db(true); // Updating database
-    logfile("%s: Updated %d records in %s DataBase after sorting\n", __func__, nb_records, DB);
+    log_info("Updated %d records in %s DataBase after sorting", nb_records, DB);
 
     wclear(win);
     wrefresh(win);

@@ -16,7 +16,7 @@ int flexMenu(WINDOW *win, sds *choices, char *menuName)
     /* Create items */
     my_items = (ITEM **) calloc(n_choices, sizeof(ITEM *)); // calculate the size of memory to allocate for menu items
     if (!my_items) {
-        logfile("%s: error allocationg memory for items\n", __func__);
+        log_perror("error allocationg memory for items");
 
         return -1;
     }
@@ -27,7 +27,7 @@ int flexMenu(WINDOW *win, sds *choices, char *menuName)
     /* Crate menu */
     my_menu = new_menu((ITEM **) my_items);
     if (!my_menu) {
-        logfile("%s: error menu initialization\n", __func__);
+        log_perror("error menu initialization");
 
         return -1;
     }
@@ -147,14 +147,14 @@ int flexForm(WINDOW *win, DBnode_t *db, const char *formName)
 
     field = initField(ptrDB); // Initialize the fields and respective labels
     if (!field) {             // check if field are well initialized
-        logfile("%s: error initializing fields\n", __func__);
+        log_perror("error initializing fields");
 
         return -1;
     }
 
     my_form = new_form(field); // Create the form and post it
     if (!my_form) {
-        logfile("%s: error form initialization\n", __func__);
+        log_perror("error form initialization");
 
         return -1;
     }
@@ -371,7 +371,7 @@ FIELD **initField(DBnode_t *db)
 
     field = (FIELD **) calloc(PHONE_FIELDS, sizeof(FIELD *)); // allocate memory for fields there are 19 fields+1 NULL
     if (!field) {
-        logfile("%s: error allocationg memory for fields\n", __func__);
+        log_perror("error allocationg memory for fields");
 
         return NULL;
     }
@@ -500,14 +500,14 @@ int showMatch(WINDOW *win, DBnode_t first, DBnode_t second, unsigned int check)
 
     field = initMatchField(first, second, check);
     if (!field) { // check if field are well initialized
-        logfile("%s: error initializing fields\n", __func__);
+        log_perror("error initializing fields");
 
         return -1;
     }
 
     my_form = new_form(field); // Create the form and post it
     if (!my_form) {
-        logfile("%s: error form initialization\n", __func__);
+        log_perror("error form initialization");
 
         return -1;
     }
@@ -582,7 +582,7 @@ FIELD **initMatchField(DBnode_t first, DBnode_t second, unsigned int check)
 
     field = (FIELD **) calloc(MATCH_FIELDS, sizeof(FIELD *)); // allocate memory for fields there are 28 fields+1 NULL
     if (!field) {
-        logfile("%s: error allocationg memory for fields\n", __func__);
+        log_perror("error allocationg memory for fields");
 
         return NULL;
     }
